@@ -1,0 +1,100 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_X			150
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			34
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define CHOICE_GROUP			"map_selection"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#undef A_BUTTON_SIZE
+#define A_BUTTON_SIZE			0.3
+
+#undef A_BUTTON_OFFSET_X
+#define A_BUTTON_OFFSET_X		-2
+// ------------------- end preprocessing definitions ----------------------
+{
+	menuDef
+	{
+		name			settings_map
+		fullscreen		1
+		rect			0 0 640 480
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		border			0
+		soundloop 		"music_mainmenu"
+		onOpen
+		{
+			focusFirst;
+			setfocusbydvar "ui_mapname";
+		}
+		onEsc
+		{
+			close settings_map;
+		}
+		onClose
+		{
+			execNow "xupdatepartystate";
+		}
+		
+#define LOCAL_DLC_ACTION( p_mapname, p_mapname_text ) \
+	play "mouse_click";	\
+	open settings_map_dlc;
+			
+#define LOCAL_DLC_SELECTION( itemNum, p_mapname_text, p_mapname, visArg )\
+	CHOICE_BUTTON_FOCUS_VIS_EX( itemNum, p_mapname_text, LOCAL_DLC_ACTION( p_mapname, p_mapname_text ), LOCAL_MAP_SHOW( p_mapname, p_mapname_text ), ;, visArg, forecolor 0.55 0.93 0.56 1 ) \
+	PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-20) 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 18, "@"+tablelookup(MAP_TABLE,0,p_mapname,3), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "name_"p_mapname group "map_name_group" )\
+	PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+20), "@"+tablelookup(MAP_TABLE,0,p_mapname,6), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, CHOICE_TEXTCOLOR name "desc_"p_mapname group "map_desc_group" autowrapped )\
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 (GAMEINFO_HEIGHT-26) HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 20, tablelookup(MAP_TABLE,0,p_mapname,4), 1 1 1 1, 0, 0, 0 0 0 0 name "image_"p_mapname group "map_image_group" )
+
+		// ------------------  statics ------------------------
+#include "ui/blurredbg.inc"
+
+		CHOICE_MENU_TITLE( "@MENU_CHOOSE_MAP_CAP" )
+		
+		#define MAP_LIST\
+			LOCAL_MAP_SELECTION( 1, "@MPUI_AIRFIELD",		"mp_airfield",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 2, "@MPUI_ASYLUM",			"mp_asylum",		( dvarstring( "ui_gametype" ) != "twar" ) )\ 
+			LOCAL_MAP_SELECTION( 3, "@MPUI_CASTLE", 		"mp_castle",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 4, "@MPUI_COURTYARD", 		"mp_courtyard",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 5, "@MPUI_DOME", 			"mp_dome",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 6, "@MPUI_HANGAR",			"mp_hangar",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 7, "@MPUI_MAKIN",			"mp_makin",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 8, "@MPUI_NACHTFEUER", 		"mp_nachtfeuer",	( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 9, "@MPUI_SHRINE", 		"mp_shrine",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			LOCAL_MAP_SELECTION( 10, "@MPUI_SUBURBAN", 		"mp_suburban",		( dvarstring( "ui_gametype" ) != "twar" ) )\
+			\
+			LOCAL_MAP_SELECTION( 11, "@MPUI_BEACHHEAD", 		"mp_beachhead",		( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			LOCAL_MAP_SELECTION( 12, "@MPUI_DOWNFALL", 		"mp_downfall",		( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			LOCAL_MAP_SELECTION( 13, "@MPUI_KNEEDEEP", 		"mp_kneedeep",		( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			LOCAL_MAP_SELECTION( 14, "@MPUI_OUTSKIRTS", 		"mp_outskirts",		( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			LOCAL_MAP_SELECTION( 15, "@MPUI_ROUNDHOUSE", 		"mp_roundhouse",	( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			LOCAL_MAP_SELECTION( 16, "@MPUI_SEELOW", 		"mp_seelow",		( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			LOCAL_MAP_SELECTION( 17, "@MPUI_WETLANDS", 		"mp_wetlands",		( dvarstring( "ui_gametype" ) == "tdm" || dvarstring( "ui_gametype" ) == "dm" ) )\
+			\
+			LOCAL_MAP_SELECTION( 1, "@MPUI_BEACHHEAD", 		"mp_beachhead",		( dvarstring( "ui_gametype" ) == "twar" ) )\
+			LOCAL_MAP_SELECTION( 2, "@MPUI_DOWNFALL", 		"mp_downfall",		( dvarstring( "ui_gametype" ) == "twar" ) )\
+			LOCAL_MAP_SELECTION( 3, "@MPUI_KNEEDEEP", 		"mp_kneedeep",		( dvarstring( "ui_gametype" ) == "twar" ) )\
+			LOCAL_MAP_SELECTION( 4, "@MPUI_OUTSKIRTS", 		"mp_outskirts",		( dvarstring( "ui_gametype" ) == "twar" ) )\
+			LOCAL_MAP_SELECTION( 5, "@MPUI_ROUNDHOUSE", 		"mp_roundhouse",	( dvarstring( "ui_gametype" ) == "twar" ) )\
+			LOCAL_MAP_SELECTION( 6, "@MPUI_SEELOW", 		"mp_seelow",		( dvarstring( "ui_gametype" ) == "twar" ) )\
+			\
+			LOCAL_MAP_SELECTION( 18, "MP Weapon Test (DEV)", 	"mp_weapontest", 1 )
+			//LOCAL_MAP_SELECTION( 16, "@MPUI_CAVERN", 	"Script Test: Cavern" )\
+			//LOCAL_MAP_SELECTION( 17, "MP Water Test (DEV)", 	"mp_water_test" )\
+			//LOCAL_MAP_SELECTION( 18, "MP Vehicle Test (DEV)", 	"mp_vehicle_test" )\
+			//LOCAL_MAP_SELECTION( 19, "MP Weapon Test (DEV)", 	"mp_weapontest" )\
+			//LOCAL_DLC_SELECTION( 20, "@MP_DLC_MAPS", "dlc", when( dvarBool( mappack1 ) || dvarBool( mappack2 ) ) )
+
+		#define MAP_TABLE	"mp/mapsTable.csv"
+		
+		#include "ui_mp/map_info.inc"
+	}
+}

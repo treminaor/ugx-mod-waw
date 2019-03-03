@@ -1,0 +1,50 @@
+#include "ui/menudef.h"
+#include "ui/mission_select/missiondefs.menu"
+
+
+{
+	menuDef
+	{
+		name            scaleform
+		fullScreen      1
+		rect            0 0 640 480
+		focusColor      COLOR_FOCUSED
+		onOpen
+		{
+			execnow "nosplitscreen";
+			focusfirst;
+		}
+
+//		itemDef
+//		{
+//			type			ITEM_TYPE_TEXT
+//			origin			ORIGIN_TITLE
+//			forecolor		COLOR_TITLE
+//			text			"Scaleform v2.0.46"
+//			textfont		UI_FONT_NORMAL
+//			textscale		TEXTSIZE_TITLE
+//			visible			1
+//			decoration
+//		}
+
+		itemDef
+		{
+			text            "CmFrontEnd"
+			type            ITEM_TYPE_SCALEFORM
+			rect            FULLSCREEN_WIDE HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			origin          0 0
+			textscale       TEXTSIZE_DEFAULT
+			textfont        UI_FONT_NORMAL
+			forecolor       COLOR_UNFOCUSED
+			visible         1
+			onFocus
+			{
+				play "mouse_over";
+			}
+			action
+			{
+				play "mouse_click";
+			}
+		}
+	}
+}

@@ -1,0 +1,11 @@
+name,sequence,file,vol_min,vol_max,pitch_min,pitch_max,dist_min,limit_type,limit_count,dist_max,bus,priority,spatialized,type,probability,loop,masterslave,loadspec,subtitle,compression,secondaryaliasname,chainaliasname,volumefalloffcurve,startdelay,speakermap,reverb,lfe percentage,center percentage,platform,envelop_min,envelop_max,envelop percentage
+music_mainmenu,,stream\music\ugx_mod\menu\menu_music.wav,1,1,,,,,,,full_vol,0,2d,streamed,,looping,,all_sp,,,,,,200,music_all,,,,,,,
+#mouse_over_t,,ugx_mod\menu\ugx_mod_menu_mouseover.wav,0.2,,1,1,,,,,ui,0,2d,,,,,all_sp all_mp,,,mouse_over_rear,,,,wpn_fnt,,,,,,,
+#mouse_over_t_rear,,ugx_mod\menu\ugx_mod_menu_mouseover.wav,0.2,,1,1,,,,,ui,0,2d,,,,,all_sp all_mp,,,,,,,wpn_rear,,,,,,,
+#mouse_over,,ugx_mod\menu\ugx_mod_menu_mouseover.wav,0.15,,1,1,,oldest,1,,ui,0,2d,,,,,all_sp all_mp,,,mouse_over_rear,,,,wpn_fnt,,,,,,,
+#mouse_over_rear,,ugx_mod\menu\ugx_mod_menu_mouseover.wav,0.15,,1,1,,oldest,1,,ui,0,2d,,,,,all_sp all_mp,,,,,,,wpn_rear,,,,,,,
+#mouse_submenu_over,,ugx_mod\menu\ugx_mod_menu_mouseover.wav,0.2,,1,1,,oldest,1,,ui,0,2d,,,,,all_sp all_mp,,,mouse_submenu_over_rear,,,,wpn_fnt,,,,,,,
+#mouse_submenu_over_rear,,ugx_mod\menu\ugx_mod_menu_mouseover.wav,0.2,,1,1,,oldest,1,,ui,0,2d,,,,,all_sp all_mp,,,,,,,wpn_rear,,,,,,,
+#mouse_click,,ugx_mod\menu\ugx_mod_menu_click.wav,0.4,0.4,1,1,,reject,1,,ui,0,2d,,,,,all_sp all_mp,,,,,,,,,,,,,,
+#mouse_click_t,,ugx_mod\menu\ugx_mod_menu_click.wav,0.3,,1,1,,oldest,1,,ui,0,2d,,,,,all_sp all_mp,,,mouse_click_t_rear,,,,wpn_fnt,,,,,,,
+#mouse_click_t_rear,,ugx_mod\menu\ugx_mod_menu_click.wav,0.3,,1,1,,oldest,1,,ui,0,2d,,,,,all_sp all_mp,,,,,,,wpn_rear

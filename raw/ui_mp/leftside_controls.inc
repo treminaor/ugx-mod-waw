@@ -1,0 +1,78 @@
+#undef		OPTIONS_STYLE
+#undef		STYLE2_NOPOSITION
+#define		OPTIONS_LEFT
+#include "ui_mp/menustyle.inc"
+#undef		OPTIONS_LEFT
+
+#ifndef BACKGROUND_BLACK_LETTERBOX_BLURWORLD_VIS
+#include "ui/overlaybg.inc"
+#endif
+
+#ifdef PC_INGAME
+	BACKGROUND_BLACK_LETTERBOX_BLURWORLD_VIS( 1 , 1 )
+	OVERLAY_BACKGROUND
+	CHOICE_MENU_TITLE( "@MENU_CONTROLS_CAP" )
+#else
+	CHOICE_OVERLAY_TITLE( "@MENU_CONTROLS_CAP" )
+#endif
+
+#undef BACK_OPEN
+#define BACK_OPEN exec "wait";
+#include "ui_mp/navcontrols.inc"
+
+#undef CHOICE_X_START
+#define CHOICE_X_START		30
+
+#undef CHOICE_Y_START
+#define CHOICE_Y_START		65
+
+#undef		CHOICE_SIZE_Y
+#define		CHOICE_SIZE_Y		22
+
+fullScreen		0
+rect			0 0 640 480	HORIZONTAL_ALIGN_FULLSCREEN
+
+CHOICE_BUTTON( 1, "@MENU_LOOK_CAP", LOCAL_CLOSE_ALL open options_look )
+CHOICE_BUTTON( 2, "@MENU_MOVE_CAP", LOCAL_CLOSE_ALL open options_move )
+CHOICE_BUTTON( 3, "@MENU_COMBAT_CAP", LOCAL_CLOSE_ALL open options_shoot )
+CHOICE_BUTTON( 4, "@MENU_INTERACT_CAP", LOCAL_CLOSE_ALL open options_misc )
+CHOICE_BUTTON_VIS( 5, "@MENU_MULTIPLAYER_CONTROLS_CAP", LOCAL_CLOSE_ALL open controls_multi, when( dvarbool( ui_multiplayer ) ) )
+CHOICE_BUTTON_VIS( 5, "@MENU_COOPERATIVE_CONTROLS_CAP", LOCAL_CLOSE_ALL open options_coop, when( !dvarbool( ui_multiplayer ) ); )
+CHOICE_BUTTON( 6, "@MENU_SET_DEFAULT_CONTROLS_CAP", open options_control_defaults )		
+CHOICE_BUTTON( 9, "@MENU_OPTIONS_CAP", LOCAL_CLOSE_ALL open options_new_pc; close options_controls_new_pc )
+
+
+
+
+#undef		CHOICE_SIZE_X
+#undef		CHOICE_SIZE_Y
+
+#define CHOICE_SIZE_X			150//250
+#define CHOICE_SIZE_Y			20
+
+#define		OPTIONS_STYLE			1
+#undef		STYLE2_NOPOSITION
+#define STYLE2_NOPOSITION
+#include "ui_mp/menustyle.inc"
+
+#undef CHOICE_TEXTSIZE
+#define CHOICE_TEXTSIZE 	TEXTSIZE_SMALL
+#undef	CHOICE_TEXTALIGN
+#define	CHOICE_TEXTALIGN	ITEM_ALIGN_MIDDLE_RIGHT
+#undef	CHOICE_TEXT_OFFSET_X
+#define CHOICE_TEXT_OFFSET_X	(-(4+CHOICE_SIZE_Y)) //22
+
+#undef  CHOICE_DVAR_OFFSET_X
+#define CHOICE_DVAR_OFFSET_X	(CHOICE_SIZE_X+20)
+#undef  CHOICE_DVAR_TEXTALIGN
+#define CHOICE_DVAR_TEXTALIGN	ITEM_ALIGN_MIDDLE_LEFT
+#undef CHOICE_DVAR_WIDTH_OFFSET
+#define CHOICE_DVAR_WIDTH_OFFSET	120
+#undef CHOICE_ACTION_SOUND	
+#define CHOICE_ACTION_SOUND		"mouse_click_t"
+
+#undef CHOICE_Y_START
+#define CHOICE_Y_START		25
+
+#undef CHOICE_X_START
+#define CHOICE_X_START		75

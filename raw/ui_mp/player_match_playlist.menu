@@ -1,0 +1,467 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#undef ORIGIN_TITLE
+#define ORIGIN_TITLE			0 0
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			70//34
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+//#define CHOICE_GROUP			"xboxlive"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui_mp/stats_info.inc"
+#include "ui_mp/overlaybg.inc"
+
+#define ORIGIN_DESCRIPTION		-190 0//-205 0//(CHOICE_X_START + 15) 190
+#define COLOR_DESC_TEXT			1 1 1 0.7
+
+#define ORIGIN_BUTTON_BACK		52 438
+#define ORIGIN_BUTTON_INVITE	390 86
+#define ORIGIN_BUTTON_KICK		529 98
+
+#define MENU_FONT_SIZE			TEXTSIZE_DEFAULT
+#define HIGHLIGHT_SIZE			142 22
+#define MENU_FONT_COLOR			1 1 1 0.5
+#define MENU_LOCKED_COLOR		0.25 0.25 0.25 1
+
+#define PLAYERLIST_WIDTH 270
+#define ORIGIN_PLAYERLIST (- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 36
+#define LISTBOX_WIDTH 204
+#define COLOR_DISABLE 0.3 0.3 0.3 1
+
+{
+	
+	menuDef	
+	{
+		name			findgame_category
+		rect			0 0 640 470 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen			{ setdvar invite_visible "0"; setFocus category_list }
+		onEsc			{ close self; }
+		onClose			{ setdvar invite_visible "1"; }
+
+		// background from overlaybg.inc
+		OVERLAY_BACKGROUND
+		#include "ui_mp/navcontrols.inc"
+		#include "ui/safearea.menu"
+
+		CHOICE_OVERLAY_TITLE( "@MPUI_PLAYER_MATCH_PLAYLIST" )
+
+		THIRD_RIGHT_COL_GRADIENT
+		// OwnerDraw UI_PLAYLISTICON
+		itemDef 
+		{
+			name			playlist_icon
+			ownerdraw		UI_PLAYLISTICON
+			rect			-170 45 128 128 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+			visible			when ( dvarBool( category_selected ) == 0 );
+			decoration
+		}
+		// OwnerDraw UI_CATEGORYICON
+		itemDef 
+		{
+			name			category_icon
+			ownerdraw		UI_CATEGORYICON
+			rect			-170 45 128 128 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+			visible			when ( dvarBool( category_selected ) == 1 );
+			decoration
+		}
+
+		// OwnerDraw UI_PLAYLISTNAME
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			3 -33 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			ORIGIN_DESCRIPTION
+			forecolor		COLOR_FOCUSED
+			ownerdraw		UI_PLAYLISTNAME
+			textfont		CHOICE_TEXTFONT
+			textscale		CHOICE_TEXTSIZE
+			textstyle		CHOICE_TEXTSTYLE
+			textalign		ITEM_ALIGN_TOP_LEFT
+			textaligny		26
+			textalignx		0
+			visible			when ( dvarBool( category_selected ) == 0 );
+			decoration
+		}
+		// OwnerDraw UI_CATEGORYNAME
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			3 -33 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			ORIGIN_DESCRIPTION
+			forecolor		COLOR_FOCUSED
+			ownerdraw		UI_CATEGORYNAME
+			textfont		CHOICE_TEXTFONT
+			textscale		CHOICE_TEXTSIZE
+			textstyle		CHOICE_TEXTSTYLE
+			textalign		ITEM_ALIGN_TOP_LEFT
+			textaligny		26
+			textalignx		0
+			visible			when ( dvarBool( category_selected ) == 1 );
+			decoration
+		}
+
+		PREPROC_GRADIENT_DRAW_ALIGNED( 0, -5, 185, (115+45), HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, "menu_white_line_faded", 0 0 0 0.5 )
+		// OwnerDraw UI_PLAYLISTDESCRIPTION
+		itemDef
+		{
+			rect			-2 0 185 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			ORIGIN_DESCRIPTION
+			type			ITEM_TYPE_BUTTON
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		UI_PLAYLISTDESCRIPTION
+			textalign 		ITEM_ALIGN_LEFT
+			forecolor		COLOR_BODY_TEXT
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			when ( dvarBool( category_selected ) == 0 );
+			decoration
+			autowrapped
+		}
+		// OwnerDraw UI_CATEGORYDESCRIPTION
+		itemDef
+		{
+			name			category_description
+			rect			-2 0 185 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			ORIGIN_DESCRIPTION
+			type			ITEM_TYPE_BUTTON
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		UI_CATEGORYDESCRIPTION
+			textalign 		ITEM_ALIGN_LEFT
+			forecolor		COLOR_BODY_TEXT
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			when ( dvarBool( category_selected ) == 1 );
+			decoration
+			autowrapped
+		}
+
+		itemDef
+		{
+			rect			-5 165 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			ORIGIN_DESCRIPTION
+			type			ITEM_TYPE_BUTTON
+			dvar			playlist_population
+			textalign 		ITEM_ALIGN_LEFT
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			forecolor		COLOR_TITLE
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			when ( dvarBool( category_selected ) == 0 );
+			decoration
+			autowrapped
+		}
+
+		itemDef
+		{
+			rect			-5 165 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			ORIGIN_DESCRIPTION
+			type			ITEM_TYPE_BUTTON
+			dvar			category_population
+			textalign 		ITEM_ALIGN_LEFT
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			forecolor		COLOR_TITLE
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			when ( dvarBool( category_selected ) == 1 );
+			decoration
+			autowrapped
+		}
+
+		// --------------------- categories and playlists -----------------------
+		itemDef 
+		{
+			name			category_list
+			type			ITEM_TYPE_LISTBOX
+			feeder			FEEDER_CATEGORIES
+			rect			0 61 (LISTBOX_WIDTH-20) 400 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			0 0
+			elementwidth	20
+			elementheight	23//18
+			noscrollbars
+			textfont		CHOICE_TEXTFONT
+			textscale		CHOICE_TEXTSIZE
+			textaligny		0
+			forecolor		CHOICE_TEXTCOLOR
+			focusColor		COLOR_TITLE
+			selectBorder	0.8 0.95 1 0
+			outlinecolor	HIGHLIGHT_COLOR 
+			highlightTexture	"menu_button_backing_highlight"
+			#ifdef XENON
+				selectIcon	"ui_button_xenon_3d_a_32x32"
+			#endif
+			#ifdef PS3
+				selectIcon	"ui_button_ps3_x_32x32"
+			#endif
+			backcolor		.1 .1 .1 .5
+			backgroundItemListbox	"menu_white_line_faded"
+			disablecolor	COLOR_DISABLED
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible			1
+			columns			1 25 190 64
+			onfocus 
+			{
+				play "mouse_over";				
+				setdvar	category_selected "1";
+			}
+			doubleclick
+			{
+				setdvar	category_selected "0";
+				setFocus playlist_list;
+			}
+			onListboxSelectionChange
+			{
+				play "mouse_over";
+			}
+			dvarTest		category_selected
+			enableDvar		{ "1" }
+		}
+
+		//gradient for the playlist_list
+		PREPROC_GRADIENT_TOP_LINE_DRAW_ALIGNED( (LISTBOX_WIDTH-30), 65, 165, 308, HORIZONTAL_ALIGN_LEFT, VERTICAL_ALIGN_TOP, 0 0, "menu_button_backing", 0 0 0 0.4 )
+
+		itemDef 
+		{
+			name			playlist_list
+			type			ITEM_TYPE_LISTBOX
+			feeder			FEEDER_PLAYLISTS
+			rect			(LISTBOX_WIDTH-30) 62 185 308 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			0 0
+			elementwidth	20
+			elementheight	23
+			noscrollbars
+			textfont		CHOICE_TEXTFONT
+			textscale		CHOICE_TEXTSIZE
+			textalignx		-5
+			forecolor		CHOICE_TEXTCOLOR
+			focusColor		COLOR_TITLE
+			selectBorder	0.8 0.95 1 0
+			outlinecolor		1 1 1 0.5 
+			highlightTexture	"menu_button_backing_highlight" 
+			#ifdef XENON
+				selectIcon	"ui_button_xenon_3d_a_32x32"
+			#endif
+			#ifdef PS3
+				selectIcon	"ui_button_ps3_x_32x32"
+			#endif
+			disablecolor	COLOR_DISABLED
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible			1
+			columns			1 25 190 64
+			onfocus 		{ play "mouse_over"; execNow "GetPrevPlaylist"; }
+			leaveFocus		{ execNow "SetPrevPlaylist"; }
+			doubleclick
+			{
+				play "mouse_click";
+				exec "party_timerVisible 0";
+				exec "sv_privateclients 1";
+				exec "xstartparty";
+				exec "updategamerprofile";
+				open menu_xboxlive_lobby;
+				close findgame_category;
+				close self;
+			}
+			execKeyInt BUTTON_B
+			{
+				setdvar	category_selected "1";
+				setFocus category_list;
+			}
+			onListboxSelectionChange
+			{
+				play "mouse_over";
+			}
+			dvarTest		category_selected
+			enableDvar		{ "0" }
+		}
+	}
+
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			175//216
+
+	#undef CHOICE_HORIZONTAL_ALIGN
+	#define CHOICE_HORIZONTAL_ALIGN	HORIZONTAL_ALIGN_LEFT
+	#undef CHOICE_VERTICAL_ALIGN
+	#define CHOICE_VERTICAL_ALIGN	VERTICAL_ALIGN_TOP
+
+	#undef CHOICE_SIDEITEM_SPACING
+	#define CHOICE_SIDEITEM_SPACING	-308//-310
+
+	#define Y_OFFSET				4
+
+	#include "ui_mp/popupstyle.inc"
+	#include "ui/choices_setup_popmenu.menu"
+
+	//===========================================================
+	//=================== find game playlist ====================
+	//===========================================================
+//	#undef CHOICE_SIZE_X
+//	#define CHOICE_SIZE_X			208 //178
+	menuDef	
+	{
+		name			findgame_playlist_ps3
+		rect			0 0 640 470 //HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen			{ setdvar invite_visible "0"; }
+		onEsc			{ close self; }
+		onClose			{ setdvar invite_visible "1"; }
+		itemDef
+		{
+			//name			popup_background
+			style			WINDOW_STYLE_SHADER
+			rect			0 70 640 350 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN //100 100 256 192 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			background		"menu_pop_up_window"
+			forecolor		1 1 1 1//0 0 0 1
+			visible			1
+			decoration
+		}
+
+		CHOICE_MENU_TITLE( "@MPUI_PLAYER_MATCH_PLAYLIST" )
+
+		itemDef
+		{
+			//rect			4 10 280 14 //210 14
+			rect			0 0 280 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			-300 135//230 265
+			textfont		UI_FONT_NORMAL
+			type			ITEM_TYPE_BUTTON
+			dvar			playlist_population
+			textalign 		ITEM_ALIGN_LEFT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL
+			forecolor		COLOR_TITLE
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			1
+			decoration
+			autowrapped
+		}
+
+		itemDef
+		{
+			//rect			4 10 280 14
+			rect			0 0 280 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin			-300 150//230 280
+			textfont		UI_FONT_NORMAL
+			type			ITEM_TYPE_BUTTON
+			dvar			playlist_totalonline
+			textalign 		ITEM_ALIGN_LEFT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL
+			forecolor		COLOR_TITLE
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			1
+			decoration
+			autowrapped
+		}
+		// OwnerDraw UI_PLAYLISTDESCRIPTION
+		itemDef
+		{
+			//rect			4 10 280 280 //TEMPLATE_ORIGIN 186 280
+			rect			0 0 280 280 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER//TEMPLATE_ORIGIN 186 280
+			origin			-300 0//230 0
+			type			ITEM_TYPE_BUTTON
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		UI_PLAYLISTDESCRIPTION
+			textalign 		ITEM_ALIGN_LEFT
+			forecolor		1 1 1 .75
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			1
+			decoration
+			autowrapped
+		}
+		// OwnerDraw UI_TOTALONINE
+		itemDef
+		{
+			rect			4 10 280 280 //TEMPLATE_ORIGIN 186 280
+			origin			230 0
+			type			ITEM_TYPE_BUTTON
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		UI_TOTALONLINE
+			textalign 		ITEM_ALIGN_LEFT
+			forecolor		1 1 1 .75
+			backcolor		0 0 0 0
+			origin			5 10
+			visible			1
+			decoration
+			autowrapped
+		}
+
+		itemDef 
+		{
+			type			ITEM_TYPE_LISTBOX
+			feeder			FEEDER_PLAYLISTS
+			//rect			0 4 224 300 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP//TEMPLATE_ORIGIN 214 280
+			rect			0 50 224 400 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP//TEMPLATE_ORIGIN 214 280
+			origin			0 0
+			elementwidth	20
+			elementheight	18
+			noscrollbars
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			forecolor		CHOICE_TEXTCOLOR
+			focusColor		CHOICE_TEXTCOLOR
+			selectBorder	0.8 0.95 1 0
+			#ifdef XENON
+				selectIcon	"ui_button_xenon_3d_a_32x32"
+			#endif
+			#ifdef PS3
+				selectIcon	"ui_button_ps3_x_32x32"
+			#endif
+			disablecolor	0.3 0.3 0.3 1
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible			1
+			columns			1 22 190 64
+			onfocus 
+			{
+				play "mouse_over";
+			}
+			doubleclick
+			{
+				play "mouse_click";
+				exec "party_timerVisible 0";
+				exec "sv_privateclients 1";
+				exec "xstartparty";
+				exec "updategamerprofile";
+				open menu_xboxlive_lobby;
+				close findgame_category;
+				close self;
+			}
+			execKeyInt DPAD_LEFT
+			{
+				close self;
+			}
+			execKeyInt APAD_LEFT
+			{
+				close self;
+			}
+			onListboxSelectionChange
+			{
+				play "mouse_over";
+			}
+		}
+	}
+
+}

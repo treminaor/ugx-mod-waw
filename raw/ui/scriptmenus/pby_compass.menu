@@ -1,0 +1,266 @@
+
+#include "ui/menudef.h"
+
+#define HUD_ALPHA 0.65
+#define HUD_FOREGROUND_ALPHA 0.75
+#define DPAD_ICON_ALPHA 0.65
+#define SUBTITLES_ACTIVE (gameMsgWndActive( 2 ))
+#define CHAPLIN_CHEAT_OFF (dvarBool( chaplinCheat ) == 0)
+
+{
+	assetGlobalDef
+	{
+		fadeClamp		1					// sets the fadeup alpha
+		fadeCycle		1					// how often fade happens in milliseconds
+		fadeAmount		0.1					// amount to adjust alpha per cycle
+	}
+
+// PBY COMPASS
+	menuDef
+	{
+		name "Pby_Compass"
+ 	   	fullScreen MENU_FALSE
+ 	   	visible MENU_TRUE;
+#ifdef PC
+		rect 0 -140 COMPASS_SIZE COMPASS_SIZE HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+#else
+		rect -40 -120 COMPASS_SIZE COMPASS_SIZE HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+#endif
+
+		itemDef
+		{
+			name "compassface"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_compass_face"
+			ownerdraw CG_PLAYER_COMPASS
+			visible MENU_TRUE
+			decoration
+		}
+		//-- GLocke: the red flash for the damaged face
+		itemDef
+		{
+			name "compassface"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_compass_face_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt( ui_pby_damage_red ) == 1 );
+			decoration
+		}
+		itemDef
+ 	  {
+			name "compassrim"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_compass_rim"
+			ownerdraw CG_PLAYER_COMPASS_BACK
+			visible MENU_TRUE
+			decoration
+ 	  }
+// MikeD (10/16/2007): Hiding this, so we keep the memory alocation (remove before ship if we do not need it).
+		itemDef
+		{
+			name "compasshighlight"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_compass_highlight"
+			ownerdraw CG_PLAYER_COMPASS_BACK
+			visible MENU_FALSE
+			decoration
+		}
+		itemDef // Friendlies pointers
+		{
+			name "compassfriendlies"
+			visible MENU_TRUE
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "objective_friendly"
+			ownerdraw CG_PLAYER_COMPASS_ACTORS
+		}
+		itemDef // tank pointers
+		{
+			name "compasstanks"
+			visible MENU_TRUE
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_objective_tank"
+			ownerdraw CG_PLAYER_COMPASS_TANKS
+		}
+		itemDef // Objective pointers
+		{
+			name "compasspointers"
+			decoration
+			visible MENU_TRUE
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			ownerdraw CG_PLAYER_COMPASS_POINTERS
+		}
+//-- Neutral Damage States
+		itemDef
+		{
+			name "compass_pby_ltgun_neutral"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_gun_lt_neut"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_gunlt) == 0);
+		}
+		itemDef
+		{
+			name "compass_pby_ltwing_neutral"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_wing_lt_neut"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_winglt) == 0);
+		}
+		itemDef
+		{
+			name "compass_pby_rtgun_neutral"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_gun_rt_neut"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_gunrt) == 0);
+		}
+		itemDef
+		{
+			name "compass_pby_rtwing_neutral"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_wing_rt_neut"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_wingrt) == 0);
+		}
+		itemDef
+		{
+			name "compass_pby_nose_neutral"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_nose_neut"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_nose) == 0);
+		}
+		itemDef
+		{
+			name "compass_pby_tail_neutral"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_tail_neut"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_tail) == 0);
+		}
+//-- Partial Damage States
+		itemDef
+		{
+			name "compass_pby_ltgun_yellow"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_gun_lt_yellow"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_gunlt) == 1);
+		}
+		itemDef
+		{
+			name "compass_pby_ltwing_yellow"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_wing_lt_yellow"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_winglt) == 1);
+		}
+		itemDef
+		{
+			name "compass_pby_rtgun_yellow"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_gun_rt_yellow"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_gunrt) == 1);
+		}
+		itemDef
+		{
+			name "compass_pby_rtwing_yellow"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_wing_rt_yellow"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_wingrt) == 1);
+		}
+		itemDef
+		{
+			name "compass_pby_nose_yellow"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_nose_yellow"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_nose) == 1);
+		}
+		itemDef
+		{
+			name "compass_pby_tail_yellow"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_tail_yellow"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_tail) == 1);
+		}
+//-- Final Damage States
+		itemDef
+		{
+			name "compass_pby_ltgun_red"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_gun_lt_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_gunlt) == 2);
+		}
+		itemDef
+		{
+			name "compass_pby_ltwing_red"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_wing_lt_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_winglt) == 2);
+		}
+		itemDef
+		{
+			name "compass_pby_rtgun_red"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_gun_rt_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_gunrt) == 2);
+		}
+		itemDef
+		{
+			name "compass_pby_rtwing_red"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_wing_rt_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_wingrt) == 2);
+		}
+		itemDef
+		{
+			name "compass_pby_nose_red"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_nose_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_nose) == 2);
+		}
+		itemDef
+		{
+			name "compass_pby_tail_red"
+			rect 0 0 COMPASS_SIZE COMPASS_SIZE
+			forecolor 1.0 1.0 1.0 1.0
+			background "hud_pby_tail_red"
+			ownerdraw CG_PLAYER_COMPASS
+			visible when ( dvarInt(ui_pby_damage_tail) == 2);
+		}
+// End Damage Pieces
+	}
+}

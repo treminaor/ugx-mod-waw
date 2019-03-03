@@ -1,0 +1,261 @@
+#include "ui/menudef.h"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+
+{	
+	menuDef
+	{
+		name				"ugxm_vote_teams"		
+		rect				FULLSCREEN_WIDE
+		focuscolor			1 1 1 1
+		disablecolor		0 0 0 0
+ 		style				WINDOW_STYLE_FILLED
+
+		onOpen
+		{
+			setDvar cl_bypassMouseInput "1"
+		}
+		onClose
+		{
+			setDvar cl_bypassMouseInput "0"
+		}
+		onEsc
+		{
+			scriptMenuResponse "close";
+			close self;
+		}
+
+		#undef CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START			116
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START			-105
+
+		#undef CHOICE_Y_SPACING
+		#define CHOICE_Y_SPACING		20
+
+		#define WINDOW_RECT_TEAMS		-162 88 540 305
+		
+		#define WINDOW_ORIGIN_TEAMS_X	-152
+		#define WINDOW_ORIGIN_TEAMS2_X	-52
+		#define WINDOW_ORIGIN_TEAMS_Y	88
+		
+		#define TEAMS_START_Y			116
+
+		itemDef
+		{
+			name			"options_bg"
+			rect			WINDOW_RECT_TEAMS HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+	 		style			WINDOW_STYLE_FILLED
+	 		border			1
+			bordersize		1
+			bordercolor		0.9 0.9 0.9 0.85
+			forecolor		1 1 1 1
+			backcolor		0.6 0.6 0.6 0.9
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"close_msg"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y -10) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 1 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			text			"Press [ESC] or [RMB] to Confirm & Close."
+			decoration
+		}
+
+		itemDef
+		{
+			name			"switch_msg"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 0) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 1 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			text			"Press [USE] to Switch Teams."
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_0"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 10) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			text 			"Red Team"
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_0"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 10) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			text 			"_________________"
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_0"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 20) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team0_0")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_0"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 20) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team0_0")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_1"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 30) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team0_1")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_2"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 40) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team0_2")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team0_3"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS_X (TEAMS_START_Y + 50) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team0_3")
+			decoration
+		}
+
+
+
+
+
+		itemDef
+		{
+			name			"team1"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS2_X (TEAMS_START_Y + 10) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0 0 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			text			"Blue Team"
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team1"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS2_X (TEAMS_START_Y + 10) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0 0 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			text			"__________________"
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team1_0"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS2_X (TEAMS_START_Y + 20) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0 0 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team1_0")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team1_1"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS2_X (TEAMS_START_Y + 30) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0 0 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team1_1")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team1_2"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS2_X (TEAMS_START_Y + 40) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0 0 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team1_2")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"team1_3"
+			visible			1
+			rect			WINDOW_ORIGIN_TEAMS2_X (TEAMS_START_Y + 50) 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0 0 1 1
+			textfont		UI_FONT_NORMAL
+			textscale		.25
+			textaligny		8
+			exp text		dvarString("ugxm_team1_3")
+			decoration
+		}
+	}
+}

@@ -1,0 +1,223 @@
+#include "ui/menudef.h"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+
+{
+	menuDef
+	{
+		#undef CHOICE_POPUP_TITLE_HEIGHT
+		#define CHOICE_POPUP_TITLE_HEIGHT	20
+
+		#undef CHOICE_SIZE_X
+		#define CHOICE_SIZE_X			180
+
+		#undef CHOICE_Y_START
+		#define CHOICE_Y_START			230
+		
+		CENTER_POPUP_SETUP_ONOPEN( ugxm_gamemode_not_allowed_plr, 3, ;, ;, 1 )
+		CHOICE_POPMENU_TITLE( "Gamemode Disabled" )
+		CHOICE_POPMENU_SUBTITLE( "This gamemode has been disabled by the map maker." )
+		
+		CHOICE_BUTTON( 3, "OK", close self; )
+	}
+	
+	menuDef
+	{
+		name				"ugxm_vote_players"		
+		rect				FULLSCREEN_WIDE
+		focuscolor		1 1 1 1
+		disablecolor		0 0 0 0
+ 		style				WINDOW_STYLE_SHADER
+		background		"ugx_loadscreen_user"
+		
+		onOpen
+		{
+			setLocalVarInt ugx_gamemode 0;
+			setLocalVarInt ugx_timed 0;
+			setLocalVarInt ugx_obj 0;
+			setLocalVarInt confirmed 0;
+			setdvar ugxm_player_index "0"; // must do this otherwise compiler throws an error
+			setLocalVarInt ugx_time_limit 0;
+			setLocalVarInt ugx_game_speed 1;
+		}
+		onClose
+		{
+		}
+		onEsc
+		{
+		}
+		
+		#define ACTION_NOSAVE_QUIT \
+			play "mouse_click"; \
+			close self; \
+			setdvar ui_skipMainLockout "1"; \
+			exec "disconnect"; 
+		
+		//#undef	CHOICE_Y_START
+		//#define CHOICE_Y_START							211
+		//#undef	CHOICE_X_START
+		//#define CHOICE_X_START							0//-114 //-117 //closer to 0 is farther to right
+		#undef CHOICE_SIZE_X
+		#undef CHOICE_SIZE_Y
+		#define CHOICE_SIZE_X								240
+		#define CHOICE_SIZE_Y								20
+		#undef CHOICE_Y_SPACING
+		#define CHOICE_Y_SPACING		30
+		#undef CHOICE_TEXTCOLOR
+		#define CHOICE_TEXTCOLOR 					1 0 0 1//0.8 0.8 0.8 1
+		#undef HIGHLIGHT_BORDER_COLOR
+		#define HIGHLIGHT_BORDER_COLOR	0 0 0 0
+		#undef HIGHLIGHT_COLOR
+		#define HIGHLIGHT_COLOR			1 0 0 0.5
+		#undef BUTTON_BG_COLOR
+		#define BUTTON_BG_COLOR			0 0 0 0
+		//#undef CHOICE_HORIZONTAL_ALIGN
+		//#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+		
+		#define TIMED_GP ((localvarInt( ugx_timed ) == 1 && localvarInt(ugx_gamemode) != 3 && localvarInt(ugx_gamemode) != 4) || localvarInt(ugx_gamemode) == 3 || localvarInt(ugx_gamemode) == 4)
+		#define NOT_TIMED_GP (localvarInt( ugx_timed ) == 0 && localvarInt(ugx_gamemode) != 3 && localvarInt(ugx_gamemode) != 4)
+		#define OBJECTIVES (localvarInt( ugx_obj ) == 1)
+		#define NON_OBJECTIVES (localvarInt( ugx_obj ) == 0)
+		#define GAMEMODE (localvarInt(ugx_gamemode))
+		
+		#define ON_DISABLED_MODE ((dvarBool(ugxm_allow_classic) == 0 && GAMEMODE == 0) || (dvarBool(ugxm_allow_gungame) == 0 && GAMEMODE == 1) || (dvarBool(ugxm_allow_arcademode) == 0 && GAMEMODE == 2) || (dvarBool(ugxm_allow_sharpshooter) == 0 && GAMEMODE == 3) || (dvarBool(ugxm_allow_bountyhunter) == 0 && GAMEMODE == 4))
+		#define ON_ENABLED_MODE ((dvarBool(ugxm_allow_classic) == 1 && GAMEMODE == 0) || (dvarBool(ugxm_allow_gungame) == 1 && GAMEMODE == 1) || (dvarBool(ugxm_allow_arcademode) == 1 && GAMEMODE == 2) || (dvarBool(ugxm_allow_sharpshooter) == 1 && GAMEMODE == 3) || (dvarBool(ugxm_allow_bountyhunter) == 1 && GAMEMODE == 4))
+		
+		#define NO_GAMEMODES_ALLOWED (dvarBool(ugxm_allow_gungame) == 0 && dvarBool(ugxm_allow_classic) == 0 && dvarBool(ugxm_allow_sharpshooter) == 0 && dvarBool(ugxm_allow_arcademode) == 0 && dvarBool(ugxm_allow_bountyhunter) == 0)
+		#define GAMEMODES_ALLOWED (dvarBool(ugxm_allow_gungame) == 1 || dvarBool(ugxm_allow_classic) == 1 || dvarBool(ugxm_allow_sharpshooter) == 1 || dvarBool(ugxm_allow_arcademode) == 1 && dvarBool(ugxm_allow_bountyhunter) == 1)
+		
+		#define HAS_TIME_LIMIT (GAMEMODE == 3 || GAMEMODE == 4)
+		#define DOESNT_HAVE_TIME_LIMIT (GAMEMODE == 0 || GAMEMODE == 1 || GAMEMODE == 2)
+		
+		#define TEXT_X_START 114//114
+		#define TEXT_Y_START 10
+		
+		
+		
+		#define MAP_HAS_ADJUSTABLE_TIME_ABILITY 			(GAMEMODE == 3 || GAMEMODE == 4)
+		#define MAP_DOESNT_HAVE_ADJUSTABLE_TIME_ABILITY 	(GAMEMODE == 0 || GAMEMODE == 1 || GAMEMODE == 2)
+		#define MAP_HAS_ADJUSTABLE_SPEED_ABILITY 			(GAMEMODE == 1)
+		#define MAP_DOESNT_HAVE_ADJUSTABLE_SPEED_ABILITY 	(GAMEMODE == 0 || GAMEMODE == 2 || GAMEMODE == 3 || GAMEMODE == 4)
+		#define TIME_LIMIT_IS_UNLIMITED 					(localvarInt(ugx_time_limit) == 4) // this is if it "has a time limit" but its set to unlimited by the user
+		#define TIME_LIMIT_IS_NOT_UNLIMITED 				(localvarInt(ugx_time_limit) != 4)
+		
+		#define IS_TIMED_GAMEPLAY_FORCED 					(MAP_HAS_ADJUSTABLE_TIME_ABILITY && TIME_LIMIT_IS_NOT_UNLIMITED)
+		#define IS_TIMED_GAMEPLAY_CHANGEABLE 				(((MAP_HAS_ADJUSTABLE_TIME_ABILITY && TIME_LIMIT_IS_UNLIMITED) || MAP_DOESNT_HAVE_ADJUSTABLE_TIME_ABILITY) && dvarBool(ugxm_allow_timed_gameplay) == 1)
+		#define IS_TIMED_GAMEPLAY_DISABLED					(((MAP_HAS_ADJUSTABLE_TIME_ABILITY && TIME_LIMIT_IS_UNLIMITED) || MAP_DOESNT_HAVE_ADJUSTABLE_TIME_ABILITY) && dvarBool(ugxm_allow_timed_gameplay) == 0)
+		
+		#define IS_COMPETITIVE_GAMEMODE						(localvarInt(ugx_gamemode) == 1 || localvarInt(ugx_gamemode) == 3 || localvarInt(ugx_gamemode) == 4 || localvarInt(ugx_gamemode) == 5)
+		#define IS_NOT_COMPETITIVE_GAMEMODE					(localvarInt(ugx_gamemode) != 1 && localvarInt(ugx_gamemode) != 3 && localvarInt(ugx_gamemode) != 4 && localvarInt(ugx_gamemode) != 5)
+		
+		#define PLAYER_INDEX_IS_1 (dvarInt(ugxm_player_index) == 1)
+		#define PLAYER_INDEX_IS_2 (dvarInt(ugxm_player_index) == 2)
+		#define PLAYER_INDEX_IS_3 (dvarInt(ugxm_player_index) == 3)
+		
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START TEXT_Y_START 400 200
+			origin 			TEXT_X_START TEXT_Y_START
+			forecolor		.8 .8 .8 1
+			exp text		dvarstring(ugxm_player_0)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			visible 		1
+			decoration
+		}
+		
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START (TEXT_Y_START+10) 400 200
+			origin 			TEXT_X_START (TEXT_Y_START+10)
+			forecolor		.8 .8 .8 1
+			exp text		dvarstring(ugxm_player_1)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			exp visible 	(PLAYER_INDEX_IS_2 || PLAYER_INDEX_IS_3)
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START (TEXT_Y_START+20) 400 200
+			origin 			TEXT_X_START (TEXT_Y_START+20)
+			forecolor		.8 .8 .8 1
+			exp text		dvarstring(ugxm_player_2)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			exp visible 	(PLAYER_INDEX_IS_1 || PLAYER_INDEX_IS_3)
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START (TEXT_Y_START+30) 400 200
+			origin 			TEXT_X_START (TEXT_Y_START+30)
+			forecolor		.8 .8 .8 1
+			exp text		dvarstring(ugxm_player_3)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			exp visible 	(PLAYER_INDEX_IS_1 || PLAYER_INDEX_IS_2)
+			decoration
+		}
+		
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START 270//450
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START 100
+		
+		CHOICE_BUTTON_VIS_NOHI( 6, "Exit to Main Menu", 						ACTION_NOSAVE_QUIT, 															when(1); )
+		
+		#undef CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+		
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START							170
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START							-114
+		
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: Classic", 		play "mouse_click"; scriptMenuResponse "gg"; setLocalVarInt ugx_gamemode 1; setLocalVarInt confirmed 0;, 	when(GAMEMODES_ALLOWED && GAMEMODE == 0); )
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: Gungame", 		play "mouse_click"; scriptMenuResponse "ar"; setLocalVarInt ugx_gamemode 2; setLocalVarInt confirmed 0;, 	when(GAMEMODES_ALLOWED && GAMEMODE == 1); )
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: Arcademode", 		play "mouse_click"; scriptMenuResponse "kh"; setLocalVarInt ugx_gamemode 5; setLocalVarInt confirmed 0;, 	when(GAMEMODES_ALLOWED && GAMEMODE == 2); )
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: King of the Hill",play "mouse_click"; scriptMenuResponse "ss"; setLocalVarInt ugx_gamemode 3; setLocalVarInt confirmed 0;, 	when(GAMEMODES_ALLOWED && GAMEMODE == 5); )
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: Sharpshooter", 	play "mouse_click"; scriptMenuResponse "bh"; setLocalVarInt ugx_gamemode 4; setLocalVarInt confirmed 0;, 	when(GAMEMODES_ALLOWED && GAMEMODE == 3); )
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: Bounty Hunter",	play "mouse_click"; scriptMenuResponse "cl"; setLocalVarInt ugx_gamemode 0; setLocalVarInt confirmed 0;,	when(GAMEMODES_ALLOWED && GAMEMODE == 4); )
+		CHOICE_BUTTON_VIS_NOHI( 1, "Gamemode: None Allowed", 	play "mouse_click";, 																						when(NO_GAMEMODES_ALLOWED); )
+		
+		CHOICE_DBUTTON_VIS( 2, "Timed Gameplay: Yes",																													 	when(IS_TIMED_GAMEPLAY_FORCED); )
+		CHOICE_BUTTON_VIS_NOHI( 2, "Timed Gameplay: Yes", 		play "mouse_click"; scriptMenuResponse "timed"; setLocalVarInt ugx_timed 0; setLocalVarInt confirmed 0;, 	when(localvarInt(ugx_timed) == 1 && IS_TIMED_GAMEPLAY_CHANGEABLE); )
+		CHOICE_BUTTON_VIS_NOHI( 2, "Timed Gameplay: No", 		play "mouse_click"; scriptMenuResponse "timed";	setLocalVarInt ugx_timed 1; setLocalVarInt confirmed 0;, 	when(localvarInt(ugx_timed) == 0 && IS_TIMED_GAMEPLAY_CHANGEABLE); )
+		CHOICE_BUTTON_VIS_NOHI( 2, "Timed Gameplay: Disabled",	play "mouse_click";, 																						when(IS_TIMED_GAMEPLAY_DISABLED); )
+		
+		CHOICE_DBUTTON_VIS( 3, "Objectives: No",																															when(IS_COMPETITIVE_GAMEMODE); )
+		CHOICE_BUTTON_VIS_NOHI( 3, "Objectives: Yes", 			play "mouse_click"; scriptMenuResponse "obj"; setLocalVarInt ugx_obj 0; setLocalVarInt confirmed 0;, 		when(IS_NOT_COMPETITIVE_GAMEMODE && OBJECTIVES && dvarBool(ugxm_allow_objectives) == 1); )
+		CHOICE_BUTTON_VIS_NOHI( 3, "Objectives: No", 			play "mouse_click"; scriptMenuResponse "obj"; setLocalVarInt ugx_obj 1; setLocalVarInt confirmed 0;, 		when(IS_NOT_COMPETITIVE_GAMEMODE && NON_OBJECTIVES && dvarBool(ugxm_allow_objectives) == 1); )
+		CHOICE_BUTTON_VIS_NOHI( 3, "Objectives: Disabled",		play "mouse_click";, 																						when(IS_NOT_COMPETITIVE_GAMEMODE && dvarBool(ugxm_allow_objectives) == 0); )
+		
+		CHOICE_DBUTTON_VIS( 4, "Game Speed Multiplier: Normal (1x)",																							when(MAP_DOESNT_HAVE_ADJUSTABLE_SPEED_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 4, "Game Speed Multiplier: Normal (1x)", 		play "mouse_click"; scriptMenuResponse "gs2"; setLocalVarInt ugx_game_speed 2;, when(localvarInt(ugx_game_speed) == 1 && MAP_HAS_ADJUSTABLE_SPEED_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 4, "Game Speed Multiplier: Fast (2x)",			play "mouse_click"; scriptMenuResponse "gs3"; setLocalVarInt ugx_game_speed 3;, when(localvarInt(ugx_game_speed) == 2 && MAP_HAS_ADJUSTABLE_SPEED_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 4, "Game Speed Multiplier: Fastest (3x)",		play "mouse_click"; scriptMenuResponse "gs1"; setLocalVarInt ugx_game_speed 1;, when(localvarInt(ugx_game_speed) == 3 && MAP_HAS_ADJUSTABLE_SPEED_ABILITY); )
+
+		CHOICE_BUTTON_VIS_NOHI( 5, "Time Limit: 15 Minutes", 					play "mouse_click"; scriptMenuResponse "t30"; setLocalVarInt ugx_time_limit 1;, when(localvarInt(ugx_time_limit) == 0 && MAP_HAS_ADJUSTABLE_TIME_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 5, "Time Limit: 30 Minutes", 					play "mouse_click"; scriptMenuResponse "t45"; setLocalVarInt ugx_time_limit 2;, when(localvarInt(ugx_time_limit) == 1 && MAP_HAS_ADJUSTABLE_TIME_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 5, "Time Limit: 45 Minutes",					play "mouse_click"; scriptMenuResponse "t60"; setLocalVarInt ugx_time_limit 3;, when(localvarInt(ugx_time_limit) == 2 && MAP_HAS_ADJUSTABLE_TIME_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 5, "Time Limit: 1 Hour",						play "mouse_click"; scriptMenuResponse "t_none"; setLocalVarInt ugx_time_limit 4;, when(localvarInt(ugx_time_limit) == 3 && MAP_HAS_ADJUSTABLE_TIME_ABILITY); )
+		CHOICE_BUTTON_VIS_NOHI( 5, "Time Limit: Unlimited",						play "mouse_click"; scriptMenuResponse "t15"; setLocalVarInt ugx_time_limit 0;, when(localvarInt(ugx_time_limit) == 4 && MAP_HAS_ADJUSTABLE_TIME_ABILITY); )
+		
+		CHOICE_BUTTON_VIS_NOHI( 6, "Confirm Your Settings", 	play "mouse_click"; open ugxm_gamemode_not_allowed_plr;, 													when(GAMEMODES_ALLOWED && ON_DISABLED_MODE && localvarInt( confirmed ) == 0); )
+		CHOICE_BUTTON_VIS_NOHI( 6, "Confirm Your Settings", 	play "mouse_click"; scriptMenuResponse "confirm"; setLocalVarInt confirmed 1;, 								when(GAMEMODES_ALLOWED && ON_ENABLED_MODE && localvarInt( confirmed ) == 0); )
+		CHOICE_DBUTTON_VIS( 6, "Confirmed",																																	when(localvarInt( confirmed ) == 1); )
+		
+		//CHOICE_BUTTON_VIS( 5, "Leave Game", 				ACTION_NOSAVE_QUIT, 																						when(1); )
+	}
+}
+
+//CHOICE_BUTTON_VIS( 3, "Objectives: Yes", 			scriptMenuResponse "obj";			setLocalVarInt ugx_obj 0;, 			when(localvarInt( ugx_obj ) == 1); )
+//CHOICE_BUTTON_VIS( 3, "Objectives: No", 			scriptMenuResponse "obj";			setLocalVarInt ugx_obj 1;, 			when(localvarInt( ugx_obj ) == 0); )

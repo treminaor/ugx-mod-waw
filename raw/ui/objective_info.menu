@@ -1,0 +1,1523 @@
+#include "ui/menudef.h"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#define UGX_CURRENT_SETTINGS_VER 3
+
+#define SETUP_ACTION_CAC( stat_range_s ) \
+		statSetUsingTable( stat_range_s, 1 ); \
+		close self;
+
+#define PAUSESCREEN_MAP_RECT 	-150 230 130 120 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP //415 280 130 120 0 0
+#define PAUSESCREEN_ZOMBIE_MAP_RECT		0 120 464 265 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+#define PLATFORM_OFFSET			(-20)
+
+#define PAUSESCREEN_OPTION_SIZE 100 16
+
+#define LOCAL_VIS_OBJECTIVE_DISPLAY			dvarstring( mapname ) != "coup" && \
+											dvarstring( mapname ) != "aftermath"
+											
+#define LCOAL_VIS_MAP_DISPLAY				!dvarBool( ui_hidemap ) && \
+											dvarstring( mapname ) != "coup" && \
+											dvarstring( mapname ) != "aftermath" && \
+											dvarstring( mapname ) != "airplane" && \
+											dvarstring( mapname ) != "ac130" && \
+											dvarstring( mapname ) != "jeepride" && \
+											dvarstring( mapname ) != "simplecredits"
+
+#undef CHOICE_ROW
+#define CHOICE_ROW( itemIndex )		((itemIndex - 1) % 20)
+
+#undef CHOICE_Y
+#ifdef PC
+#define CHOICE_Y( itemIndex ) 		(35 + 44 + 20 * CHOICE_ROW( itemIndex ))
+#else
+#define CHOICE_Y( itemIndex ) 		(44 + 20 * CHOICE_ROW( itemIndex ))
+#endif
+#undef CHOICE_ORIGIN
+#define CHOICE_ORIGIN( itemIndex )	-267 CHOICE_Y( itemIndex ) //CHOICE_X( itemIndex ) CHOICE_Y( itemIndex )
+
+//Legacy command w/o extraArg because I'm too lazy to change the lines which still use this.
+#define CHOICE_BUTTON_P( itemIndex, textArg, nameArg, actionArg, visArg ) \
+		CHOICE_BUTTON_BG_P( itemIndex, visArg ) \
+		CHOICE_HIGHLIGHT_P( itemIndex, visArg ) \
+		CHOICE_BUTTON_P_INTERN( itemIndex, textArg, nameArg, actionArg, ;, when( visArg ); )
+
+//Supports an extraArg
+#define CHOICE_BUTTON_UGX( itemIndex, textArg, nameArg, actionArg, extraArg, visArg ) \
+		CHOICE_BUTTON_BG_P( itemIndex, visArg ) \
+		CHOICE_HIGHLIGHT_P( itemIndex, visArg ) \
+		CHOICE_BUTTON_P_INTERN( itemIndex, textArg, nameArg, actionArg, extraArg, when( visArg ); )
+
+#undef CHOICE_HORIZONTAL_ALIGN
+#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_RIGHT
+
+#undef CHOICE_TEXTSTYLE
+#define CHOICE_TEXTSTYLE		ITEM_TEXTSTYLE_SHADOWED
+
+#undef CHOICE_TEXTALIGN
+#define CHOICE_TEXTALIGN		ITEM_ALIGN_MIDDLE_RIGHT
+
+#undef CHOICE_TEXT_OFFSET_X    
+#define CHOICE_TEXT_OFFSET_X	-25
+
+#define CHOICE_BUTTON_BG_P( itemIndex, visArg ) \
+	itemDef \
+		{ \
+			style			WINDOW_STYLE_SHADER \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X-(CHOICE_SIZE_Y/4)) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			background		"menu_button_backing_right" \
+			forecolor		BUTTON_BG_COLOR \
+			visible			when(visArg); \
+			decoration \
+		} 
+
+#define CHOICE_HIGHLIGHT_P( itemIndex, vis ) \
+	itemDef \
+		{ \
+			style			WINDOW_STYLE_SHADER \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X-(CHOICE_SIZE_Y/4)) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			background		"menu_button_backing_highlight_right" \
+			forecolor		HIGHLIGHT_COLOR \
+			border			HIGHLIGHT_BORDER \
+			bordersize		2 \
+			bordercolor		HIGHLIGHT_BORDER_COLOR \
+			visible			when( localVarInt( ui_highlight ) == itemIndex && localVarString( ui_choicegroup ) == CHOICE_GROUP && vis ); \
+			decoration \
+		} \
+		itemDef \
+		{ \
+			style			WINDOW_STYLE_SHADER \
+			rect			CHOICE_ORIGIN( itemIndex ) 24 21 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			background		"ui_button_a" \
+			forecolor		1 1 1 1 \
+			visible			when( localVarInt( ui_highlight ) == itemIndex && localVarString( ui_choicegroup ) == CHOICE_GROUP && vis && dvarString(ugx_client_xbox) == "Yes" && dvarInt(cl_bypassMouseInput) == 1); \
+			decoration \
+		} \
+		CHOICE_ACCEPT_HINT( itemIndex, vis )
+
+#define CHOICE_BUTTON_P_INTERN( itemIndex, textArg, nameArg, actionArg, extraArg, visArg ) \
+		itemDef \
+		{ \
+			name			nameArg \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			extraArg \
+			onFocus	\
+			{ \
+				play "mouse_over"; \
+				setLocalVarInt ui_highlight itemIndex; \
+				setLocalVarString ui_choicegroup CHOICE_GROUP; \	
+			} \
+			leaveFocus \
+			{ \
+				setLocalVarInt ui_highlight 0; \
+			} \
+			action \
+			{ \
+				play "mouse_click"; \
+				close pausedmenu; \
+				actionArg; \
+			} \
+		} \
+
+#define CHOICE_BUTTON_LOCKED( itemIndex, textArg, nameArg, visArg ) \
+		CHOICE_BUTTON_LOCKED_UGX( itemIndex, textArg, nameArg, ;, visArg ) 
+
+#define CHOICE_BUTTON_LOCKED_UGX( itemIndex, textArg, nameArg, extraArg, visArg ) \
+		CHOICE_BUTTON_BG( itemIndex, when( visArg ); ) \
+		itemDef	{ \
+			name			nameArg \
+			type			ITEM_TYPE_BUTTON \
+			style			WINDOW_STYLE_EMPTY \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		0.3 0.3 0.3 1 \
+			visible			when( visArg ); \
+			extraArg \
+			decoration \
+		}
+		
+#undef UI_FONT_OBJECTIVE
+#define UI_FONT_OBJECTIVE UI_FONT_BIG
+
+#define UP_NAV( pname, to )\
+		name pname \
+		execkeyint DPAD_UP { setfocus to; } \
+		execkeyint APAD_UP { setfocus to; }
+
+#define UP_NAV_EX_2( pname, a, b )\
+		name pname \
+		execkeyint DPAD_UP {  setfocus a; setfocus b; } \
+		execkeyint APAD_UP {  setfocus a; setfocus b; }
+
+#define DOWN_NAV( pname, to )\
+		name pname \
+		execkeyint DPAD_DOWN { setfocus to; } \
+		execkeyint APAD_DOWN { setfocus to; }	
+
+#define DOWN_NAV_EX_2( pname, a, b, c) \
+				name pname \
+				execkeyint DPAD_DOWN { setfocus a; setfocus b;  setfocus c;  } \
+				execkeyint APAD_DOWN { setfocus a; setfocus b;  setfocus c;  } 
+
+#define LEFT_NAV( pname, to )\
+		name pname \
+		execkeyint DPAD_LEFT { setfocus to; } \
+		execkeyint APAD_LEFT { setfocus to; }	
+
+#define RIGHT_NAV( pname, to )\
+		name pname \
+		execkeyint DPAD_RIGHT { setfocus to; } \
+		execkeyint APAD_RIGHT { setfocus to; }	
+
+{	
+	
+	// Pause menu
+	menuDef
+	{
+		name			"pausedmenu"
+		fullScreen		0
+#ifdef CONSOLE		
+		rect			0 0 640 480
+#else		
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN
+#endif		
+		focusColor		COLOR_FOCUSED
+		allowedBinding	"pause"
+		onOpen
+		{
+			showMenu "pausedbkgnd"
+			showMenu "objectiveinfo"
+			//showMenu "overheadmap"
+			focusfirst
+			nosavehide "saveandquit"
+			saveAvailableHide "quit";
+			execOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+
+//			profilehide "quitnoprofile"
+#ifdef PC
+//			nosavehide "quitnosave"
+			exec "update_sv_savegameavailable"
+#endif
+#ifndef PC
+			exec "fullscreenview"
+			setfocus "resumegame1";
+#endif	
+		}
+		onClose
+		{
+			hideMenu "pausedbkgnd"
+			hideMenu "objectiveinfo"
+			hideMenu "overheadmap"
+#ifndef PC
+			exec "splitscreenview"
+#endif	
+		}
+		onEsc
+		{
+			close pausedmenu;
+		}
+#ifdef PC
+		#include "ui_mp/overlaybg.inc"
+		BACKGROUND_BLACK_LETTERBOX_BLURWORLD( 1.0 )
+		OVERLAY_BACKGROUND
+#endif
+		// "Paused" text
+		itemDef
+		{
+			name			"pausedMsg"
+			text			"@MENU_PAUSED_CAP"
+			rect			-150 40 PAUSESCREEN_OPTION_SIZE HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_DEFAULT
+			forecolor		COLOR_TITLE
+			textscale		TEXTSIZE_TITLE
+			textfont		UI_FONT_DEFAULT
+			textalign		ITEM_ALIGN_TOP_LEFT
+			visible			when( !dvarbool( systemlink ) && !dvarbool( onlinegame ) )
+			decoration
+		}
+		
+//"credits_quit"
+#define SETUP_ACTION_CREDITS_QUIT \
+			setdvar credits_active 0; \
+			setdvar ui_skipMainLockout 1; \
+			setdvar credits_frommenu 0; \
+			exec "disconnect";
+
+#define SETUP_ACTION_ZOMBIEMODE_QUIT \
+			setdvar zombiemode 0; \
+			exec "disconnect";
+
+#ifdef PC 
+	#define SETUP_ACTION_MENU_CONTROLS \
+				close self; \
+				open "options_controls_new_pc"; 
+
+	#define SETUP_ACTION_MENU_OPTIONS \
+				execnow "set ui_allow_graphic_change 0"; \
+				close self; \
+				open "options_new_pc"; 
+	
+	#define	SETUP_ACTION_MENU_UGX_OPTIONS \
+				execnow "set ui_allow_graphic_change 0"; \
+				open "options_ugx"; 
+#else
+	#define SETUP_ACTION_MENU_CONTROLS \
+				open "ingame_controls"; 
+
+	#define SETUP_ACTION_MENU_OPTIONS \
+				open "ingameoptions"; 
+#endif //#ifdef PC
+
+#define SOLO \
+		( !dvarBool( splitscreen ) && !dvarBool( onlinegame ) && !dvarBool( systemlinkparty ) )
+#define NOT_SOLO \
+		( dvarBool(splitscreen) || dvarBool( onlinegame ) || dvarBool( systemlinkparty ) )
+#define CUSTOM_MATCH \
+		( dvarbool( systemlink ) || dvarbool( xblive_privatematch ) )
+#define NOT_CUSTOM_MATCH \
+		( !dvarbool( systemlink ) && !dvarbool( xblive_privatematch ) )
+#define XBOX_LIVE_PUBLIC \
+		( dvarbool( onlinegame ) && !dvarbool( xblive_privatematch ) )
+#define SPLITSCREEN_HOST \
+		( dvarbool( splitscreen ) && issplitscreenhost() == 1 )
+#define NOT_SPLITSCREEN_HOST \
+		( dvarbool( splitscreen ) && issplitscreenhost() != 1 )
+#ifdef PC
+	#define XBOX_LIVE_PRIVATE \
+		( dvarbool( onlinegame ) )
+#else
+	#define XBOX_LIVE_PRIVATE \
+		( dvarbool( onlinegame ) && dvarbool( xblive_privatematch ) )
+
+#endif
+
+#define MOVIE_MAPS \
+	( dvarString( mapname ) == "intro_pac" || dvarString( mapname ) == "outro" )
+#define NOT_MOVIE_MAPS \
+	( dvarString( mapname ) != "intro_pac" && dvarString( mapname ) != "outro" )
+
+		// Credits Only
+		CHOICE_BUTTON_P( 1, "@MENU_RESUME_CREDITS_CAP", "resumegame", ;, dvarstring( "credits_active" ) == "1" )
+		CHOICE_BUTTON_P( 2, "@PLATFORM_QUIT_CAP", "credits_quit", SETUP_ACTION_CREDITS_QUIT, dvarstring( "credits_active" ) == "1" )
+
+		// Resume for Zombie Game
+		CHOICE_BUTTON_UGX( 1, "@MENU_ZOMBIE_RESUMEGAME", "resumegame1", ;, DOWN_NAV("resumegame1", "options");, dvarbool( zombiemode ) )
+		// Resume Regular
+		CHOICE_BUTTON_UGX( 1, "@MENU_RESUMEGAME_CAP", "resumegame", ;, DOWN_NAV("resumegame", "options");, dvarstring( "credits_active" ) != "1" && !dvarbool( zombiemode ) )
+
+		CHOICE_BUTTON_UGX( 2, "@MENU_OPTIONS_UPPER_CASE", "options", SETUP_ACTION_MENU_OPTIONS; ;, DOWN_NAV("options", "ugx_options");  UP_NAV("options", "resumegame1");, dvarstring( "credits_active" ) != "1" )
+		
+		#undef CHOICE_TEXTCOLOR
+		#define CHOICE_TEXTCOLOR 0.1 1 0.1 1
+
+		CHOICE_BUTTON_UGX( 3, "UGX MOD OPTIONS", ;, open "overheadmap", DOWN_NAV_EX_2("ugx_options", "quit", "zombie_quit", "restartlevel"); UP_NAV("ugx_options", "options");, dvarstring( "credits_active" ) != "1" ) //Comosea only
+		#undef CHOICE_TEXTCOLOR
+		#define CHOICE_TEXTCOLOR		0.1 0.4 1 1
+		//CHOICE_BUTTON_UGX( 4, "CHALLENGES", ;, open menu_challenges, DOWN_NAV("challenges", "restartlevel"); UP_NAV("ugx_options", "ugx_options");, dvarstring( "credits_active" ) != "1" ) //Singleplayer only
+		
+		#undef CHOICE_TEXTCOLOR
+		#define CHOICE_TEXTCOLOR		COLOR_TEXT
+		
+		// Restart Level for SP
+		CHOICE_BUTTON_UGX( 4, "@MENU_RESTART_LEVEL_CAP", "restartlevel", open "popup_restart_warning";, DOWN_NAV("restartlevel", "zombie_quit"); UP_NAV("restartlevel", "ugx_options");, dvarstring( "credits_active" ) != "1" && dvarBool( sv_running ) && !dvarbool( arcademode ) && !dvarbool( splitscreen ) && NOT_CUSTOM_MATCH && !dvarbool( onlinegame ) )
+		// Restart Level for Splitscreen Host alone
+		CHOICE_BUTTON_UGX( 4, "@MENU_RESTART_LEVEL_CAP", "restartlevel", open "popup_restart_warning";, DOWN_NAV("restartlevel", "zombie_quit"); UP_NAV("restartlevel", "ugx_options");, dvarstring( "credits_active" ) != "1" && SPLITSCREEN_HOST && NOT_CUSTOM_MATCH )
+		// Restart Level for any COOP game
+		CHOICE_BUTTON_UGX( 4, "@MENU_RESTART_LEVEL_CAP", "restartlevel", open "popup_restart_warning";, DOWN_NAV("restartlevel", "zombie_quit"); UP_NAV("restartlevel", "ugx_options");, dvarstring( "credits_active" ) != "1" && dvarBool( sv_running ) && CUSTOM_MATCH && !dvarbool( splitscreen ) )
+
+		//CHOICE_BUTTON_LOCKED_UGX( 4, "@MENU_RESTART_LEVEL_CAP", "restartlevel", DOWN_NAV("restartlevel", "zombie_quit"); UP_NAV("restartlevel", "ugx_options");, dvarString( "credits_active" ) != "1" && !dvarBool( sv_running ) )
+		CHOICE_BUTTON_UGX( 4, "@MENU_RESTART_LEVEL_CAP", "restartlevel", open "popup_restart_warning";, DOWN_NAV("restartlevel", "zombie_quit"); UP_NAV("restartlevel", "ugx_options");, dvarstring( "credits_active" ) != "1" && dvarBool( sv_running ) && dvarbool( onlinegame ) )
+
+		// Client Quitting Option : COOP
+		//"online_leave_quit"
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_leavegame_coop";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarbool( onlinegame ) && !dvarbool( systemlinkparty ) && !dvarbool( sv_running ) && (!InPrivateParty() || PrivatePartyHost() || !PrivatePartyHostInLobby()) )
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_leavegameandparty_coop";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarbool( onlinegame ) && !dvarbool( systemlinkparty ) && !dvarbool( sv_running ) && (InPrivateParty() && !PrivatePartyHost() && PrivatePartyHostInLobby()) )
+
+		//"systemlinkparty_leave_quit"
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_coop_client_quit";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarBool( onlinegame ) && dvarbool( systemlinkparty ) && !dvarbool( sv_running ) )
+
+		// Host Quitting Option : COOP
+		// "quit_coop"
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_coop_host_quit";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarstring( "credits_active" ) != "1" && dvarbool( sv_running ) &&  ( dvarBool( splitscreen ) || dvarBool( systemlinkparty ) || XBOX_LIVE_PRIVATE ) )
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_coop_host_quit_clone";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarstring( "credits_active" ) != "1" && dvarbool( sv_running ) &&  XBOX_LIVE_PUBLIC && !dvarbool( splitscreen ) && !dvarbool( systemlinkparty ) )
+
+		// SOLO Quitting Options
+		// "quit"
+		// quit for movie maps
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_general_quit";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarstring( "credits_active" ) != "1" && !dvarBool( arcademode ) && dvarbool( sv_running ) && SOLO && MOVIE_MAPS )
+		// quit for no profile signed in
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "quit", open "popup_noprofile_quit";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarstring( "credits_active" ) != "1" && !dvarBool( arcademode ) && dvarbool( sv_running ) && SOLO && NOT_MOVIE_MAPS )
+		// "saveandquit" ( displayed when we dont have an available save device )
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_SAVE_AND_QUIT_CAP", "saveandquit", open "popup_savegame_warning";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarstring( "credits_active" ) != "1" && !dvarBool( arcademode ) && !dvarBool( zombiemode ) && dvarbool( sv_running ) && SOLO )
+		// "Quit for Zombie mode"
+		CHOICE_BUTTON_UGX( 5, "@PLATFORM_QUIT_CAP", "zombie_quit", open "popup_nosave_quit";, UP_NAV("zombie_quit", "restartlevel");, dvarstring( "credits_active" ) != "1" && dvarBool( zombiemode ) && dvarbool( sv_running ) && SOLO )
+
+		// "restartCheckpoint"
+		CHOICE_BUTTON_UGX( 6, "@MENU_RESTART_CHECKPOINT", "restartCheckpoint", open "popup_checkpoint_restart_warning";, UP_NAV_EX_2("quit", "ugx_options", "restartlevel");, dvarBool( ui_shipping_cheats ) && dvarbool( sv_running ) )
+	}
+
+#ifdef CONSOLE
+	// Pause menu background... separate menu so that it can draw behind the objective menu
+	menuDef
+	{
+		name			"pausedbkgnd"
+		fullScreen		0
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		blurWorld		4.8
+
+		// background overlay
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			backcolor		0 0 0 0.50
+			visible			1
+			decoration
+		}
+
+		// gradient_top
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_top"
+			visible			1
+			decoration
+		}
+
+		// gradient_bottom
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			0 480 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_bottom"
+			visible			1
+			decoration
+		}
+
+		#ifndef PC
+			#include "ui/navcontrols.menu"
+		#endif
+	}
+#else
+	// looke for overlaybg.inc
+#endif
+
+#define PLAYER_0_SCORE	  		dvarString(ugxm_player_0_score)
+#define PLAYER_0_NAME	  		dvarString(scoreboard_name)
+#define PLAYER_0_KILLS	  		dvarString(scoreboard_kills)
+#define PLAYER_0_HEADSHOTS	  	dvarString(scoreboard_hshots)
+#define PARTS_HUD_Y_START 118
+#define PARTS_HUD_Y_MARGIN 12
+#define PARTS_HUD_COL_0_X_START -200
+#define PARTS_HUD_COL_2_X_START 100
+#define WHITE_GRADIENT			1 1 1 //Player 0
+#define YELLOW_GRADIENT			0.898 0.741 0.262
+#define BLUE_GRADIENT			0.467 0.776 0.894 //Player 1
+#define ORANGE_GRADIENT			0.9 0.56 0.02 //Player 2
+#define GREEN_GRADIENT			0.39 0.9 0.42 //Player 3
+#define ELECTRIC_GRADIENT		0 0.847 1
+#define FIRE_GRADIENT			1 0.315 0
+#define ACID_GRADIENT			0.517 1 0
+#define ICE_GRADIENT			0.58 1 0.95
+#define EXPLOSIVE_GRADIENT		1 0.988 0
+#define WIND_GRADIENT			0.827 0.827 0.827
+
+#define PLAYER_C_0_R_0 	dvarString(ugxm_parts_hud_c_0_r_0)
+#define PLAYER_C_0_R_1 	dvarString(ugxm_parts_hud_c_0_r_1)
+#define PLAYER_C_0_R_2 	dvarString(ugxm_parts_hud_c_0_r_2)
+#define PLAYER_C_1_R_0 	dvarString(ugxm_parts_hud_c_1_r_0)
+#define PLAYER_C_1_R_1 	dvarString(ugxm_parts_hud_c_1_r_1)
+#define PLAYER_C_1_R_2 	dvarString(ugxm_parts_hud_c_1_r_2)
+#define PLAYER_C_1_R_3 	dvarString(ugxm_parts_hud_c_1_r_3)
+#define PLAYER_C_1_R_4 	dvarString(ugxm_parts_hud_c_1_r_4)
+#define PLAYER_C_2_R_0 	dvarString(ugxm_parts_hud_c_2_r_0)
+#define PLAYER_C_2_R_1 	dvarString(ugxm_parts_hud_c_2_r_1)
+
+
+	// objective info... shown when paused, or on PC when "TAB" is held
+	menuDef
+	{
+		name			"objectiveinfo"
+		fullScreen		0
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+
+		/*
+		// top black border
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			-107 0 854 66 
+			forecolor		1 1 1 1
+			background		"menu_black_line"
+			visible			1
+			decoration
+		}
+		// bottom black border
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			-107 420 854 70 //-50 0 50 480 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+			forecolor		1 1 1 1
+			background		"menu_black_line"
+			visible			1
+			decoration
+		}
+		*/
+
+#define SOLO_SCOREBOARD_START_Y 155
+		
+		//SOLO Scoreboard - treminaor
+		itemDef	{ name		"player0_bg"
+			rect			-300 SOLO_SCOREBOARD_START_Y 600 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			forecolor		0.509 0.07 0.07 0.8
+			style			WINDOW_STYLE_SHADER
+			background		"hud_bg_blood"
+			decoration
+			visible			when(dvarString(solo_scoreboard) == "1")
+		}
+		itemDef { name		"player0_name" 
+			type			ITEM_TYPE_TEXT
+			rect			-150 (SOLO_SCOREBOARD_START_Y + 17) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp text		PLAYER_0_NAME
+			textalign 		ITEM_ALIGN_RIGHT
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+		itemDef { name		"score_col" 
+			type			ITEM_TYPE_TEXT
+			rect			80 (SOLO_SCOREBOARD_START_Y + 5) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.20
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			text			"Points"
+			textalign 		ITEM_ALIGN_CENTER
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+		itemDef { name		"player0_score" 
+			type			ITEM_TYPE_TEXT
+			rect			100 (SOLO_SCOREBOARD_START_Y + 18) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_BOLD
+			forecolor		1 1 1 1
+			exp text		PLAYER_0_SCORE
+			textalign 		ITEM_ALIGN_RIGHT
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+		itemDef { name		"kills_col" 
+			type			ITEM_TYPE_TEXT
+			rect			130 (SOLO_SCOREBOARD_START_Y + 5) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.20
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			text			"Kills"
+			textalign 		ITEM_ALIGN_CENTER
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+		itemDef { name		"player0_kills" 
+			type			ITEM_TYPE_TEXT
+			rect			150 (SOLO_SCOREBOARD_START_Y + 18) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_BOLD
+			forecolor		1 1 1 1
+			exp text		PLAYER_0_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+		itemDef { name		"kills_col" 
+			type			ITEM_TYPE_TEXT
+			rect			180 (SOLO_SCOREBOARD_START_Y + 5) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.20
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			text			"Headshots"
+			textalign 		ITEM_ALIGN_CENTER
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+		itemDef { name		"player0_hedashots" 
+			type			ITEM_TYPE_TEXT
+			rect			200 (SOLO_SCOREBOARD_START_Y + 18) 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_BOLD
+			forecolor		1 1 1 1
+			exp text		PLAYER_0_HEADSHOTS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible			when(dvarString(solo_scoreboard) == "1")
+			decoration
+		}
+
+#define ELEMENTAL_ACID_KILLS		 	dvarInt(acid_count)
+#define ELEMENTAL_ELECTRIC_KILLS 		dvarInt(electric_count)
+#define ELEMENTAL_EXPLOSIVE_KILLS		dvarInt(explosive_count)
+#define ELEMENTAL_FIRE_KILLS			dvarInt(fire_count)
+#define ELEMENTAL_ICE_KILLS				dvarInt(ice_count)
+#define ELEMENTAL_WIND_KILLS			dvarInt(wind_count)
+#define COL_0_ALPHA 					dvarFloat(col_0_alpha)
+#define COL_1_ALPHA 					dvarFloat(col_1_alpha)
+#define COL_2_ALPHA 					dvarFloat(col_2_alpha)
+#define COL_3_ALPHA 					dvarFloat(col_3_alpha)
+#define ELEMENTAL_KILLS_TEXTSCALE 		0.24
+#define ELEMENTAL_KILLS_Y_MARGIN		9
+#define ELEMENTAL_KILLS_X_START 		-190
+#define ELEMENTAL_KILLS_Y_START			113
+#define ELEMENTAL_KILLS_WIDTH 			90
+#define ELEMENTAL_KILLS_HEIGHT 			16
+
+		//Elements HUD
+		itemDef { name 		"col_0_strikethrough"
+			style			WINDOW_STYLE_SHADER
+			rect			(PARTS_HUD_COL_0_X_START - 10) 90 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		0.2 1 0.2 1
+			visible 		when(COL_0_ALPHA < 1 && COL_0_ALPHA > 0)
+			decoration
+		}
+		itemDef { name		"col_0_b" 
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START 100 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Elemental Kills:"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(ELEMENTAL_ACID_KILLS > 0 || ELEMENTAL_ELECTRIC_KILLS > 0 || ELEMENTAL_EXPLOSIVE_KILLS > 0 || ELEMENTAL_FIRE_KILLS > 0 || ELEMENTAL_ICE_KILLS > 0 || ELEMENTAL_WIND_KILLS > 0)
+			decoration
+		}
+		itemDef { name 		"col_0_underline_b"
+			style			WINDOW_STYLE_SHADER
+			rect			(PARTS_HUD_COL_0_X_START - 10) 100 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_0_ALPHA)
+			visible 		when(ELEMENTAL_ACID_KILLS > 0 || ELEMENTAL_ELECTRIC_KILLS > 0 || ELEMENTAL_EXPLOSIVE_KILLS > 0 || ELEMENTAL_FIRE_KILLS > 0 || ELEMENTAL_ICE_KILLS > 0 || ELEMENTAL_WIND_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_0_acid"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START ELEMENTAL_KILLS_Y_START 100 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ACID_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Acid Kills: "
+			textalign 		ITEM_ALIGN_LEFT
+			visible 		when(ELEMENTAL_ACID_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_0_acid_count"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START ELEMENTAL_KILLS_Y_START ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ACID_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			exp text		ELEMENTAL_ACID_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible 		when(ELEMENTAL_ACID_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_1_electric"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN) 100 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ELECTRIC_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Electric Kills: "
+			textalign 		ITEM_ALIGN_LEFT
+			visible 		when(ELEMENTAL_ELECTRIC_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_1_electric_count"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN) ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ELECTRIC_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			exp text		ELEMENTAL_ELECTRIC_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible 		when(ELEMENTAL_ELECTRIC_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_explosive"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 2) 100 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		EXPLOSIVE_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Explosive Kills: "
+			textalign 		ITEM_ALIGN_LEFT
+			visible 		when(ELEMENTAL_EXPLOSIVE_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_explosive_count"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 2) ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		EXPLOSIVE_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			exp text		ELEMENTAL_EXPLOSIVE_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible 		when(ELEMENTAL_EXPLOSIVE_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_fire"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 3) ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		FIRE_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Fire Kills: "
+			textalign 		ITEM_ALIGN_LEFT
+			visible 		when(ELEMENTAL_FIRE_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_fire_count"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 3) ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		FIRE_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			exp text		ELEMENTAL_FIRE_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible 		when(ELEMENTAL_FIRE_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_ice"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 4) 100 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ICE_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Ice Kills: "
+			textalign 		ITEM_ALIGN_LEFT
+			visible 		when(ELEMENTAL_ICE_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_ice_count"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 4) ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ICE_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			exp text		ELEMENTAL_ICE_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible 		when(ELEMENTAL_ICE_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_wind"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 5) 100 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WIND_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			text			"Wind Kills: "
+			textalign 		ITEM_ALIGN_LEFT
+			visible 		when(ELEMENTAL_WIND_KILLS > 0)
+			decoration
+		}
+		itemDef { name		"col_0_row_2_wind_count"
+			type			ITEM_TYPE_TEXT
+			rect			ELEMENTAL_KILLS_X_START (ELEMENTAL_KILLS_Y_START + ELEMENTAL_KILLS_Y_MARGIN * 5) ELEMENTAL_KILLS_WIDTH ELEMENTAL_KILLS_HEIGHT HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		ELEMENTAL_KILLS_TEXTSCALE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WIND_GRADIENT 1
+			exp forecolor	A(COL_0_ALPHA)
+			exp text		ELEMENTAL_WIND_KILLS
+			textalign 		ITEM_ALIGN_RIGHT
+			visible 		when(ELEMENTAL_WIND_KILLS > 0)
+			decoration
+		}
+
+		//Parts HUD
+		itemDef { name 		"col_0_striketrhough"
+			style			WINDOW_STYLE_SHADER
+			rect			(PARTS_HUD_COL_0_X_START - 10) 90 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		0.2 1 0.2 1
+			visible 		when(COL_0_ALPHA > 0 && COL_1_ALPHA < 1 && (ELEMENTAL_ACID_KILLS == 0 && ELEMENTAL_ELECTRIC_KILLS == 0 && ELEMENTAL_EXPLOSIVE_KILLS == 0 && ELEMENTAL_FIRE_KILLS == 0 && ELEMENTAL_ICE_KILLS == 0 && ELEMENTAL_WIND_KILLS == 0))
+			decoration
+		}
+		itemDef { name		"col_0" 
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START 100 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Parts:"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_0 != "" || PLAYER_C_0_R_1 != "" || PLAYER_C_0_R_2 != "")
+			decoration
+		}
+		itemDef { name 		"col_0_underline"
+			style			WINDOW_STYLE_SHADER
+			rect			(PARTS_HUD_COL_0_X_START - 10) 100 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			visible 		when(COL_0_ALPHA > 0 && (PLAYER_C_0_R_0 != "" || PLAYER_C_0_R_1 != "" || PLAYER_C_0_R_2 != ""))
+			decoration
+		}
+		itemDef { name		"col_0_row_0_p0"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WHITE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Box"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_0 == "0")
+			decoration
+		}
+		itemDef { name		"col_0_row_0_p1"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		BLUE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Box"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_0 == "1")
+			decoration
+		}
+		itemDef { name		"col_0_row_0_p2"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ORANGE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Box"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_0 == "2")
+			decoration
+		}
+		itemDef { name		"col_0_row_0_p3"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		GREEN_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Box"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_0 == "3")
+			decoration
+		}
+		itemDef { name		"col_0_row_1_p0"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WHITE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Switch"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_1 == "0")
+			decoration
+		}
+		itemDef { name		"col_0_row_1_p1"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		BLUE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Switch"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_1 == "1")
+			decoration
+		}
+		itemDef { name		"col_0_row_1_p2"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ORANGE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Switch"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_1 == "2")
+			decoration
+		}
+		itemDef { name		"col_0_row_1_p3"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		GREEN_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Power Switch"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_1 == "3")
+			decoration
+		}
+		itemDef { name		"col_0_row_2_p0"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN * 2) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WHITE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Fuse"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_2 == "0")
+			decoration
+		}
+		itemDef { name		"col_0_row_2_p1"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN * 2) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		BLUE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Fuse"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_2 == "1")
+			decoration
+		}
+		itemDef { name		"col_0_row_2_p2"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN * 2) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ORANGE_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Fuse"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_2 == "2")
+			decoration
+		}
+		itemDef { name		"col_0_row_2_p3"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_0_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN * 2) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		GREEN_GRADIENT 1
+			exp forecolor	A(COL_1_ALPHA)
+			text			"Fuse"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_0_R_2 == "3")
+			decoration
+		}
+
+		itemDef { name 		"col_1_strikethrough"
+			style			WINDOW_STYLE_SHADER
+			rect			-60 90 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		0.2 1 0.2 1
+			visible 		when(COL_2_ALPHA < 1)
+			decoration
+		}
+		itemDef { name		"col_1" 
+			type			ITEM_TYPE_TEXT
+			rect			-50 100 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_2_ALPHA)
+			text			"Meteorites:"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_1_R_0 != "" || PLAYER_C_1_R_1 != "" || PLAYER_C_1_R_2 != "" || PLAYER_C_1_R_3 != "")
+			decoration
+		}
+		itemDef { name 		"col_1_underline"
+			style			WINDOW_STYLE_SHADER
+			rect			-60 100 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			visible 		when(PLAYER_C_1_R_0 != "" || PLAYER_C_1_R_1 != "" || PLAYER_C_1_R_2 != "" || PLAYER_C_1_R_3 != "")
+			decoration
+		}
+		itemDef { name		"col_1_row_0" 
+			type			ITEM_TYPE_TEXT
+			rect			-50 PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_2_ALPHA)
+			text			"Meteorite 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_1_R_0 != "")
+			decoration
+		}
+		itemDef { name		"col_1_row_1"
+			type			ITEM_TYPE_TEXT
+			rect			-50 (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_2_ALPHA)
+			text			"Meteorite 2"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_1_R_1 != "")
+			decoration
+		}
+		itemDef { name		"col_1_row_2"
+			type			ITEM_TYPE_TEXT
+			rect			-50 (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN * 2) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_2_ALPHA)
+			text			"Meteorite 3"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_1_R_2 != "")
+			decoration
+		}
+		itemDef { name		"col_1_row_3"
+			type			ITEM_TYPE_TEXT
+			rect			-50 (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN * 3) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_2_ALPHA)
+			text			"Meteorite 4"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_1_R_3 != "")
+			decoration
+		}
+
+		itemDef { name 		"col_2_strikethrough"
+			style			WINDOW_STYLE_SHADER
+			rect			(PARTS_HUD_COL_2_X_START - 10) 90 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		0.2 1 0.2 1
+			visible 		when(COL_3_ALPHA < 1)
+			decoration
+		}
+		itemDef { name		"col_2" 
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START 100 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Device Parts:"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_0 != "" || PLAYER_C_2_R_1 != "")
+			decoration
+		}
+		itemDef { name 		"col_2_underline"
+			style			WINDOW_STYLE_SHADER
+			rect			(PARTS_HUD_COL_2_X_START - 10) 100 120 2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			exp forecolor	A(COL_3_ALPHA)
+			visible 		when(PLAYER_C_2_R_0 != "" || PLAYER_C_2_R_1 != "")
+			decoration
+		}
+		itemDef { name		"col_2_row_0_p0"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WHITE_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_0 == "0")
+			decoration
+		}
+		itemDef { name		"col_2_row_0_p1"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		BLUE_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_0 == "1")
+			decoration
+		}
+		itemDef { name		"col_2_row_0_p2"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ORANGE_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_0 == "2")
+			decoration
+		}
+		itemDef { name		"col_2_row_0_p3"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START PARTS_HUD_Y_START 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		GREEN_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_0 == "3")
+			decoration
+		}
+		itemDef { name		"col_2_row_1_p0"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		WHITE_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_1 == "0")
+			decoration
+		}
+		itemDef { name		"col_2_row_1_p1"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		BLUE_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_1 == "1")
+			decoration
+		}
+		itemDef { name		"col_2_row_1_p2"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		ORANGE_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_1 == "2")
+			decoration
+		}
+		itemDef { name		"col_2_row_1_p3"
+			type			ITEM_TYPE_TEXT
+			rect			PARTS_HUD_COL_2_X_START (PARTS_HUD_Y_START + PARTS_HUD_Y_MARGIN) 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		0.30
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		GREEN_GRADIENT 1
+			exp forecolor	A(COL_3_ALPHA)
+			text			"Motherboard Piece 1"
+			textalign 		ITEM_ALIGN_CENTER
+			visible 		when(PLAYER_C_2_R_1 == "3")
+			decoration
+		}
+
+		// objective header
+		/*
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			48 68
+			forecolor		COLOR_TITLE
+			textfont		UI_FONT_NORMAL
+			textscale		TEXTSIZE_TITLE
+			textalign		ITEM_ALIGN_TOP_LEFT
+			visible			when ( dvarstring( "credits_active" ) != "1" && LOCAL_VIS_OBJECTIVE_DISPLAY );
+			ownerdraw		CG_MISSION_OBJECTIVE_HEADER
+			decoration
+		}
+		*/
+
+		//CHOICE_MENU_TITLE( "@MENU_MISSIONOBJECTIVES_CAP" )
+
+		// objective check box stub
+		itemDef
+		{
+			name			"objectivecheckbox"
+			//rect	 		15 75 16 16
+			rect	 		37 99 16 16
+			forecolor		1.0 1.0 1.0 1.0
+			textscale		0.38
+			textfont		UI_FONT_DEFAULT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible 		when  ( LOCAL_VIS_OBJECTIVE_DISPLAY );
+			ownerdraw		CG_MISSION_OBJECTIVE_LIST
+			decoration
+		}
+	}
+	#define CURRENT_PLAYER_INDEX 	dvarString(ugxm_player_index)
+	#define CURRENT_PLAYER_FOV 		dvarString(ugx_client_fov)
+	#define CURRENT_PLAYER_SENSE 	dvarString(ugx_client_sense)
+	#define CURRENT_PLAYER_HIT 		dvarString(ugx_client_hitmarker)
+	#define CURRENT_PLAYER_ADS 		dvarString(ugx_client_ads)
+	// overhead map - old map code opens
+	menuDef
+	{
+		name			"overheadmap"
+		fullScreen		0
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN
+		focusColor		COLOR_FOCUSED
+
+		onOpen {
+			execNow "seta ugx_client_seen_settings 3"; // UGX_CURRENT_SETTINGS_VER wont work here due to synax; so that "new" will no longer show in any map since they now know the settings exist.
+			execNow "setfromdvar cg_fov ugx_client_fov"; //init the FOV display
+			execNow "setfromdvar input_viewSensitivity ugx_client_sense"; //init the Joystick display
+			execOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 0";
+			execOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+			setLocalVarString xbox_button_text "[Execute Controller Bind Setup]";
+			setFocus "fov";
+		}
+		onClose {
+			execNow "setfromdvar cg_fov ugx_client_fov";
+			execNow "setfromdvar input_viewSensitivity ugx_client_sense";
+#ifdef PC_INGAME
+			execOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+#else
+			execOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 1";
+#endif
+			execOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+		}
+		onEsc {
+			//close self; //Don't let them do this, it allows them escape without sending settings to script.
+		}
+		
+		itemDef 
+		{ 
+			style			WINDOW_STYLE_FILLED
+			rect			FULLSCREEN_WIDE
+			backcolor		0 0 0 1
+			visible			1
+			background		"white"
+			decoration
+		} 
+
+		//#include "ui/navcontrols.inc"
+		
+		#undef CHOICE_ORIGIN
+		#define CHOICE_ORIGIN( itemIndex )	20 CHOICE_Y( itemIndex ) //CHOICE_X( itemIndex ) CHOICE_Y( itemIndex )
+
+		#undef CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_LEFT
+
+		#define SET_CLIENT_FOV exec "setfromdvar cg_fov ugx_client_fov";
+		#define SET_CLIENT_SENSE exec "setfromdvar input_viewSensitivity ugx_client_sense";
+
+		#define CHOICE_CAPTION_FULL_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		0 1 0 1  \
+			visible			visArg \
+			decoration \
+		}
+		#define CHOICE_OVERLAY_SUB_TITLE_VIS_UGX( index, titleArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_TEXT \
+			rect			22 58 500 100 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP \
+			origin			ORIGIN_TITLE \
+			forecolor		COLOR_TITLE \
+			exp				text( titleArg ) \
+			textfont		CHOICE_TEXTFONT \
+			textscale		TEXTSIZE_SMALL \
+			textstyle		CHOICE_TEXTSTYLE \
+			textalign		ITEM_ALIGN_TOP_LEFT \
+			textaligny		(TITLE_Y_OFFSET + (index * 10)) \
+			textalignx		(TITLE_X_OFFSET) \
+			visible			1 \
+			autowrapped \
+			decoration \
+		}
+
+		#define SAVE_PLAYER_0_SETTINGS \
+			setDvar ugxm_client_0_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_0_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_0_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_0_fov dvarString(ugx_client_fov); 
+		#define SAVE_PLAYER_1_SETTINGS \
+			setDvar ugxm_client_1_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_1_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_1_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_1_fov dvarString(ugx_client_fov); 
+		#define SAVE_PLAYER_2_SETTINGS \
+			setDvar ugxm_client_2_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_2_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_2_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_2_fov dvarString(ugx_client_fov); 
+		#define SAVE_PLAYER_3_SETTINGS \
+			setDvar ugxm_client_3_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_3_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_3_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_3_fov dvarString(ugx_client_fov); 
+
+		CHOICE_CAPTION( 6, "FOV") 
+		itemDef
+		{
+			type			ITEM_TYPE_SLIDER
+			dvarFloat		ugx_client_fov 65 65 110
+			rect			CHOICE_ORIGIN( 6 ) (CHOICE_SIZE_X+CHOICE_DVAR_WIDTH_OFFSET) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
+			textalign		ITEM_ALIGN_MIDDLE_LEFT
+			textalignx		(CHOICE_SIZE_X+20)
+			textscale		CHOICE_TEXTSIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			visible			1
+			DOWN_NAV("fov", "hitmarkers");
+			RIGHT_NAV("fov", "fovmin");
+			CHOICE_SCRIPTS_ALL( 6, SET_CLIENT_FOV, SET_CLIENT_FOV, SET_CLIENT_FOV)
+		}
+		itemDef 
+		{ 
+			name 			"FOV_Value"
+			type			ITEM_TYPE_TEXT 
+			rect			(CHOICE_X( 6 ) + 300) (CHOICE_Y( 6 ) - 30) (CHOICE_SIZE_X+CHOICE_DVAR_WIDTH_OFFSET) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
+			origin			ORIGIN_TITLE 
+			forecolor		COLOR_TITLE 
+			exp	text		dvarInt(ugx_client_fov)
+			textfont		CHOICE_TEXTFONT 
+			textscale		TEXTSIZE_SMALL 
+			textstyle		CHOICE_TEXTSTYLE 
+			textalign		ITEM_ALIGN_TOP_LEFT 
+			textaligny		TITLE_Y_OFFSET 
+			textalignx		TITLE_X_OFFSET 
+			visible			1 
+			decoration 
+		}
+
+		CHOICE_CAPTION( 11, "Joystick Sensitivity") 
+		itemDef
+		{
+			type			ITEM_TYPE_SLIDER
+			dvarFloat		input_viewSensitivity 1 0.1 5
+			rect			CHOICE_ORIGIN( 11 ) (CHOICE_SIZE_X+CHOICE_DVAR_WIDTH_OFFSET) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
+			textalign		ITEM_ALIGN_MIDDLE_LEFT
+			textalignx		(CHOICE_SIZE_X+20)
+			textscale		CHOICE_TEXTSIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			visible			1
+			DOWN_NAV("sense", "hitmarkers");
+			RIGHT_NAV("sense", "fovmin");
+			CHOICE_SCRIPTS_ALL( 11, SET_CLIENT_SENSE, SET_CLIENT_SENSE, SET_CLIENT_SENSE)
+		}
+		itemDef 
+		{ 
+			name 			"Sense_Value"
+			type			ITEM_TYPE_TEXT 
+			rect			(CHOICE_X( 11 ) + 300) (CHOICE_Y( 11 ) - 30) (CHOICE_SIZE_X+CHOICE_DVAR_WIDTH_OFFSET) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
+			origin			ORIGIN_TITLE 
+			forecolor		COLOR_TITLE 
+			exp	text		dvarFloat(input_viewSensitivity)
+			textfont		CHOICE_TEXTFONT 
+			textscale		TEXTSIZE_SMALL 
+			textstyle		CHOICE_TEXTSTYLE 
+			textalign		ITEM_ALIGN_TOP_LEFT 
+			textaligny		TITLE_Y_OFFSET 
+			textalignx		TITLE_X_OFFSET 
+			visible			1 
+			decoration 
+		}
+
+		#define ON_ON_YES			scriptMenuResponse "ugx_On_On_Yes"; close self;
+		#define CON_ON_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_ON_YES			scriptMenuResponse "ugx_Muted_On_Yes"; close self;
+		#define CMUTED_ON_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_ON_YES			scriptMenuResponse "ugx_Off_On_Yes"; close self;
+		#define COFF_ON_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_REDUCED_YES			scriptMenuResponse "ugx_On_Reduced_Yes"; close self;
+		#define CON_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_REDUCED_YES			scriptMenuResponse "ugx_Muted_Reduced_Yes"; close self;
+		#define CMUTED_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_REDUCED_YES			scriptMenuResponse "ugx_Off_Reduced_Yes"; close self;
+		#define COFF_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_OFF_YES			scriptMenuResponse "ugx_On_Off_Yes"; close self;
+		#define CON_OFF_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_OFF_YES			scriptMenuResponse "ugx_Muted_Off_Yes"; close self;
+		#define CMUTED_OFF_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_OFF_YES			scriptMenuResponse "ugx_Off_Off_Yes"; close self;
+		#define COFF_OFF_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_ON_NO			scriptMenuResponse "ugx_On_On_No"; close self;
+		#define CON_ON_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_ON_NO			scriptMenuResponse "ugx_Muted_On_No"; close self;
+		#define CMUTED_ON_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_ON_NO			scriptMenuResponse "ugx_Off_On_No"; close self;
+		#define COFF_ON_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define ON_REDUCED_NO			scriptMenuResponse "ugx_On_Reduced_No"; close self;
+		#define CON_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_REDUCED_NO			scriptMenuResponse "ugx_Muted_Reduced_No"; close self;
+		#define CMUTED_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_REDUCED_NO			scriptMenuResponse "ugx_Off_Reduced_No"; close self;
+		#define COFF_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define ON_OFF_NO			scriptMenuResponse "ugx_On_Off_No"; close self;
+		#define CON_OFF_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_OFF_NO			scriptMenuResponse "ugx_Muted_Off_No"; close self;
+		#define CMUTED_OFF_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_OFF_NO			scriptMenuResponse "ugx_Off_Off_No"; close self;
+		#define COFF_OFF_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+
+
+		#define DOWN_NAV_EX_11( pname, a, b, c, d, e, f, g, h, i, j, k, l)\
+				name pname \
+				execkeyint DPAD_DOWN { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; setfocus i; setfocus j; setfocus k; setfocus l; } \
+				execkeyint APAD_DOWN { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; setfocus i; setfocus j; setfocus k; setfocus l; }
+
+		//xenon_controller_top
+		//xenon_controller_button_bg
+		#undef CHOICE_X_SPACING	
+		#define CHOICE_X_SPACING		250
+		#undef CHOICE_Y_COUNT
+		#define CHOICE_Y_COUNT			20
+
+		#define CHOICE_DVARLIST_FOCUS_VIS_EX( itemIndex, textArg, dvarArg, listArg, actionArg, visArg, extraArg ) \
+		CHOICE_CAPTION_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_MULTI \
+			dvar			dvarArg \
+			dvarStrList 	listArg \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X+CHOICE_DVAR_WIDTH_OFFSET) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			textalign		CHOICE_DVAR_TEXTALIGN \
+			textalignx		CHOICE_DVAR_OFFSET_X \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle 		ITEM_TEXTSTYLE_SHADOWED \
+			style			WINDOW_STYLE_FILLED \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg ; \
+			extraArg \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+		}
+
+		CHOICE_OVERLAY_TITLE( "UGX Mod Settings" )
+		CHOICE_OVERLAY_SUB_TITLE_VIS_UGX(0, "These settings are persistent! What you choose here will save for ALL UGX Mod maps you play. Your FOV and other settings will be saved and loaded automatically across all other UGX Mod-enabled maps.")
+		CHOICE_OVERLAY_SUB_TITLE_VIS_UGX(4, "^5If you get stuck you can disable Xbox Controller Input mode from the main menu by pressing ^5ESC on your ^5keyboard ^5or ^5by entering exec disableXboxController.cfg into the ingame console.")
+
+		CHOICE_DVARLIST_FOCUS_VIS_EX( 7, "Maintain FOV in ADS", ugx_client_fovmin, { "Yes"; "Yes"; "No"; "No" }, ;, 1, LEFT_NAV("fovmin", "fov"); execKeyInt BUTTON_A { exec "toggle ugx_client_fovmin Yes No"; } )
+		CHOICE_DVARLIST_FOCUS_VIS_EX( 8, "Hitmarkers", ugx_client_hitmarker, { "On"; "On"; "Muted"; "Muted"; "Off"; "Off" }, ;, 1, DOWN_NAV("hitmarkers", "bob"); UP_NAV("hitmarkers", "fov"); execKeyInt BUTTON_A { exec "toggle ugx_client_hitmarker On Muted Off"; } )
+		CHOICE_DVARLIST_FOCUS_VIS_EX( 9, "Weapon Bob/Sway", ugx_client_weaponbob, { "On"; "On"; "Reduced"; "Reduced"; "Off"; "Off" }, ;, 1, DOWN_NAV("bob", "xbox"); UP_NAV("bob", "hitmarkers"); execKeyInt BUTTON_A { exec "toggle ugx_client_weaponbob On Reduced Off"; } )
+		//CHOICE_DVARLIST_FOCUS_VIS_EX( 8, "Akimbo ADS Setting", ugx_client_ads, { "Toggle"; "Toggle"; "Hold"; "Hold" }, ;, 1, DOWN_NAV("akimbo", "xbox"); UP_NAV("akimbo", "hitmarkers"); execKeyInt BUTTON_A { exec "toggle ugx_client_ads Toggle Hold"; } )
+		CHOICE_DVARLIST_FOCUS_VIS_EX( 10, "Using Xbox 360 Controller", ugx_client_xbox, { "Yes"; "Yes"; "No"; "No" }, ;, 1, DOWN_NAV_EX_11("xbox", "save0", "save1", "save2", "save3", "save4", "save5", "save6", "save7", "save8", "save9", "save10", "save11"); UP_NAV("xbox", "bob"); execKeyInt BUTTON_A { exec "toggle ugx_client_xbox Yes No"; } )
+		//CHOICE_BUTTON_VIS_NOHI(10, "Close", play "mouse_click"; SETUP_ACTION_CAC( "3200" ), when(1); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", ON_ON_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CON_ON_YES);, UP_NAV("save0", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", MUTED_ON_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CMUTED_ON_YES);, UP_NAV("save1", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", OFF_ON_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(COFF_ON_YES);, UP_NAV("save2", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", ON_REDUCED_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CON_REDUCED_YES);, UP_NAV("save3", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", MUTED_REDUCED_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CMUTED_REDUCED_YES);, UP_NAV("save4", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", OFF_REDUCED_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(COFF_REDUCED_YES);, UP_NAV("save5", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", ON_OFF_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CON_OFF_YES);, UP_NAV("save6", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", MUTED_OFF_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CMUTED_OFF_YES);, UP_NAV("save7", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", OFF_OFF_YES;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(COFF_OFF_YES);, UP_NAV("save8", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", ON_ON_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CON_ON_NO);, UP_NAV("save9", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", MUTED_ON_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CMUTED_ON_NO);, UP_NAV("save10", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", OFF_ON_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(COFF_ON_NO);, UP_NAV("save11", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", ON_REDUCED_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CON_REDUCED_NO);, UP_NAV("save12", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", MUTED_REDUCED_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CMUTED_REDUCED_NO);, UP_NAV("save13", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", OFF_REDUCED_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(COFF_REDUCED_NO);, UP_NAV("save14", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", ON_OFF_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CON_OFF_NO);, UP_NAV("save15", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", MUTED_OFF_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(CMUTED_OFF_NO);, UP_NAV("save16", "xbox"); )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( 13, "Save & Close", OFF_OFF_NO;, setdvar ugx_client_seen_settings UGX_CURRENT_SETTINGS_VER, ;, when(COFF_OFF_NO);, UP_NAV("save17", "xbox"); )
+
+
+
+		#undef CHOICE_COL
+		#define CHOICE_COL( itemIndex )		((itemIndex - 1 - ((itemIndex - 1) % CHOICE_Y_COUNT)) / CHOICE_Y_COUNT)
+
+		#undef CHOICE_X
+		#define CHOICE_X( itemIndex ) 		(CHOICE_X_START + CHOICE_X_SPACING * CHOICE_COL( itemIndex ))
+
+		#undef CHOICE_ORIGIN
+		#define CHOICE_ORIGIN( itemIndex )	CHOICE_X( itemIndex ) CHOICE_Y( itemIndex )
+		#undef CHOICE_RECT
+		#define CHOICE_RECT( itemIndex )	CHOICE_ORIGIN( itemIndex ) CHOICE_SIZE_X CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
+
+		//CHOICE_DVARLIST_FOCUS_VIS_EX( 7, "Maintain FOV while ADSing", ugx_client_fovmin, { "Yes"; "Yes"; "No"; "No" }, ;, 1, LEFT_NAV("fovmin", "fov"); execKeyInt BUTTON_A { exec "toggle ugx_client_fovmin Yes No"; } )
+
+		CHOICE_BUTTON_FOCUS( 30, localVarString(xbox_button_text), exec "exec default_controller.cfg" setLocalVarString xbox_button_text "Done!";, ;, ; )
+	}
+	}
+}

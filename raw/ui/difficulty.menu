@@ -1,0 +1,190 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_GROUP			"select_difficulty"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#undef CHOICE_HORIZONTAL_ALIGN
+#define CHOICE_HORIZONTAL_ALIGN	HORIZONTAL_ALIGN_LEFT
+#undef CHOICE_VERTICAL_ALIGN
+#define CHOICE_VERTICAL_ALIGN	VERTICAL_ALIGN_TOP
+
+#define CHOICE_POPUP_TITLE_HEIGHT	24
+#define CHOICE_POPUP_SUBTITLE_HEIGHT 142
+
+#include "ui_mp/popupstyle.inc"	
+#include "ui/choices_setup_popmenu.menu"
+
+#undef CHOICE_SIZE_Y
+#define CHOICE_SIZE_Y				22
+
+#undef A_BUTTON_SIZE
+#define A_BUTTON_SIZE				0.4//0.33
+
+#undef CHOICE_POPUP_BORDER_X
+#define CHOICE_POPUP_BORDER_X 		130
+
+#undef CHOICE_TEXTSIZE
+#define CHOICE_TEXTSIZE				TEXTSIZE_DEFAULT
+
+#undef CHOICE_POPUP_TITLE_TEXTSIZE
+#define CHOICE_POPUP_TITLE_TEXTSIZE		TEXTSIZE_TITLE
+
+#undef CHOICE_POPUP_SUBTITLE_TEXTSIZE
+#define CHOICE_POPUP_SUBTITLE_TEXTSIZE 	TEXTSIZE_DEFAULT
+
+#ifdef CONSOLE
+#define UPDATE_GAMER_PROFILE	execnow "updategamerprofile";
+#else
+#define UPDATE_GAMER_PROFILE	;
+#endif
+
+{
+		
+	#define LOCAL_START_LEVEL \
+		exec "set arcademode_lives 2; set arcademode_combined_score 0";\
+		execondvarstringvalue ui_load_level prologue DEVMAP" prologue";\
+		execondvarstringvalue ui_load_level mak DEVMAP" mak";\
+		execondvarstringvalue ui_load_level pel1 DEVMAP" pel1";\
+		execondvarstringvalue ui_load_level pel1a DEVMAP" pel1a";\
+		execondvarstringvalue ui_load_level see2 DEVMAP" see2";\
+		execondvarstringvalue ui_load_level see1 DEVMAP" see1";\
+		execondvarstringvalue ui_load_level pel1b DEVMAP" pel1b";\
+		execondvarstringvalue ui_load_level pel2 DEVMAP" pel2";\
+		execondvarstringvalue ui_load_level pby_fly DEVMAP" pby_fly";\
+		execondvarstringvalue ui_load_level ber1 DEVMAP" ber1";\
+		execondvarstringvalue ui_load_level ber2 DEVMAP" ber2";\
+		execondvarstringvalue ui_load_level sniper DEVMAP" sniper";\
+		execondvarstringvalue ui_load_level oki2 DEVMAP" oki2";\
+		execondvarstringvalue ui_load_level oki3 DEVMAP" oki3";\
+		execondvarstringvalue ui_load_level ber3 DEVMAP" ber3";\
+		execondvarstringvalue ui_load_level ber3b DEVMAP" ber3b";\
+		execondvarstringvalue ui_load_level nazi_zombie_prototype DEVMAP" nazi_zombie_prototype";
+
+	/*	#define LOCAL_DIFFICULTY_BUTTONS\
+		CHOICE_CAPTION_VIS( 1, "@MENU_REGULAR_DESC_3", when( localVarInt( ui_highlight ) == 3 ) )\
+		CHOICE_CAPTION_VIS( 2, "@MENU_REGULAR_DESC_4", when( localVarInt( ui_highlight ) == 3 ) )\
+		CHOICE_CAPTION_VIS( 1, "@MENU_SKILLED_DESC", when( localVarInt( ui_highlight ) == 4 ) )\
+		CHOICE_CAPTION_VIS( 2, "@MENU_SKILLED_DESC_2", when( localVarInt( ui_highlight ) == 4 ) )\
+		CHOICE_CAPTION_VIS( 1, "@MENU_HARDENED_DESC", when( localVarInt( ui_highlight ) == 5 ) )\
+		CHOICE_CAPTION_VIS( 1, "@MENU_VETERAN_DESC", when( localVarInt( ui_highlight ) == 6 ) )		*/
+#ifdef PC		
+	#define SINGLE_PLAYER ( dvarbool( onlinegame ) == 0 && dvarbool( systemlink ) == 0 )
+	#define MULTIPLAYER ( dvarbool( onlinegame ) || dvarbool( systemlink ) )
+	#define LOCAL_DIFF_DESC_X		rect 42 300 216 100 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP; autowrapped //exp rect X( CHOICE_SIZE_X+225 ); autowrapped exp rect Y( 300 ) exp rect W(216) exp rect HORZALIGN( HORIZONTAL_ALIGN_CENTER )
+	#define LOCAL_DIFF_PIC_X		75 130 150 150 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+	#define LOCAL_DIFF_PIC_ORIGIN	0 0
+	#define CHECKPOINT_Y			exp rect W(275)
+#else
+	#define SINGLE_PLAYER ( dvarbool( splitscreen ) == 0 && dvarbool( onlinegame ) == 0 && dvarbool( systemlink ) == 0 )
+	#define MULTIPLAYER ( dvarbool( splitscreen ) || dvarbool( onlinegame ) || dvarbool( systemlink ) )
+	#define LOCAL_DIFF_DESC_X		rect 42 270 216 100 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP; autowrapped //exp rect X( CHOICE_SIZE_X+225 ); autowrapped exp rect Y( 270 ) exp rect W(216) exp rect HORZALIGN( HORIZONTAL_ALIGN_CENTER )
+	#define LOCAL_DIFF_PIC_X		75 100 150 150 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+	#define LOCAL_DIFF_PIC_ORIGIN	0 0
+	#define CHECKPOINT_Y		 exp rect Y(240); exp rect W(275); autowrapped
+#endif //#ifdef PC
+
+	#define LOCAL_DIFFICULTY_DESC\
+		CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( locString( "@MENU_REGULAR_DESC_3" ) + " " + locString( "@MENU_REGULAR_DESC_4" ), ITEM_ALIGN_CENTER, when( localVarInt( ui_highlight ) == 1 ); LOCAL_DIFF_DESC_X )\
+		CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( locString( "@MENU_SKILLED_DESC" ) + " " + locString( "@MENU_SKILLED_DESC_2" ), ITEM_ALIGN_CENTER, when( localVarInt( ui_highlight ) == 2 ); LOCAL_DIFF_DESC_X )\
+		CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( "@MENU_HARDENED_DESC", ITEM_ALIGN_CENTER, when( localVarInt( ui_highlight ) == 3 ); LOCAL_DIFF_DESC_X )\
+		CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( "@MENU_VETERAN_DESC", ITEM_ALIGN_CENTER, when( localVarInt( ui_highlight ) == 4 ); LOCAL_DIFF_DESC_X )
+
+	#define LOCAL_DIFFICULTY_PIC\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_recr_story", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 1 && !dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_reg_story", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 2 && !dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_hard_story", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 3 && !dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_vet_story", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 4 && !dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_recr_comp", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 1 && dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_reg_comp", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 2 && dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_hard_comp", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 3 && dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_coop_vet_comp", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 4 && dvarBool( arcademode ) && MULTIPLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_sp_recr", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 1 && SINGLE_PLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_sp_reg", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 2 && SINGLE_PLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_sp_hard", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 3 && SINGLE_PLAYER ); )\
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_DIFF_PIC_X, LOCAL_DIFF_PIC_ORIGIN, "playlist_sp_vet", 1 1 1 1, 0, 0, 0 0 0 0, when( localVarInt( ui_highlight ) == 4 && SINGLE_PLAYER ); )
+
+#ifdef PC
+	#undef CHOICE_Y_START
+	#define CHOICE_Y_START 218
+#endif // #ifdef PC
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popmenu_difficulty, 4, ;, setfocus "newgame_regular"; setfocusbydvar "g_gameskill", 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_SELECT_DIFFICULTY_CAP" )
+		LOCAL_DIFFICULTY_DESC
+		LOCAL_DIFFICULTY_PIC
+		
+		CHOICE_POPMENU_SUBTITLE_VIS( "@MENU_WARNING_CHECKPOINT_RESET2", when( dvarBool( sv_saveGameAvailable ) ); CHECKPOINT_Y; )	
+		
+		CHOICE_BUTTON_FOCUS_VIS_EX( 1, "@MENU_RECRUIT", execnow "difficultyeasy"; UPDATE_GAMER_PROFILE close self; LOCAL_START_LEVEL, play "mouse_over";, ;, 1, name newgame_easy; dvartest "g_gameskill"; focusdvar { "0" } )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 2, "@MENU_REGULAR", execnow "difficultymedium"; UPDATE_GAMER_PROFILE close self; LOCAL_START_LEVEL, play "mouse_over";, ;, 1, name newgame_regular; dvartest "g_gameskill"; focusdvar { "1" } )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 3, "@MENU_HARDENED", execnow "difficultyhard"; UPDATE_GAMER_PROFILE close self; LOCAL_START_LEVEL, play "mouse_over";, ;, 1, name newgame_regular; dvartest "g_gameskill"; focusdvar { "2" } )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 4, "@MENU_VETERAN", execnow "difficultyfu"; UPDATE_GAMER_PROFILE close self; LOCAL_START_LEVEL, play "mouse_over";, ;, 1, name newgame_regular; dvartest "g_gameskill"; focusdvar { "3" } )
+	}
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popmenu_arcade_difficulty, 4, ;, exec "set arcademode_lives 2; set arcademode_combined_score 0"; setfocus "newgame_regular"; setfocusbydvar "g_gameskill", 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_SELECT_DIFFICULTY" )
+		LOCAL_DIFFICULTY_DESC
+		LOCAL_DIFFICULTY_PIC
+		
+		CHOICE_BUTTON_EX( 1, "@MENU_RECRUIT", execnow "difficultyeasy"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_easy; dvartest "g_gameskill"; focusdvar { "0" } )
+		CHOICE_BUTTON_EX( 2, "@MENU_REGULAR", execnow "difficultymedium"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "1" } )
+		CHOICE_BUTTON_EX( 3, "@MENU_HARDENED", execnow "difficultyhard"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "2" } )
+		CHOICE_BUTTON_EX( 4, "@MENU_VETERAN", execnow "difficultyfu"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "3" } )
+	}	
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popmenu_newgame, 4, ;, setfocus "newgame_regular"; setfocusbydvar "g_gameskill", 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_SELECT_DIFFICULTY_CAP" )
+		LOCAL_DIFFICULTY_DESC
+		LOCAL_DIFFICULTY_PIC
+
+		CHOICE_BUTTON_EX( 1, "@MENU_RECRUIT", execnow "difficultyeasy"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_easy; dvartest "g_gameskill"; focusdvar { "0" } )
+		CHOICE_BUTTON_EX( 2, "@MENU_REGULAR", execnow "difficultymedium"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "1" } )
+		CHOICE_BUTTON_EX( 3, "@MENU_HARDENED", execnow "difficultyhard"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "2" } )
+		CHOICE_BUTTON_EX( 4, "@MENU_VETERAN", execnow "difficultyfu"; UPDATE_GAMER_PROFILE close self; exec DEVMAP_LEVEL_FIRST;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "3" } )
+	}
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popmenu_coop_difficulty, 4, ;, setfocus "newgame_regular"; setfocusbydvar "g_gameskill", 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_SELECT_DIFFICULTY" )
+		LOCAL_DIFFICULTY_DESC
+		LOCAL_DIFFICULTY_PIC
+
+		CHOICE_BUTTON_EX( 1, "@MENU_RECRUIT", execnow "difficultyeasy"; execNow "xupdatepartystate"; UPDATE_GAMER_PROFILE close self;, name newgame_easy; dvartest "g_gameskill"; focusdvar { "0" } )
+		CHOICE_BUTTON_EX( 2, "@MENU_REGULAR", execnow "difficultymedium"; execNow "xupdatepartystate"; UPDATE_GAMER_PROFILE close self;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "1" } )
+		CHOICE_BUTTON_EX( 3, "@MENU_HARDENED", execnow "difficultyhard"; execNow "xupdatepartystate"; UPDATE_GAMER_PROFILE close self;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "2" } )
+		CHOICE_BUTTON_EX( 4, "@MENU_VETERAN", execnow "difficultyfu"; execNow "xupdatepartystate"; UPDATE_GAMER_PROFILE close self;, name newgame_regular; dvartest "g_gameskill"; focusdvar { "3" } )
+	}
+	
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			180
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( ingame_difficulty, 3, ;, setfocus "no";, 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_LOWER_DIFFICULTY" )
+		
+		CHOICE_POPMENU_SUBTITLE_VIS( "@MENU_LOWER_DIFFICULTY_1_0", when( dvarInt(g_gameskill) == 1 ); )
+		CHOICE_POPMENU_SUBTITLE_VIS( "@MENU_LOWER_DIFFICULTY_2_1", when( dvarInt(g_gameskill) == 2 ); )
+		CHOICE_POPMENU_SUBTITLE_VIS( "@MENU_LOWER_DIFFICULTY_3_2", when( dvarInt(g_gameskill) == 3 ); )
+			
+		CHOICE_BUTTON_VIS( 2, "@MENU_YES", close self; setdvar g_gameskill "0", when( dvarInt(g_gameskill) == 1 ); )
+		CHOICE_BUTTON_VIS( 2, "@MENU_YES", close self; setdvar g_gameskill "1", when( dvarInt(g_gameskill) == 2 ); )
+		CHOICE_BUTTON_VIS( 2, "@MENU_YES", close self; setdvar g_gameskill "2", when( dvarInt(g_gameskill) == 3 ); )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self;, name "no" )
+	}
+}

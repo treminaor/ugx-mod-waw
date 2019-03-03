@@ -1,0 +1,218 @@
+#include "ui/menudef.h"
+
+#define CHOICE_SIZE_X			180
+#define CHOICE_SIZE_Y			22
+
+#ifdef CONSOLE
+	#define CHOICE_X_START			0
+	#define CHOICE_Y_START			34
+#else
+	#define CHOICE_X_START			78
+	#define CHOICE_Y_START			230
+#endif
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define CHOICE_GROUP			"xboxlive_lobby"
+
+#define CHOICE_SEP_1			3
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#ifdef CONSOLE
+#define ORIGIN_POPUPTITLE		320 160
+#define ORIGIN_POPUPTITLE2		320 220
+
+#define ORIGIN_YES				234 260
+#define ORIGIN_NO				310 260
+
+#define ORIGIN_POPUPCHOICE1		180 200
+#define ORIGIN_POPUPCHOICE2		180 220
+#endif
+
+{
+
+	#include "ui_mp/popupstyle.inc"
+
+#ifdef CONSOLE
+#else
+	#undef	CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			180
+
+	#undef	CHOICE_X_START
+	#define CHOICE_X_START			78
+
+	#undef	CHOICE_Y_START
+	#define CHOICE_Y_START			230
+#endif
+	#include "ui/choices_setup_popmenu.menu"
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_leavegame, 3, ;, setfocus cancel_button, 1 )
+		
+		#define LOCAL_ACCEPT_LEAVEGAME \
+				play "mouse_click"; \
+				close popup_leavegame; \
+				exec "disconnect"
+				
+		CHOICE_POPMENU_TITLE( "@MPUI_LEAVE_GAME1")
+
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_LEAVEGAME )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}		
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_HEIGHT( popup_createjoin_squad, 3, ;, 1, 22 )
+		
+		#define LOCAL_ACCEPT_CREATE_SQUAD \
+				play "mouse_click"; \
+				setDvar squad_previous getSquadId; \
+				exec "clearAllInvites"; \
+				close self; \
+				scriptMenuResponse "createsquad"
+				
+		#define LOCAL_ACCEPT_JOIN_SQUAD \
+				play "mouse_click"; \
+				setDvar squad_previous getSquadId; \
+				close self; \
+				open popup_joinsquad				
+				
+		CHOICE_POPMENU_TITLE( "@MPUI_CREATEJOIN_SQUAD")
+		
+		#define MAX_UI_SQUADS 9
+		
+		#define MAX_UI_SYSTEMLINK_SQUADS 5
+
+		CHOICE_BUTTON_BG( 2, 1 )
+		CHOICE_HIGHLIGHT( 2, 1 )
+		CHOICE_BUTTON_VIS_NOHI( 2, "@MPUI_CREATE_SQUAD", LOCAL_ACCEPT_CREATE_SQUAD, when( ( ( !dvarBool( systemlink ) && ( dvarInt( ui_squad_count) < MAX_UI_SQUADS ) ) || ( dvarBool( systemlink ) && ( dvarInt( ui_squad_count) < MAX_UI_SYSTEMLINK_SQUADS ) ) ) ) )
+		CHOICE_BUTTON_VIS_NOHI( 2, "", ;, when( ( ( !dvarBool( systemlink ) && ( dvarInt( ui_squad_count) >= MAX_UI_SQUADS ) ) || ( dvarBool( systemlink ) && ( dvarInt( ui_squad_count) >= MAX_UI_SYSTEMLINK_SQUADS ) ) ) ) )
+		CHOICE_DBUTTON_VIS( 2, "@MPUI_CREATE_SQUAD", when( ( ( !dvarBool( systemlink ) && ( dvarInt( ui_squad_count) >= MAX_UI_SQUADS ) ) || ( dvarBool( systemlink ) && ( dvarInt( ui_squad_count) >= MAX_UI_SYSTEMLINK_SQUADS ) ) ) ) )
+
+		CHOICE_BUTTON_BG( 3, 1 )
+		CHOICE_HIGHLIGHT( 3, 1 )
+		CHOICE_BUTTON_VIS_NOHI( 3, "@MPUI_JOIN_SQUAD", LOCAL_ACCEPT_JOIN_SQUAD, when( dvarInt( ui_squad_count) >= 1 ) )
+		CHOICE_BUTTON_VIS_NOHI( 3, "", ;, when( dvarInt( ui_squad_count) < 1 ) )
+		CHOICE_DBUTTON_VIS( 3, "@MPUI_JOIN_SQUAD", when( dvarInt( ui_squad_count) < 1 ) )
+	}		
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_leave_squad, 3, ;, setfocus cancel_button, 1 )
+		
+		#define LOCAL_ACCEPT_LEAVESQUAD \
+				play "mouse_click"; \				
+				setDvar squad_previous getSquadId; \
+				exec "clearAllInvites"; \
+				close self; \
+				scriptMenuResponse "leavesquad" 
+				
+		CHOICE_POPMENU_TITLE( "@MPUI_LEAVE_SQUAD")
+
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_LEAVESQUAD )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}		
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_leavegameandparty, 3, ;, setfocus cancel_button, 1 )
+		
+		#define LOCAL_ACCEPT_LEAVEGAMEANDPARTY \
+			play "mouse_click"; \
+			close popup_leavegameandparty;  \
+			exec "disconnect; xstopprivateparty; xstopparty"; \
+			exec "xblive_privatematch 0"; \
+			exec "xstartprivateparty";
+				
+		CHOICE_POPMENU_TITLE( "@MENU_LEAVE_GAME_AND_PARTY" )
+		
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_LEAVEGAMEANDPARTY )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}			
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_endgame, 3, ;, setfocus cancel_button, 1 )
+
+		visible when ( dvarbool( onlineunrankedgameandhost ) == 1 || dvarbool( sv_running ) == 1 );
+#ifdef CONSOLE		
+		#define LOCAL_ACCEPT_ENDGAME \
+			play "mouse_click"; \
+			close popup_endgame; \
+			scriptMenuResponse "endround"; 
+#else
+		#define LOCAL_ACCEPT_ENDGAME \
+		play "mouse_click"; \
+		close popup_endgame; \
+		exec "disconnect";
+#endif
+				
+		CHOICE_POPMENU_TITLE( "@MPUI_END_GAME2")
+		
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_ENDGAME )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}	
+
+
+
+#ifdef PC
+#else
+	#undef CHOICE_Y_START
+	#define CHOICE_Y_START			200
+#endif //#ifdef PC
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_leavegame_ranked, 3, ;, setfocus cancel_button, 1 )
+		
+		#define LOCAL_ACCEPT_LEAVEGAME_RANKED \
+				play "mouse_click"; \
+				close popup_leavegame; \
+				exec "disconnect"
+				
+		CHOICE_POPMENU_TITLE( "@MPUI_LEAVE_GAME1")
+		CHOICE_POPMENU_SUBTITLE( "@MENU_LEAVE_GAME_RANKED" );
+
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_LEAVEGAME_RANKED )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}		
+		
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_endgame_ranked, 3, ;, setfocus cancel_button, 1 )
+		visible when ( dvarbool( onlineunrankedgameandhost ) == 1 );
+		
+		#define LOCAL_ACCEPT_ENDGAME_RANKED \
+			play "mouse_click"; \
+			close popup_endgame; \
+			exec "xpartydisbandafterround"; \
+			scriptMenuResponse "endround"; 
+				
+		CHOICE_POPMENU_TITLE( "@MPUI_LEAVE_GAME1")
+		CHOICE_POPMENU_SUBTITLE( "@MENU_LEAVE_GAME_RANKED" );
+
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_ENDGAME_RANKED )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}	
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN( popup_leavegameandparty_ranked, 3, ;, setfocus cancel_button, 1 )
+		
+		#define LOCAL_ACCEPT_LEAVEGAMEANDPARTY_RANKED \
+			play "mouse_click"; \
+			close popup_leavegameandparty;  \
+			exec "disconnect; xstopprivateparty; xstopparty"; \
+			exec "xblive_privatematch 0"; \
+			exec "xstartprivateparty";
+				
+		CHOICE_POPMENU_TITLE( "@MENU_LEAVE_GAME_AND_PARTY" )
+		CHOICE_POPMENU_SUBTITLE( "@MENU_LEAVE_GAME_RANKED" );
+
+		CHOICE_BUTTON( 2, "@MENU_YES", LOCAL_ACCEPT_LEAVEGAMEANDPARTY_RANKED )
+		CHOICE_BUTTON_EX( 3, "@MENU_NO", close self, name cancel_button )
+	}	
+}

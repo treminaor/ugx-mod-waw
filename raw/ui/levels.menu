@@ -1,0 +1,501 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			34
+
+#ifdef PC
+	#undef	CHOICE_Y_START
+	#define CHOICE_Y_START		80//106//120
+	#undef	CHOICE_X_START
+	#define CHOICE_X_START		22
+	#undef	SIGNED_IN_RECT
+	#define SIGNED_IN_RECT			-350 60 250 15
+#else
+	#undef	SIGNED_IN_RECT
+	#define SIGNED_IN_RECT			-250 60 250 15
+#endif
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define CHOICE_GROUP			"acts"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+#include "ui/online_status.inc"
+
+//--- style override ---
+
+#define MENU_YELLOW				1 .847 0 1
+#define MENU_GOLD				.953 .722 .212 1
+
+#undef CHOICE_SIZE_Y
+#define CHOICE_SIZE_Y			19
+
+#undef CHOICE_Y_SPACING
+#define CHOICE_Y_SPACING		20
+
+#undef CHOICE_SIZE_X
+#define CHOICE_SIZE_X			250
+
+#undef CHOICE_TEXTSIZE
+#define CHOICE_TEXTSIZE			0.4
+
+#undef CHOICE_POPUP_TITLE_TEXTSIZE 
+#define CHOICE_POPUP_TITLE_TEXTSIZE 0.4
+
+#undef CHOICE_POPUP_SUBTITLE_TEXTSIZE
+#define CHOICE_POPUP_SUBTITLE_TEXTSIZE 0.33
+
+#undef NEW_X_OFFSET
+#define NEW_X_OFFSET -10
+
+#undef CHOICE_TEXT_OFFSET_X
+#ifdef PC
+#define CHOICE_TEXT_OFFSET_X	29
+#else
+#define CHOICE_TEXT_OFFSET_X	23
+#endif
+
+#undef HIGHLIGHT_COLOR
+#define HIGHLIGHT_COLOR			0.9 0.95 1 0.25
+
+//---- orient ----
+#define GAMEINFO_WIDTH			250
+#define GAMEINFO_WIDTH2			255
+#define GAMEINFO_HEIGHT			258
+#define GAMEINFO_HEIGHT2		0
+#ifdef PC
+	#define GAMEINFO_ORIGIN			4 -190
+	#define PC_OFFSET_Y				40
+#else
+	#define GAMEINFO_ORIGIN			4 -170
+	#define PC_OFFSET_Y				0
+#endif
+
+//---- cheats conditions ----
+#define CHEAT_CONDITION 		( 0 )
+#define CHEAT_CONDITION_NOT		( 1 )
+
+// Cheats enabled indicat0r!
+#define ORIGIN_CHEATS_INDICATOR	156 32
+#define CHEATS_INDICATOR \
+PREPROC_TEXT_DRAW_ALIGNED( ORIGIN_CHEATS_INDICATOR 100 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP, 0 0, text "@MENU_CHEAT_ENABLED", TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_RIGHT, COLOR_TITLE visible when( CHEAT_CONDITION ); )
+
+// macros for the map display info
+#define LOCAL_MAP_SHOW( p_mapname, p_mapname2, offset, action ) \
+	hide "map_image_group"; \
+	hide "map_name_group"; \
+	hide "map_desc_group"; \
+	hide "map_difficulty"; \
+	show "image_"p_mapname; \
+	show "name_"p_mapname; \
+	show "desc_"p_mapname; \
+	show "easy_"p_mapname; \
+	show "regular_"p_mapname; \
+	show "hardened_"p_mapname; \
+	show "veteran_"p_mapname; \
+	uiscript loadMissionDifficultyOffset offset; \
+	play "mouse_over"; \
+	action;
+
+#define LOCAL_MAP_ACTION( p_mapname, p_mapname_text, offset ) \
+	setdvar credits "0"; \
+	setdvar credits_active "0"; \
+	setdvar ui_load_level p_mapname; open popmenu_difficulty;
+
+#define LOCAL_MAP_ACTION_NODIFFICULTY( p_mapname, p_mapname_text, offset ) \
+	setdvar credits "0"; \
+	setdvar credits_active "0"; \
+	exec "devmap "p_mapname;
+	
+#define LOCAL_DIFFICULTY_WIDGET \ 
+	itemDef{ \
+		rect 0 -50 275 30 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM \
+		textfont CHOICE_TEXTFONT \
+		textscale CHOICE_POPUP_SUBTITLE_TEXTSIZE \
+		textstyle CHOICE_TEXTSTYLE \
+		ownerdraw UI_DIFFICULTY_INFO \
+		forecolor MENU_GOLD \
+		visible when( !localVarBool( ui_hideBack ) ); \
+		decoration \
+	} \
+	itemDef{ \
+		rect 187 -90 60 60 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM \
+		ownerdraw UI_DIFFICULTY_ICON \
+		visible when( !localVarBool( ui_hideBack ) ); \
+		decoration \
+	} 
+
+#define LOCAL_MAP_SELECTION( itemNum, p_mapname_text, p_mapname, pdesc, offset, action, sel_Action ) \
+	CHOICE_BUTTON_FOCUS_VIS( itemNum, p_mapname_text, sel_Action; LOCAL_MAP_ACTION( p_mapname, p_mapname_text, offset), LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset, action ), ;, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ); ) \
+	CHOICE_DBUTTON_VIS( itemNum, p_mapname_text, when( ( dvarInt( mis_01 ) < (offset) ) && CHEAT_CONDITION_NOT ) ) \
+	/*CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( itemNum, "", ;, LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset ), ;, when( dvarInt( mis_01 ) >= (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) ), ; )*/ \
+	/*CHOICE_LOCKEDICON_VIS( itemNum, "specialty_locked", when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) ) ) */ \ 
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+12), pdesc, TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, 1 1 1 1 name "desc_"p_mapname group "map_desc_group" autowrapped )*/\
+	/*easy*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_RECRUIT"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "easy_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "1" ); )*/\
+	/*regular*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_REGULAR"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "regular_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "2" ); )*/\
+	/*hardened*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_HARDENED"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "hardened_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "3" ); )*/\
+	/*veteran*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_VETERAN"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "veteran_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "4" ); )*/\
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "loadscreen_"p_mapname, 1 1 1 1, 0, 0, 0 0 0 0, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ) name "image_"p_mapname group "map_image_group" ) \
+	CHOICE_POPMENU_TITLE_VIS( p_mapname_text, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ); name "image_"p_mapname group "map_image_group" rect 0 -55 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER forecolor MENU_GOLD ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( pdesc, ITEM_ALIGN_LEFT, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ); name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "mission_screen_"p_mapname"_lock", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) ) name "image_"p_mapname group "map_image_group" ) 
+
+#define LOCAL_MAP_SELECTION_NODIFFICULTY( itemNum, p_mapname_text, p_mapname, pdesc, offset, action, sel_Action ) \
+	CHOICE_BUTTON_FOCUS_VIS( itemNum, p_mapname_text, sel_Action; LOCAL_MAP_ACTION_NODIFFICULTY( p_mapname, p_mapname_text, offset) , LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset, action ), ;, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ); ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "loadscreen_"p_mapname, 1 1 1 1, 0, 0, 0 0 0 0, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ) name "image_"p_mapname group "map_image_group" ) \
+	CHOICE_POPMENU_TITLE_VIS( p_mapname_text, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ); name "image_"p_mapname group "map_image_group" rect 0 -55 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER forecolor MENU_GOLD ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( pdesc, ITEM_ALIGN_LEFT, when( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ); name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "mission_screen_"p_mapname"_lock", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) ) name "image_"p_mapname group "map_image_group" ) 
+
+#define LOCAL_NONGERMAN_MAP_SELECTION( itemNum, p_mapname_text, p_mapname, pdesc, offset, action, sel_Action ) \
+	CHOICE_BUTTON_FOCUS_VIS( itemNum, p_mapname_text, sel_Action; LOCAL_MAP_ACTION( p_mapname, p_mapname_text, offset), LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset, action ), ;, when( dvarString( language ) != "german" && (( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION) ); ) \
+	/*CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( itemNum, "", ;, LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset ), ;, when( dvarInt( mis_01 ) >= (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) ), ; )*/ \
+	/*CHOICE_DBUTTON_VIS( itemNum, p_mapname_text, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) );/*when( ARCADE_CONDITION(p_mapname) ) ) */ \ 
+	/*CHOICE_LOCKEDICON_VIS( itemNum, "specialty_locked", when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) ) ) */ \ 
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+12), pdesc, TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, 1 1 1 1 name "desc_"p_mapname group "map_desc_group" autowrapped )*/\
+	/*easy*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_RECRUIT"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "easy_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "1" ); )*/\
+	/*regular*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_REGULAR"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "regular_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "2" ); )*/\
+	/*hardened*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_HARDENED"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "hardened_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "3" ); )*/\
+	/*veteran*/ \
+	/*PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-8) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+PC_OFFSET_Y+66), locString("@MENU_DIFFICULTY_COMPLETED") + " " + locString("@MENU_VETERAN"), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE name "veteran_"p_mapname group "map_difficulty" autowrapped visible*/ \
+	/*when( dvarString( "ui_level" ) == "4" ); )*/\
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "loadscreen_"p_mapname, 1 1 1 1, 0, 0, 0 0 0 0, when( dvarString( language ) != "german" && (( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION) ) name "image_"p_mapname group "map_image_group" ) \
+	CHOICE_POPMENU_TITLE_VIS( p_mapname_text, when( dvarString( language ) != "german" && (( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION) ); name "image_"p_mapname group "map_image_group" rect 0 -55 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER forecolor MENU_GOLD ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( pdesc, ITEM_ALIGN_LEFT, when( dvarString( language ) != "german" && ( ( dvarInt( mis_01 ) >= (offset) ) || CHEAT_CONDITION ) ); name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "mission_screen_"p_mapname"_lock", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) && dvarString( language ) != "german" ) name "image_"p_mapname group "map_image_group" ) 
+
+#define LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY2( itemNum, p_mapname_text, p_mapname, mini, pdesc, offset, action ) \
+		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY_VIS2( itemNum, p_mapname_text, p_mapname, mini, pdesc, offset, action, "", 1 )
+
+#ifdef XENON
+	#define MISSING_MAP_TEXT "@PLATFORM_MISSINGMAP"
+	#define	ACTION_DLC_ZOMBIE exec "xsignin 0 "; exec "xshowmarketplace"
+#else
+	#define MISSING_MAP_TEXT "@PATCH_MISSINGMAP"
+	#define	ACTION_DLC_ZOMBIE ""
+#endif  //#ifdef XENON
+
+#define LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY_VIS2( itemNum, p_mapname_text, p_mapname, mini, pdesc, offset, action, missing_desc, visArg ) \
+	CHOICE_BUTTON_FOCUS_VIS( itemNum, p_mapname_text, LOCAL_MAP_ACTION_NODIFFICULTY( p_mapname, p_mapname_text, offset), LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset, action ), ;, when( dvarString( language ) != "german" && NOT_CHEAT_CONDITION && visArg ) ) \
+	CHOICE_BUTTON_FOCUS_VIS_NOHI( itemNum, "", ACTION_DLC_ZOMBIE, LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset, action ), ;, when( !visArg ) ) \
+	CHOICE_DBUTTON_VIS( itemNum, p_mapname_text, when( !visArg ) ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "loadscreen_"p_mapname""mini, 1 1 1 1, 0, 0, 0 0 0 0, when( dvarString( language ) != "german" && CHEAT_CONDITION_NOT ) name "image_"p_mapname group "map_image_group" ) \
+	CHOICE_POPMENU_TITLE_VIS( p_mapname_text, when( dvarString( language ) != "german" && CHEAT_CONDITION_NOT ) name "image_"p_mapname group "map_image_group" rect 0 -55 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER forecolor MENU_GOLD ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( pdesc, ITEM_ALIGN_LEFT, when( dvarString( language ) != "german" && CHEAT_CONDITION_NOT && visArg ) name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( MISSING_MAP_TEXT, ITEM_ALIGN_LEFT, when( dvarString( language ) != "german" && CHEAT_CONDITION_NOT && !visArg ) name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "mission_screen_"p_mapname"_lock", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) && dvarString( language ) != "german" ) name "image_"p_mapname group "map_image_group" )
+
+#define ZOMBIE_CHOICE_BUTTON( itemNum, textArg, action, p_mapname, pdesc, offset, action2 ) \
+	CHOICE_BUTTON_FOCUS_VIS( itemNum, textArg, action, LOCAL_MAP_SHOW( p_mapname, textArg, offset, action2 );, ;, when( dvarString( language ) != "german" && NOT_CHEAT_CONDITION ) ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "loadscreen_"p_mapname, 1 1 1 1, 0, 0, 0 0 0 0, when( dvarString( language ) != "german" && NOT_CHEAT_CONDITION ) name "image_"p_mapname group "map_image_group" ) \
+	CHOICE_POPMENU_TITLE_VIS( textArg, when( dvarString( language ) != "german" && NOT_CHEAT_CONDITION ) name "image_"p_mapname group "map_image_group" rect 0 -55 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER forecolor MENU_GOLD ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( pdesc, ITEM_ALIGN_LEFT, when( dvarString( language ) != "german" && NOT_CHEAT_CONDITION ) name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "mission_screen_"p_mapname"_lock", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) && dvarString( language ) != "german" ) name "image_"p_mapname group "map_image_group" ) 
+
+#define LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY( itemNum, p_mapname_text, p_mapname, pdesc, offset, action, sel_Action ) \
+	CHOICE_BUTTON_FOCUS_VIS( itemNum, p_mapname_text, sel_Action; LOCAL_MAP_ACTION_NODIFFICULTY( p_mapname, p_mapname_text, offset), LOCAL_MAP_SHOW( p_mapname, p_mapname_text, offset, action ), ;, when( dvarString( language ) != "german" || (CHEAT_CONDITION) ); ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "loadscreen_"p_mapname, 1 1 1 1, 0, 0, 0 0 0 0, when( dvarString( language ) != "german" || (CHEAT_CONDITION) ) name "image_"p_mapname group "map_image_group" ) \
+	CHOICE_POPMENU_TITLE_VIS( p_mapname_text, when( dvarString( language ) != "german" || (CHEAT_CONDITION) ); name "image_"p_mapname group "map_image_group" rect 0 -55 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER forecolor MENU_GOLD ) \
+	CHOICE_POPMENU_SUBTITLE_ALIGN_VIS( pdesc, ITEM_ALIGN_LEFT, when( dvarString( language ) != "german" || (CHEAT_CONDITION ) ); name "image_"p_mapname group "map_image_group" rect 0 56 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER ) \
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( 0 -160 275 164 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, "mission_screen_"p_mapname"_lock", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarInt( mis_01 ) < (offset) && CHEAT_CONDITION_NOT && dvarInt( mis_01_unlock ) > (offset) && dvarString( language ) != "german" ) name "image_"p_mapname group "map_image_group" ) 
+
+#define LOCAL_MAP_FRAME_BG \
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 92 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 (GAMEINFO_HEIGHT-6), "white", 0 0 0 0.4, 0, 0, 0 0 0 0 )\
+			
+#define LOCAL_MAP_FRAME \
+	UI_EDGE_REVERSE( GAMEINFO_ORIGIN,HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0, 0, 0.1 0.1 0.1 1 ) \
+	UI_EDGE_REVERSE( GAMEINFO_ORIGIN,HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0, 0, 0.9 0.95 1 0.4 )\
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 5 0, "white", 0.1 0.1 0.1 1, 0, 0, 0 0 0 0 )\
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN (-(GAMEINFO_WIDTH)) 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 5 0, "gradient_fadein", 0.9 0.95 1 0.4, 0, 0, 0 0 0 0 )\	
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN -80 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, (GAMEINFO_WIDTH-76) 0, "ui_perforation", 1 1 1 1, 0, 0, 0 0 0 0 )\
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 20, "gradient_top", 0 0 0 .75, 0, 0, 0 0 0 0 )\
+	PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 (GAMEINFO_HEIGHT-22), "gradient_bottom", 0 0 0 .75, 0, 0, 0 0 0 0 )\
+	PREPROC_TEXT_DRAW_ALIGNED_EXP( GAMEINFO_ORIGIN (GAMEINFO_WIDTH-4) GAMEINFO_HEIGHT2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 4 (GAMEINFO_HEIGHT+82), locString("@MENU_ARCADE_SCORE", dvarInt(dvarString(ui_arcade_score))), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_TITLE visible when( dvarBool( arcademode ) ); )
+
+/*
+#define ACT_ORIGIN	CHOICE_ORIGIN( 1 )
+	
+#define ACT_HEIGHT		344
+#define ACT_BG_COLOR	0.95 0.95 0.97 0.1
+#define ACT_BG_COLOR2	0 0 0.02 0.45 //1 1 1 0.1
+
+#define ACT_BG( ptitle, act_group ) ACT_BG_RAW( -4, -26, ptitle, act_group )
+
+#define ACT_BG_RAW( base_x, base_y, ptitle, act_group ) \
+	PREPROC_SHADER_DRAW_ALIGNED( ACT_ORIGIN (CHOICE_SIZE_X+10) ACT_HEIGHT CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, (base_x-4) base_y, "gradient_fadein", ACT_BG_COLOR, 0, 0, 0 0 0 0 group act_group )\
+	PREPROC_SHADER_DRAW_ALIGNED( ACT_ORIGIN 8 32 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, (base_x+CHOICE_SIZE_X+6) base_y, "button_highlight_end", ACT_BG_COLOR, 0, 0, 0 0 0 0 group act_group )		\
+	PREPROC_SHADER_DRAW_ALIGNED( ACT_ORIGIN 8 (ACT_HEIGHT-32) CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, (base_x+CHOICE_SIZE_X+6) (base_y+32), "white", ACT_BG_COLOR, 0, 0, 0 0 0 0 group act_group )	\	
+	PREPROC_SHADER_DRAW_ALIGNED( ACT_ORIGIN (CHOICE_SIZE_X+10) (ACT_HEIGHT-8) CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, (base_x-9) (base_y+4), "gradient_fadein", ACT_BG_COLOR2, 0, 0, 0 0 0 0 group act_group )\
+	PREPROC_SHADER_DRAW_ALIGNED( ACT_ORIGIN 8 32 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, (base_x+CHOICE_SIZE_X+1) (base_y+4), "button_highlight_end", ACT_BG_COLOR2, 0, 0, 0 0 0 0 group act_group )		\
+	PREPROC_SHADER_DRAW_ALIGNED( ACT_ORIGIN 8 (ACT_HEIGHT-40) CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, (base_x+CHOICE_SIZE_X+1) (base_y+36), "white", ACT_BG_COLOR2, 0, 0, 0 0 0 0 group act_group )		\		
+	PREPROC_TEXT_DRAW_ALIGNED_EXP( ACT_ORIGIN CHOICE_SIZE_X 20 CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN, -26 (base_y+4), ptitle, TEXTSIZE_DEFAULT, 0, 0, ITEM_ALIGN_MIDDLE_RIGHT, COLOR_TITLE group act_group )
+*/
+#define LOCAL_BACK_BUTTON \
+	itemDef {\
+		name			back\
+		text			"@MENU_BACK"\
+		type			1\
+		style			WINDOW_STYLE_FILLED\
+		textstyle		ITEM_TEXTSTYLE_SHADOWED\
+		rect			-250 -26 40 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM\
+		textfont		UI_FONT_NORMAL\
+		textalign		ITEM_ALIGN_LEFT\
+		textscale		TEXTSIZE_SMALL\
+		textaligny		18\
+		visible			1\
+		mouseEnter		{ play "mouse_over"; }\
+		action 	{\
+			play "mouse_click";\
+			close self;\
+		}	\
+	}
+
+#ifdef PC
+	#define LOCAL_X_TITLE_OFFSET	0
+#else
+	#define LOCAL_X_TITLE_OFFSET	25
+#endif
+
+#define LOCAL_CHOICE_MENU_TITLE( titleArg ) \
+		TITLE_STRIP \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_TEXT \
+			rect			(CHOICE_X_START+LOCAL_X_TITLE_OFFSET) 5 100 100 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP \
+			origin			ORIGIN_TITLE \
+			forecolor		COLOR_TITLE \
+			text			titleArg \
+			textfont		UI_FONT_NORMAL \
+			textscale		TEXTSIZE_TITLE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textalign		ITEM_ALIGN_TOP_LEFT \
+			visible			1 \
+			decoration \
+		}
+
+{
+
+
+
+	menuDef
+	{
+		name			levels
+		fullscreen		1
+		rect			0 0 640 480
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		border			0
+		soundloop 		"music_mainmenu"
+		onOpen
+		{
+			hide act_group
+			setLocalVarInt ui_hide_act_button 0;
+
+			#ifdef PC
+				show act_pre_image;
+			#else
+				focusFirst;
+			#endif
+
+			exec "set ui_load_index 0";
+			LOCAL_MAP_SHOW( "mak", "@MENU_LEVEL_DESC_MAK", 0, exec "set ui_load_index 0" );
+
+			//open levels_unlock
+		}
+		onClose
+		{
+			setLocalVarBool ui_hideBack 0;
+		}
+		onFocus
+		{
+#ifdef CONSOLE
+			exec "endsplitscreensignin";
+#endif
+		}
+		onEsc
+		{	
+			close levels;	
+		}
+
+		#include "ui/sp_sub_bg.inc"
+
+		#undef BACK_OPEN
+		#define BACK_OPEN close levels;
+		#include "ui/navcontrols.inc"
+
+		LOCAL_CHOICE_MENU_TITLE( "@MENU_MISSIONS_CAP" )
+
+		// draws signin status
+		SIGNIN_STATUS
+
+		//#undef	CHOICE_Y_START
+		//#define CHOICE_Y_START			60
+
+		//#undef  CHOICE_GROUP
+		//#define CHOICE_GROUP			"level_select"
+
+		LOCAL_MAP_SELECTION( 1,		"@MENU_LEVEL_MAK", 		"mak"		,"@MENU_LEVEL_DESC_MAK",		0,		exec "set ui_load_index 0", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 2,		"@MENU_LEVEL_PEL1",   	"pel1"		,"@MENU_LEVEL_DESC_PEL1",		1,		exec "set ui_load_index 1", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 3,		"@MENU_LEVEL_PEL2", 	"pel2" 		,"@MENU_LEVEL_DESC_PEL2",		2,		exec "set ui_load_index 2", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 4,		"@MENU_LEVEL_SNIPER",   "sniper"	,"@MENU_LEVEL_DESC_SNIPER",		3,		exec "set ui_load_index 3", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 5,		"@MENU_LEVEL_SEE1",   	"see1"		,"@MENU_LEVEL_DESC_SEE1",		4,		exec "set ui_load_index 4", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 6,		"@MENU_LEVEL_PEL1A",   	"pel1a"		,"@MENU_LEVEL_DESC_PEL1A",		5,		exec "set ui_load_index 5", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 7,		"@MENU_LEVEL_PEL1B",   	"pel1b" 	,"@MENU_LEVEL_DESC_PEL1B",		6,		exec "set ui_load_index 6", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 8,		"@MENU_LEVEL_SEE2", 	"see2" 		,"@MENU_LEVEL_DESC_SEE2",		7,		exec "set ui_load_index 7", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 9,		"@MENU_LEVEL_BER1",   	"ber1" 		,"@MENU_LEVEL_DESC_BER1",		8,		exec "set ui_load_index 8", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 10,	"@MENU_LEVEL_BER2", 	"ber2" 		,"@MENU_LEVEL_DESC_BER2",		9,		exec "set ui_load_index 9", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 11,	"@MENU_LEVEL_PBY",   	"pby_fly"	,"@MENU_LEVEL_DESC_PBY",		10,		exec "set ui_load_index 10", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 12,	"@MENU_LEVEL_OKI2", 	"oki2" 		,"@MENU_LEVEL_DESC_OKI2",		11,		exec "set ui_load_index 11", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 13,	"@MENU_LEVEL_OKI3", 	"oki3" 		,"@MENU_LEVEL_DESC_OKI3",		12,		exec "set ui_load_index 12", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 14,	"@MENU_LEVEL_BER3",   	"ber3"		,"@MENU_LEVEL_DESC_BER3",		13,		exec "set ui_load_index 13", exec "set ui_gametype cmp" )
+		LOCAL_MAP_SELECTION( 15,	"@MENU_LEVEL_BER3B",   	"ber3b" 	,"@MENU_LEVEL_DESC_BER3B",		14,		exec "set ui_load_index 14", exec "set ui_gametype cmp" )
+
+
+
+// opens zombie menu selection
+		ZOMBIE_CHOICE_BUTTON( 16, "@PATCH_ZOMBIE_MAPS", open levels_unlock, "nazi_zombie_prototype", "@PATCH_ZOMBIE_MAPS_DESC", 15, exec "set ui_load_index 15" )
+
+//#if !GERMAN_ZOMBIE_BUILD
+//		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY( 16,	"@MENU_LEVEL_ZOMBIE_PROTOTYPE", "nazi_zombie_prototype", "@MENU_LEVEL_DESC_ZOM_PROTO",		15,		exec "set ui_load_index 15", exec "set ui_gametype zom" )
+//		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY( 17,	"@PATCH_LEVEL_ZOMBIE_ASYLUM", "nazi_zombie_asylum", "@PATCH_LEVEL_DESC_ZOM_ASYLUM",		16,		exec "set ui_load_index 16", exec "set ui_gametype zom" )
+//		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY( 18,	"@PATCH_LEVEL_ZOMBIE_SUMPF", "nazi_zombie_sumpf", "@PATCH_LEVEL_DESC_ZOM_SUMPF",		17,		exec "set ui_load_index 17", exec "set ui_gametype zom" )
+//#else
+//		LOCAL_MAP_SELECTION_NODIFFICULTY( 16,	"@MENU_LEVEL_ZOMBIE_PROTOTYPE", "nazi_zombie_prototype", "@MENU_LEVEL_DESC_ZOM_PROTO",		15,		exec "set ui_load_index 15", exec "set ui_gametype cmp" )
+//		LOCAL_MAP_SELECTION_NODIFFICULTY( 17,	"@PATCH_LEVEL_ZOMBIE_ASYLUM", "nazi_zombie_asylum", "@PATCH_LEVEL_DESC_ZOM_ASYLUM",		16,		exec "set ui_load_index 16", exec "set ui_gametype cmp" )
+//		LOCAL_MAP_SELECTION_NODIFFICULTY( 18,	"@PATCH_LEVEL_ZOMBIE_SUMPF", "nazi_zombie_sumpf", "@PATCH_LEVEL_DESC_ZOM_SUMPF",		17,		exec "set ui_load_index 17", exec "set ui_gametype cmp" )
+//#endif // #ifdef GERMAN_ZOMBIE_BUILD
+
+		LOCAL_DIFFICULTY_WIDGET
+
+		// --------- button ----------
+		itemDef
+		{
+			rect				-140 -4 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+			origin				0 0
+			text				"@PLATFORM_TEST_LEVELS"
+			textfont			UI_FONT_NORMAL
+			textscale			TEXTSIZE_SMALL
+			textalign			ITEM_ALIGN_BOTTOM_LEFT
+			visible				when ( dvarbool( cg_development ) || dvarbool ( ui_shipping_cheats ) );
+#ifdef CONSOLE
+			decoration
+			execkeyint BUTTON_Y {open cod5_levels_test;}
+#endif
+//#ifdef PC
+//			type				1
+//			rect				-140 -26 60 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+//			mouseEnter			{ play "mouse_over"; }
+//			action
+//			{
+//				play			"mouse_click";
+//				close			self;
+//				open			cod5_levels_test;
+//			}
+//#endif
+
+		}		
+
+/*					
+		#ifdef PC
+			PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 GAMEINFO_WIDTH2 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, levelshot_cargoship, 1 1 1 1, 0, 0, 0 0 0 0 )
+		#endif
+		
+		#define LOCAL_ACT_IMAGE(pname, pimage) \
+			PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 (GAMEINFO_WIDTH2-8) HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 5, pimage, 1 1 1 1, 0, 0, 0 0 0 0 name pname group act_group )
+		
+		//LOCAL_ACT_IMAGE( "act_pre_image", "levelshot_cargoship" )
+		//LOCAL_ACT_IMAGE( "act_one_image", "levelshot_bog_b" )
+		//LOCAL_ACT_IMAGE( "act_two_image", "levelshot_sniperescape" )
+		//LOCAL_ACT_IMAGE( "act_three_image", "levelshot_launchfacility_a" )
+		//LOCAL_ACT_IMAGE( "act_ep_image", "levelshot_airplane" )
+		
+		UI_EDGE_REVERSE( GAMEINFO_ORIGIN,HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0, 0, 0.1 0.1 0.1 1 ) 
+		UI_EDGE_REVERSE( GAMEINFO_ORIGIN,HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0, 0, 0.9 0.95 1 0.4 )
+		PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 5 0, "white", 0.1 0.1 0.1 1, 0, 0, 0 0 0 0 )
+		PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN (-(GAMEINFO_WIDTH)) 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 5 0, "gradient_fadein", 0.9 0.95 1 0.4, 0, 0, 0 0 0 0 )
+		PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN -80 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, (GAMEINFO_WIDTH-76) 0, "ui_perforation", 1 1 1 1, 0, 0, 0 0 0 0 )
+		
+		PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 20, "gradient_top", 0 0 0 .75, 0, 0, 0 0 0 0 )
+		PREPROC_SHADER_DRAW_ALIGNED( GAMEINFO_ORIGIN GAMEINFO_WIDTH2 16 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER, 0 (GAMEINFO_HEIGHT-22), "gradient_bottom", 0 0 0 .75, 0, 0, 0 0 0 0 )	
+		
+		CHOICE_BUTTON_VIS( 1, "@MENU_DEV", open levels_game, when( localVarInt( ui_hide_act_button ) == 0 ); )
+
+		#undef GAMEINFO_HEIGHT
+		#undef GAMEINFO_HEIGHT2
+		#define GAMEINFO_HEIGHT			258
+		#define GAMEINFO_HEIGHT2		(86+PC_OFFSET_Y)
+		
+		CHEATS_INDICATOR
+*/
+	}
+
+// TU4/DLC2 hack for new zombie menu
+	#include "ui/overlaybg.inc"
+	menuDef
+	{
+		name			levels_unlock
+		rect			0 0 640 470 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+#ifdef CONSOLE
+		onFocus{ exec "endsplitscreensignin" }
+#endif
+		onEsc{ close self }
+
+		onOpen
+		{
+			hide act_group
+			setLocalVarInt ui_hide_act_button 0;
+
+			#ifdef PC
+				show act_pre_image;
+			#else
+				focusFirst;
+			#endif
+
+			exec "set ui_load_index 0";
+			setLocalVarBool ui_hideBack 1;
+			LOCAL_MAP_SHOW( "nazi_zombie_prototype", "@MENU_LEVEL_ZOMBIE_PROTOTYPE", 0, exec "set ui_load_index 15" );
+		}
+		onClose
+		{
+			setLocalVarBool ui_hideBack 0;
+		}
+
+		// background from overlaybg.inc
+		OVERLAY_BACKGROUND
+
+		#include "ui/navcontrols.inc"
+
+#if !GERMAN_ZOMBIE_BUILD
+		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY2( 2,	"@MENU_LEVEL_ZOMBIE_PROTOTYPE", "nazi_zombie_prototype",	"",			"@MENU_LEVEL_DESC_ZOM_PROTO",	15,		exec "set ui_load_index 15" )
+		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY2( 3,	"@PATCH_LEVEL_ZOMBIE_ASYLUM",	"nazi_zombie_asylum",		"",			"@PATCH_LEVEL_DESC_ZOM_ASYLUM",	15,		exec "set ui_load_index 15" )
+		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY2( 4,	"@PATCH_LEVEL_ZOMBIE_SUMPF",	"nazi_zombie_sumpf",		"_mini",	"@PATCH_LEVEL_DESC_ZOM_SUMPF",	15,		exec "set ui_load_index 15" )
+		LOCAL_NONGERMAN_MAP_SELECTION_NODIFFICULTY2( 5,	"@PATCH_LEVEL_ZOMBIE_FACTORY",	"nazi_zombie_factory",		"_mini",	"@PATCH_LEVEL_DESC_ZOM_FACTORY",15,		exec "set ui_load_index 15" )
+#else
+		LOCAL_MAP_SELECTION_NODIFFICULTY( 2,				"@MENU_LEVEL_ZOMBIE_PROTOTYPE", "nazi_zombie_prototype",	"@MENU_LEVEL_DESC_ZOM_PROTO",		15,		exec "set ui_load_index 15" )
+#endif // #ifdef GERMAN_ZOMBIE_BUILD
+
+		#undef BACK_OPEN
+		#define BACK_OPEN close levels_unlock;
+		#include "ui/navcontrols.inc"
+	}
+}	

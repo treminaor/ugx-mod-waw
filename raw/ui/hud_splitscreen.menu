@@ -1,0 +1,1244 @@
+#include "ui/menudef.h"
+
+#define HUD_ALPHA 0.12 // was 0.65 4/5/2011 treminaor
+#define HUD_FOREGROUND_ALPHA 0.12 // was 0.75 4/5/2011 treminaor
+
+#define HIDEF	( dvarbool( hiDef ) )
+#define STANDARD_DEF	( !dvarbool( hiDef ) )
+
+{
+	assetGlobalDef
+	{
+		fadeClamp		1					// sets the fadeup alpha
+		fadeCycle		1					// how often fade happens in milliseconds
+		fadeAmount		0.1					// amount to adjust alpha per cycle
+	}
+
+	// Night-Vision Hud
+	/*
+	menuDef
+	{
+		name			"NVHud"
+ 	   	rect			0 0 640 480 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+ 	   	fullScreen		0
+        visible when ( player( "nightvision" ) );
+	}
+	*/
+
+	// Low health overlay
+	/*menuDef
+	{
+		name			"Low Health"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		fullScreen		0
+		visible			1
+
+		itemDef
+		{
+			name			"healthoverlay"
+			rect			0 0 640 480
+			forecolor		1 1 1 1
+			background		"overlay_low_health"
+			ownerdraw		CG_PLAYER_LOW_HEALTH_OVERLAY
+			visible			1
+			decoration
+		}
+	}*/
+
+// ------------------- START OF HIDEF ONLY MENUS -------------------//
+
+	// Mantle hint
+	menuDef
+	{
+    	name			"MantleHint_SS"
+    	rect			0 -85 40 40 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when( HIDEF )
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 40 40
+			textscale		TEXTSIZE_DEFAULT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_MANTLE_HINT
+			visible			1
+			decoration
+		}
+	}
+
+	// Cursor hints
+	menuDef
+	{
+		name			"Cursorhints_SS"
+    	rect			0 -140 40 40 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when( HIDEF )
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 40 40 // 64x64
+			textscale		TEXTSIZE_DEFAULT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_CURSORHINT
+			visible			1
+			decoration
+		}
+	}
+
+	// Stance indicator
+	menuDef
+	{
+    	name			"stance_SS"
+		rect			20 -64 60 60 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+    	fullScreen		0
+		exp visible when ( !flashbanged() && !ui_active() && HIDEF );
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 80 80 // 64x64
+			ownerdraw		CG_PLAYER_STANCE
+			textfont		UI_FONT_NORMAL
+			textScale		TEXTSIZE_SMALL
+			dvartest		"ui_hud_showstanceicon"
+			hidedvar		{ "0" }
+			visible			1
+			decoration
+		}
+	}
+	
+	//	SPRINT
+	menuDef 
+	{
+    		name "sprintMeter_SS"
+    		fullScreen MENU_FALSE
+    		visible MENU_TRUE
+		rect 130 -28 40 10 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+
+/*
+		itemDef 
+		{
+			name "sprintRect"
+			visible MENU_TRUE
+			rect 0 0 62 10
+			background "white"
+			forecolor 0.0 0.0 0.0 0.8
+			backcolor 0.0 0.0 0.0 0.8
+			ownerdraw CG_PLAYER_SPRINT_BACK
+			decoration
+		}
+
+		itemDef 
+		{
+			name "sprintRect"
+			decoration
+			visible MENU_TRUE
+			rect 1 1 60 8
+			forecolor 0.6 0.6 0.6 0.8
+			background "white"
+			ownerdraw CG_PLAYER_SPRINT_METER
+		}
+*/
+
+	}
+
+
+#define WEAPINFO_X -150
+#define WEAPINFO_Y -60
+	menuDef
+	{
+		name			"weaponinfo_SS"
+		rect			-20 60 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible when ( HIDEF && dvarBool( ammoCounterHide ) == 0 && !flashbanged() && !ui_active() );
+
+		itemDef
+		{
+			name			"weapname"
+			rect			(WEAPINFO_X-115) (WEAPINFO_Y-18) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+			ownerdraw		CG_PLAYER_WEAPON_NAME
+			visible			1
+			decoration
+		}
+
+		// ammo text
+		itemDef
+		{
+ 			name			"ammotex"
+			rect			-60 -20 60 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_AMMO_VALUE
+			dvartest		"ui_hud_showweaponinfo"
+			hidedvar		{ "0" }
+			visible			1
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"lowammowarning"	
+			rect			-40 -95 120 10 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			textfont		UI_FONT_NORMAL
+			textscale		TEXTSIZE_SMALL
+			textalign		(ITEM_ALIGN_CENTER | ITEM_ALIGN_MIDDLE)
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			forecolor		1 1 1 1
+			//background	"white"
+			ownerdraw		CG_PLAYER_WEAPON_LOW_AMMO_WARNING
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"offhandFragIcon"
+			rect			(WEAPINFO_X+126) (WEAPINFO_Y-10) 24 24
+			forecolor		1 1 1 HUD_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_ICON_FRAG
+			background		"hud_us_grenade" // default texture
+			visible			1
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"offhandfragammo"
+			rect			(WEAPINFO_X+146) (WEAPINFO_Y+20) 25 25
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_AMMO_FRAG
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"offhandSmokeIcon"
+			rect			(WEAPINFO_X+96) (WEAPINFO_Y-10) 24 24
+			forecolor		1 1 1 HUD_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_ICON_SMOKEFLASH
+			background		"hud_us_smokegrenade" // default texture
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"offhandsmokeammo"
+			rect			(WEAPINFO_X+116) (WEAPINFO_Y+20) 25 25
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_OBJECTIVE
+			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_AMMO_SMOKEFLASH
+			visible			1
+			decoration
+		}
+	}
+
+	menuDef
+	{
+		name			"heatinfo_ss"
+		rect			-20 60 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when( HIDEF )
+		
+		itemDef
+		{
+			name			"heaticon"
+			rect			-65 -45 80 40
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_HEAT_VALUE
+			visible			1
+			decoration
+		}
+	}
+
+	// Compass
+	menuDef
+	{
+		name			"Compass_SS"
+ 	   	rect			80 40 0 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+		visible when  ( dvarBool( compass ) == 1 && (dvarString( createfx ) != "on") && dvarBool( cl_paused ) == 0 && HIDEF );
+
+		itemDef
+        {
+            name			"TickerBorder"
+            rect			-62 -24 124 13
+            forecolor		1 1 1 1
+            background		"minimap_tickertape_background"
+            ownerdraw		CG_PLAYER_COMPASS_BACK
+			visible			1
+			decoration
+        }
+
+		itemDef
+        {
+            name			"Ticker"
+            rect			-60 -20 120 8
+            forecolor		1 1 1 1
+            background		"minimap_tickertape"
+            ownerdraw		CG_PLAYER_COMPASS_TICKERTAPE
+			textscale		TEXTSIZE_SMALL
+			visible			1
+			decoration
+		}
+	}
+
+	//	Tank status
+	menuDef 
+	{
+		name			"tankstatus_SS"
+		rect			10 -36 40 40 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM 
+		fullScreen		0
+		visible			when( dvarBool( cl_paused ) == 0 && HIDEF && dvarBool( vehInfoHide ) == 0 )
+
+		itemDef 
+		{
+			name			"tankbody"
+			rect			0 0 40 40 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbody"
+			ownerdraw		CG_TANK_BODY_DIR
+			visible			1
+			decoration
+		}
+		
+		itemDef 
+		{
+			name			"tankbarrel"
+			rect			20 20 40 40 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbarrel"
+			ownerdraw		CG_TANK_BARREL_DIR
+			visible			1
+			decoration
+		}
+	}
+
+	#define DPAD_LABEL_Y		-2
+	#define	DPAD_BASE_SIZE		36
+	#define	DPAD_BASE_SIZE_HALF	18
+	#define DPAD_ICON_Y			-1
+	#define DPAD_ICON_SPACING	40
+	#define DPAD_ICON_ALPHA 0.65
+
+	// DPAD Icons
+	menuDef
+	{
+		name			"DPad_SS"
+ 	   	rect			DPAD_ICON_SPACING DPAD_LABEL_Y DPAD_BASE_SIZE DPAD_BASE_SIZE HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+		visible when  ( dvarBool( actionSlotsHide ) == 0 && dvarBool( hud_missionFailed ) == 0 && dvarBool( compass ) == 1 && (dvarString( createfx ) != "on") && !ui_active() && HIDEF );
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_BACK_3
+			background		"hud_dpad"
+            rect			(-DPAD_BASE_SIZE_HALF - DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_3
+			#ifdef PS3
+			background		"hud_arrow_left"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF (DPAD_BASE_SIZE - 4) (DPAD_BASE_SIZE - 4)
+            #else
+			background		"hud_arrow_left"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            #endif
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef // Left
+        {
+            name			"slot3_SS"
+            rect			(-DPAD_BASE_SIZE_HALF - DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_3
+			forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible			1 
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_LEFT
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_BACK_4
+			background		"hud_dpad"
+            rect			(-DPAD_BASE_SIZE_HALF + DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_4
+			#ifdef PS3
+			background		"hud_arrow_right"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF (DPAD_BASE_SIZE - 4) (DPAD_BASE_SIZE - 4)
+            #else
+			background		"hud_arrow_right"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            #endif
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef // Right
+        {
+            name			"slot4_SS"
+            rect			(-DPAD_BASE_SIZE_HALF + DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_4
+			forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible			1
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_LEFT
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_DPAD
+			background		"hud_dpad"
+            name			"pad"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible			1
+			decoration
+        }
+    }
+
+// ------------------- END OF HIDEF ONLY MENUS -------------------//
+
+// ------------------- START OF STANDARD DEF ONLY MENUS -------------------//
+	// Mantle hint
+	menuDef
+	{
+    	name			"MantleHint_LowDef_SS"
+    	rect			0 -70 40 40 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when( STANDARD_DEF )
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 40 40
+			textscale		TEXTSIZE_SMALL_SS
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_MANTLE_HINT
+			visible			1
+			decoration
+		}
+	}
+
+	// Cursor hints
+	menuDef
+	{
+		name			"Cursorhints_LowDef_SS"
+    	rect			0 -140 40 40 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when( STANDARD_DEF )
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 40 40 // 64x64
+			textscale		TEXTSIZE_SMALL_SS
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_CURSORHINT
+			visible			1
+			decoration
+		}
+	}
+
+	// Stance indicator
+	menuDef
+	{
+    	name			"stance_LowDef_SS"
+		rect			10 -114 60 60 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+    	fullScreen		0
+		exp visible when ( !flashbanged() && !ui_active() && STANDARD_DEF );
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 -20 80 80 // 64x64
+			ownerdraw		CG_PLAYER_STANCE
+			textfont		UI_FONT_NORMAL
+			textScale		TEXTSIZE_SMALL_SS
+			dvartest		"ui_hud_showstanceicon"
+			hidedvar		{ "0" }
+			visible			1
+			decoration
+		}
+	}
+
+#define WEAPINFO_LOWDEF_X -230
+#define WEAPINFO_LOWDEF_Y -90
+
+	// WEAPON INFO
+	menuDef
+	{
+		name			"weaponinfo_LowDef_SS"
+		rect			10 25 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible	when ( STANDARD_DEF && dvarBool( ammoCounterHide ) == 0 && !flashbanged() && !ui_active() );
+
+		// weapon name
+		itemDef
+		{
+			name			"weapname_LowDef_SS"
+			rect			(WEAPINFO_LOWDEF_X+5) (WEAPINFO_LOWDEF_Y-14) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL_SS
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+			ownerdraw		CG_PLAYER_WEAPON_NAME
+			visible			1
+			decoration
+		}
+
+		// ammo text
+		itemDef
+		{
+ 			name			"ammotex"
+			rect			-65 -30 100 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL_SS
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_AMMO_VALUE
+			dvartest		"ui_hud_showweaponinfo"
+			hidedvar		{ "0" }
+			visible			1
+			decoration
+		}
+
+		// Low Ammo Hint
+		itemDef
+		{
+			name			"lowammowarning_LowDef_SS"	
+			rect			-60 -90 120 10 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL_SS
+			textalign		(ITEM_ALIGN_CENTER | ITEM_ALIGN_MIDDLE)
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_WEAPON_LOW_AMMO_WARNING
+			visible			1
+			decoration
+		}
+	}
+
+	// Offhand weapons
+	menuDef
+	{
+		name				"offhandinfo_LowDef_SS"
+		rect				0 -12 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen			0
+		visible	when ( STANDARD_DEF && dvarBool( ammoCounterHide ) == 0 && !flashbanged() && !ui_active() );
+		
+		// offhand smoke icon
+		itemDef
+		{
+			name			"offhandsmokeicon_LowDef_SS"
+			rect			(WEAPINFO_LOWDEF_X+170) (WEAPINFO_LOWDEF_Y+26) 36 30
+			forecolor		1 1 1 HUD_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_ICON_SMOKEFLASH
+			background		"hud_us_smokegrenade" // default texture
+			visible			1
+			decoration
+		}
+		
+		// offhand smoke ammo
+		itemDef
+		{
+			name			"offhandsmokeammo_LowDef_SS"
+			rect			(WEAPINFO_LOWDEF_X+200) (WEAPINFO_LOWDEF_Y+70) 24 24
+			textscale		TEXTSIZE_SMALL_SS
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_AMMO_SMOKEFLASH
+			visible			1
+			decoration
+		}
+
+		// frag icon 
+		itemDef
+		{
+			name			"offhandfragicon_LowDef_SS"
+			rect			(WEAPINFO_LOWDEF_X+220) (WEAPINFO_LOWDEF_Y+26) 36 30
+			forecolor		1 1 1 HUD_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_ICON_FRAG
+			background		"hud_us_grenade" // default texture
+			visible			1
+			decoration
+		}
+		
+		// frag ammo
+		itemDef
+		{
+			name			"offhandfragammo_LowDef_SS"
+			rect			(WEAPINFO_LOWDEF_X+250) (WEAPINFO_LOWDEF_Y+70) 24 24
+			textscale		TEXTSIZE_SMALL_SS
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+			ownerdraw		CG_OFFHAND_WEAPON_AMMO_FRAG
+			visible			1
+			decoration
+		}
+	}
+
+	// Flamethrower Heat Info
+	menuDef
+	{
+		name			"heatinfo_LowDef_SS"
+		rect			0 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when( STANDARD_DEF )
+		
+		itemDef
+		{
+			name			"heaticon_LowDef_SS"
+			rect			-45 -40 80 40
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_HEAT_VALUE
+			visible			1
+			decoration
+		}
+	}
+
+	// Compass
+	menuDef
+	{
+		name			"Compass_LowDef_SS"
+ 	   	rect			0 0 0 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+		visible when  ( dvarBool( compass ) == 1 && (dvarString( createfx ) != "on") && dvarBool( cl_paused ) == 0 && STANDARD_DEF );
+
+		itemDef
+        {
+            name			"TickerBorder_LowDef_SS"
+            rect			12 -44 156 16
+            forecolor		1 1 1 1
+            background		"minimap_tickertape_background"
+            ownerdraw		CG_PLAYER_COMPASS_BACK
+			visible			1
+			decoration
+        }
+
+		itemDef
+        {
+            name			"Ticker_LowDef_SS"
+            rect			10 -40 150 10
+            forecolor		1 1 1 1
+            background		"minimap_tickertape"
+            ownerdraw		CG_PLAYER_COMPASS_TICKERTAPE
+			visible			1
+			decoration
+		}
+	}
+
+	//	Tank status
+	menuDef 
+	{
+		name			"tankstatus_LowDef_SS"
+		rect			20 -114 60 60 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM 
+		fullScreen		0
+		visible			when( dvarBool( cl_paused ) == 0 && STANDARD_DEF && dvarBool( vehInfoHide ) == 0 )
+
+		itemDef 
+		{
+			name			"tankbody_LowDef"
+			rect			0 0 60 60 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbody"
+			ownerdraw		CG_TANK_BODY_DIR
+			visible			1
+			decoration
+		}
+		
+		itemDef 
+		{
+			name			"tankbarrel_LowDef"
+			rect			30 30 60 60 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbarrel"
+			ownerdraw		CG_TANK_BARREL_DIR
+			visible			1
+			decoration
+		}
+	}
+
+	#undef DPAD_LABEL_Y
+	#define DPAD_LABEL_Y -72
+	#undef DPAD_BASE_SIZE
+	#define	DPAD_BASE_SIZE		48
+	#undef DPAD_BASE_SIZE_HALF
+	#define	DPAD_BASE_SIZE_HALF	24
+	#undef DPAD_ICON_Y
+	#define DPAD_ICON_Y			-1
+	#undef DPAD_ICON_SPACING
+	#define DPAD_ICON_SPACING	50
+	#undef DPAD_ICON_ALPHA
+	#define DPAD_ICON_ALPHA 0.65
+
+	// DPAD Icons
+	menuDef
+	{
+		name			"DPad_LowDef_SS"
+ 	   	rect			0 DPAD_LABEL_Y DPAD_BASE_SIZE DPAD_BASE_SIZE HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+ 	   	fullScreen		0
+ 	   	visible			1
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+		visible when  ( dvarBool( actionSlotsHide ) == 0 && dvarBool( hud_missionFailed ) == 0 && dvarBool( compass ) == 1 && (dvarString( createfx ) != "on") && !ui_active() && STANDARD_DEF );
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_BACK_3
+			background		"hud_dpad"
+            rect			(-DPAD_BASE_SIZE_HALF - DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_3
+			#ifdef PS3
+			background		"hud_arrow_left"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF (DPAD_BASE_SIZE - 4) (DPAD_BASE_SIZE - 4)
+            #else
+			background		"hud_arrow_left"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            #endif
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef // Left
+        {
+            name			"slot3_SS"
+            rect			(-DPAD_BASE_SIZE_HALF - DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_3
+			forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible			1 
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_LEFT
+			textscale		TEXTSIZE_SMALL_SS
+			textfont		UI_FONT_NORMAL
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_BACK_4
+			background		"hud_dpad"
+            rect			(-DPAD_BASE_SIZE_HALF + DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_4
+			#ifdef PS3
+			background		"hud_arrow_right"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF (DPAD_BASE_SIZE - 4) (DPAD_BASE_SIZE - 4)
+            #else
+			background		"hud_arrow_right"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            #endif
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible 		1
+			decoration
+        }
+		itemDef // Right
+        {
+            name			"slot4_SS"
+            rect			(-DPAD_BASE_SIZE_HALF + DPAD_ICON_SPACING) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_4
+			forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible			1
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_LEFT
+			textscale		TEXTSIZE_SMALL_SS
+			textfont		UI_FONT_NORMAL
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_DPAD
+			background		"hud_dpad"
+            name			"pad"
+            rect			-DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE DPAD_BASE_SIZE
+            forecolor		1 1 1 DPAD_ICON_ALPHA
+			visible			1
+			decoration
+        }
+    }
+
+// ------------------- END OF STANDARD DEF ONLY MENUS -------------------//
+}
+
+// ------------------- COMMON BETWEEN HIDEF AND LOWDEF -------------------//
+{
+	// Friendly Arrows
+	menuDef
+	{
+		name			"Friendly_Arrows_SS"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+ 	   	visible when( dvarBool( cl_paused ) == 0 && dvarBool( credits_active ) == 0 );
+
+		itemDef
+		{
+			name			"friendlyarrowicons"
+			rect			0 0 640 480
+			forecolor		1 1 1 1
+			ownerdraw		CG_FRIENDLYARROWS
+			visible			1
+			decoration
+		}
+	}
+
+	// Friendly Names
+	menuDef
+	{
+		name			"Friendly_Names_SS"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+ 	   	visible when( dvarBool( cl_paused ) == 0 && dvarBool( credits_active ) == 0 );
+
+		itemDef
+		{
+			name			"friendlynameicons"
+			rect			0 0 640 480
+			forecolor		1 1 1 1
+			ownerdraw		CG_FRIENDLYNAMES
+			visible			1
+			decoration
+		}
+	}
+
+	menuDef 
+	{
+		name			"deadscreen_SS"
+		fullScreen		0				
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		soundloop		""
+		visible			1
+		
+		// Death quote
+		itemDef 
+		{
+			name			quote
+			dvar			"ui_deadquote"
+			textscale		TEXTSIZE_DEFAULT
+			type			ITEM_TYPE_TEXT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			rect			80 200 480 20
+			textalign		ITEM_ALIGN_CENTER
+			textaligny		0 // point to center around
+			textalignx		240 // point to center around
+			ownerdraw		CG_DEADQUOTE
+			forecolor		1 1 1 1
+			visible			1
+			decoration 
+		}
+		
+		itemDef
+		{
+			name			hud_grenadeicon
+			rect			315 300 60 60
+			origin			0 0
+			style			WINDOW_STYLE_SHADER
+			background		"hud_grenadeicon"
+			dvartest		"ui_grenade_death"
+			showdvar		{ "1" }
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			hud_grenadepointer
+			rect			320 270 50 25
+			origin			0 0
+			style			WINDOW_STYLE_SHADER
+			background		"hud_grenadepointer"
+			dvartest		"ui_grenade_death"
+			showdvar		{ "1" }
+			visible			1
+			decoration
+		}
+	}
+
+	// Hold breath hint
+	menuDef 
+	{
+		name			"HoldBreathHint_SS"
+		rect			0 -130 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		fullScreen		0
+		visible when ( !adsjavelin() );
+
+		itemDef 
+		{
+			name			"chRect"
+			rect			0 0 0 0
+			textfont		UI_FONT_NORMAL
+			textscale		TEXTSIZE_SMALL_SS
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_HOLD_BREATH_HINT
+			visible			1
+			decoration
+		}
+	}
+	
+	// Saving Icon
+	menuDef 
+	{
+		name			"SavingIcon_SS"
+    	rect			-100 10 40 40 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible			1
+		
+		itemDef 
+		{
+			name			"chRect"
+			background		"saving"
+			forecolor		1 1 1 1
+			rect			0 0 40 40 // 64x64
+			ownerdraw		CG_SAVING
+			visible			1
+			decoration
+		}
+	}
+
+	// Invalid cmd hint
+	menuDef 
+	{
+		name			"InvalidCmdHint_SS"
+		rect			0 -130 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		fullScreen		0
+		visible			1
+
+		itemDef 
+		{
+			name			"chRect"
+			rect			0 0 0 0
+			textscale		TEXTSIZE_DEFAULT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_INVALID_CMD_HINT
+			visible			1
+			decoration
+		}
+	}
+
+	// game messages
+	menuDef
+	{
+		name			"gamemessages_SS"
+		rect			20 45 0 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible			1
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	0
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_BOTTOM
+			textfont			UI_FONT_NORMAL
+			textstyle			ITEM_TEXTSTYLE_SHADOWED
+			textalign			ITEM_ALIGN_LEFT
+			textscale			0.333 // SP: 0.417
+			visible				1
+		}
+	}
+	menuDef
+	{
+		name			"boldgamemessages_SS"
+		rect			0 180 0 0 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible			1
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	1
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_BOTTOM
+			textfont			UI_FONT_BOLD
+			textstyle			ITEM_TEXTSTYLE_SHADOWED
+			textalign			ITEM_ALIGN_CENTER
+			textscale			0.417 // SP: 0.5
+			visible				1
+		}
+	}
+	menuDef
+	{
+		name			"subtitles_SS"
+		rect			140 400 0 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible			1
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	2
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_BOTTOM
+			textfont			UI_FONT_DEFAULT
+			textstyle			ITEM_TEXTSTYLE_SHADOWED
+			textalign			ITEM_ALIGN_LEFT
+			textscale			0.333
+			visible				1
+		}
+	}
+
+	// Safe area
+	menuDef
+	{
+		name			"safearea_SS"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		fullScreen		0
+		visible			1
+
+		#include "ui/safearea.menu"
+	}
+}
+// ------------------- END OF COMMON BETWEEN HIDEF AND LOWDEF -------------------//
+	
+#ifdef PC
+	#define SCOREBAR_OFFSET 0 4
+#else
+	#define SCOREBAR_OFFSET 0 0
+#endif
+
+
+#define SCOREBAR_LEFT_OFFSET -200
+#define SCOREBAR_WIDTH 1000 
+
+{	
+	menuDef  // Stub: the scoreboard is controlled by code
+	{
+		name			"missionsuccessbar_arcademode_splitscreen"
+		rect			0 0 640 480
+		visible			when ( !ui_active() && dvarBool( missionsuccessbar ) == 1 && dvarint( arcademode ) == 1 && dvarInt( "splitscreen" ));
+
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET 0 SCOREBAR_WIDTH 2 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET 2 SCOREBAR_WIDTH 1 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		0 0 0 0.5
+			visible			1
+			decoration
+		}	
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET 3 SCOREBAR_WIDTH 18 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			SCOREBAR_OFFSET
+			background		"menu_white_line_faded"
+			forecolor		0 0 0 0.5
+			visible			1
+			decoration
+		}	
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET 21 SCOREBAR_WIDTH 1 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		0 0 0 0.5
+			visible			1
+			decoration
+		}	
+		
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET 22 SCOREBAR_WIDTH 2 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		
+		itemDef 
+		{
+			rect			0 20 1 1 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			SCOREBAR_OFFSET
+			exp text		( locString( "@MENU_MISSION_SUCCESS" ) );
+			textfont		UI_FONT_NORMAL
+			textscale		TEXTSIZE_DEFAULT
+			textalign		ITEM_ALIGN_CENTER
+			forecolor		0.95 0.72 0.21 1.0
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			visible			1
+			decoration 
+		}
+	}
+}
+
+#define SB_POS -50
+
+{	
+	menuDef
+	{
+		name			"arcademodebonussplitscreen"
+		rect			0 0 0 0
+		visible			when ( !ui_active() && dvarBool( bonusbackground ) == 1 && dvarint( arcademode ) == 1 && dvarInt( "splitscreen" ));
+		
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET SB_POS SCOREBAR_WIDTH 2 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_CENTER
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET (SB_POS+2) SCOREBAR_WIDTH 1 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_CENTER
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		0 0 0 0.5
+			visible			1
+			decoration
+		}	
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET (SB_POS+3) SCOREBAR_WIDTH 40 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_CENTER
+			origin			SCOREBAR_OFFSET
+			background		"menu_white_line_faded"
+			forecolor		0 0 0 0.8
+			visible			1
+			decoration
+		}	
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET (SB_POS+43) SCOREBAR_WIDTH 145 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_CENTER
+			origin			SCOREBAR_OFFSET
+			background		"menu_white_line_faded"
+			forecolor		0 0 0 0.6
+			visible			1
+			decoration
+		}			
+		
+		itemDef	
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET (SB_POS+188) SCOREBAR_WIDTH 1 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_CENTER
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		0 0 0 0.5
+			visible			1
+			decoration
+		}	
+		
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			SCOREBAR_LEFT_OFFSET (SB_POS+189) SCOREBAR_WIDTH 2 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_CENTER
+			origin			SCOREBAR_OFFSET
+			background		"line_horizontal_scorebar"
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}		
+	}
+}		
+	
+menuDef
+{
+	name			"miniscoreboard_splitscreen"
+	rect			-103 -75 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+	fullScreen		0
+	visible when 	( !ui_active() && dvarint( ui_hud_hardcore ) == 0 && dvarBool( miniscoreboardhide ) == 0 && dvarBool( hud_missionFailed ) == 0 && HIDEF && dvarint( arcademode ) == 1 || dvarint( zombiemode ) == 1 );
+	
+	itemDef
+	{
+		name			"playerscores"
+		rect			0 0 100 0
+		ownerdraw		CG_COMPETITIVE_MODE_SCORES
+		visible			1
+	}		
+}	
+
+menuDef
+{
+	name			"miniscoreboard_splitscreen_lowDef"
+	rect			-53 -135 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+	fullScreen		0
+	visible when 	( !ui_active() && dvarint( ui_hud_hardcore ) == 0 && dvarBool( miniscoreboardhide ) == 0 && dvarBool( hud_missionFailed ) == 0 && STANDARD_DEF && dvarint( arcademode ) == 1 || dvarint( zombiemode ) == 1 );
+	
+	itemDef
+	{
+		name			"playerscores_lowDef"
+		rect			0 0 100 0
+		ownerdraw		CG_COMPETITIVE_MODE_SCORES
+		visible			1
+	}		
+}	

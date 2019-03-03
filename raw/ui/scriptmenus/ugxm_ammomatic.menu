@@ -1,0 +1,1502 @@
+#include "ui/menudef.h"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+{
+	menuDef
+	{
+		name				"ugxm_ammomatic"		
+		rect				FULLSCREEN_WIDE
+		focuscolor			1 1 1 1
+		disablecolor		0 0 0 0
+ 		style				WINDOW_STYLE_EMPTY
+
+		onOpen
+		{
+			CLEAR_ALL_BORDER_COLORS;
+			//setLocalVarInt "tab_index" 1;
+			execNowOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execNowOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+			//execnow "AcceptInputFromAllControls";
+			//execnow "EnableSpecialInput";
+			//focusFirst;
+			setFocus "trap_button_1";
+		} 
+		onClose
+		{
+			execNowOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execNowOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+			scriptMenuResponse "close";
+		}
+		onEsc
+		{
+			scriptMenuResponse "close";
+			close self;
+		}
+
+		#define UGXM_SKILLS_TAB				dvarInt(ugxm_skills_tab)
+
+		#undef CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN 	HORIZONTAL_ALIGN_CENTER
+	
+		#undef	CHOICE_Y_START	
+		#define CHOICE_Y_START				116
+		#undef	CHOICE_X_START	
+		#define CHOICE_X_START				-105
+	
+		#undef CHOICE_Y_SPACING	
+		#define CHOICE_Y_SPACING			20
+	
+		#define XWIDE(INPUT)				(INPUT / 0.75) //for some wonderful reason, in order to actually get the X value for the center of the screen, it has to be scaled by 1.75. Any time you deal with centering on X, use this on all values of the equation.
+
+		#define CENTER_X					XWIDE(320)
+		#define CENTER_Y					240
+
+		#define WINDOW_SIZEX_AMMOMATIC		304
+		#define WINDOW_SIZEY_AMMOMATIC		202
+
+		#define WINDOW_ORIGIN_AMMOMATIC		(CENTER_X - (WINDOW_SIZEX_AMMOMATIC / 2)) (CENTER_Y - (WINDOW_SIZEY_AMMOMATIC / 2))
+		#define WINDOW_RECT_AMMOMATIC		WINDOW_SIZEX_AMMOMATIC WINDOW_SIZEY_AMMOMATIC
+	
+		#define DEFAULT_ALIGNMENT 			0 VERTICAL_ALIGN_TOP
+	
+		#define BTN_MINI_SIZEX 				96
+		#define BTN_MINI_SIZEY 				16
+		#define BTN_MINI_RECT				BTN_MINI_SIZEX BTN_MINI_SIZEY
+
+		#define BTN_SIZEX 					128
+		#define BTN_SIZEY 					16
+		#define BTN_RECT					BTN_SIZEX BTN_SIZEY
+		#define HDR_RECT					(BTN_SIZEX - 4) (BTN_SIZEY)
+		#define BTN_ORIGINX					((CENTER_X + WINDOW_SIZEX_AMMOMATIC / 2) - SI_GRID_MARGIN - BTN_SIZEX)
+
+		#define INFOBOX_SIZEX				128
+		#define INFOBOX_SIZEY				136
+		#define INFOBOX_RECT				INFOBOX_SIZEX INFOBOX_SIZEY
+		#define INFOBOX_REC_TEXT			(INFOBOX_SIZEX - TEXTBOX_MARGIN) INFOBOX_SIZEY
+		#define INFOBOX_TRAPS_RECT			INFOBOX_SIZEX (INFOBOX_SIZEY + (2 * BTN_SIZEY))
+		#define INFOBOX_TEXT_RECT			(INFOBOX_SIZEX - TEXTBOX_MARGIN) (INFOBOX_SIZEY - BTN_SIZEY)
+		#define INFOBOX_TEXTSCALE			0.24
+		#define TEXTBOX_MARGIN				4
+
+		//SI = "Skill Icon"
+		#define SI_SIZE 					40
+		#define SI_RECT 					SI_SIZE SI_SIZE
+
+		#define SI_COLOR_DISABLED			0.3 0.3 0.3 1
+
+		#define SI_GRID_MARGIN				8
+		#define SI_BORDER_COLOR				0.9 0.9 0.9 0.85
+		#define SI_BORDER_HIGHLIGHT_COLOR	0 1 0 1
+		#define SI_BORDER_PHIGHLIGHT_COLOR	0 1 1 1
+		#define CLEAR_ALL_BORDER_COLORS		setLocalVarint "si_r0c0_selected" 0; setLocalVarint "si_r0c1_selected" 0; setLocalVarint "si_r0c2_selected" 0; setLocalVarint "si_r1c0_selected" 0; setLocalVarint "si_r1c1_selected" 0; setLocalVarint "si_r1c2_selected" 0; setLocalVarint "si_r2c0_selected" 0; setLocalVarint "si_r2c1_selected" 0; setLocalVarint "si_r2c2_selected" 0; setLocalVarint "si_r3c0_selected" 0; setLocalVarint "si_r3c1_selected" 0; setLocalVarint "si_r3c2_selected" 0; 
+
+		#define SI_GRIDX_R0C0				XWIDE(CENTER_X - 108)
+		#define SI_GRIDY_R0C0				(CENTER_Y - 92)		
+		#define SI_GRIDR_R0C0				SI_GRIDX_R0C0 SI_GRIDY_R0C0
+
+		#define SI_GRIDR_R0C1				(SI_GRIDX_R0C0 + (SI_SIZE * 1) + (SI_GRID_MARGIN * 1)) SI_GRIDY_R0C0
+		#define SI_GRIDR_R0C2				(SI_GRIDX_R0C0 + (SI_SIZE * 2) + (SI_GRID_MARGIN * 2)) SI_GRIDY_R0C0
+		
+		#define SI_GRIDY_R1C0				(SI_GRIDY_R0C0 + SI_SIZE + SI_GRID_MARGIN)
+		#define SI_GRIDR_R1C0				SI_GRIDX_R0C0 SI_GRIDY_R1C0
+		#define SI_GRIDR_R1C1				(SI_GRIDX_R0C0 + (SI_SIZE * 1) + (SI_GRID_MARGIN * 1)) SI_GRIDY_R1C0
+		#define SI_GRIDR_R1C2				(SI_GRIDX_R0C0 + (SI_SIZE * 2) + (SI_GRID_MARGIN * 2)) SI_GRIDY_R1C0
+
+		#define SI_GRIDY_R2C0				(SI_GRIDY_R0C0 + (SI_SIZE * 2) + (SI_GRID_MARGIN * 2))
+		#define SI_GRIDR_R2C0				SI_GRIDX_R0C0 SI_GRIDY_R2C0
+		#define SI_GRIDR_R2C1				(SI_GRIDX_R0C0 + (SI_SIZE * 1) + (SI_GRID_MARGIN * 1)) SI_GRIDY_R2C0
+		#define SI_GRIDR_R2C2				(SI_GRIDX_R0C0 + (SI_SIZE * 2) + (SI_GRID_MARGIN * 2)) SI_GRIDY_R2C0
+
+		#define SI_GRIDY_R3C0				(SI_GRIDY_R0C0 + (SI_SIZE * 3) + (SI_GRID_MARGIN * 3))
+		#define SI_GRIDR_R3C0				SI_GRIDX_R0C0 SI_GRIDY_R3C0
+		#define SI_GRIDR_R3C1				(SI_GRIDX_R0C0 + (SI_SIZE * 1) + (SI_GRID_MARGIN * 1)) SI_GRIDY_R3C0
+		#define SI_GRIDR_R3C2				(SI_GRIDX_R0C0 + (SI_SIZE * 2) + (SI_GRID_MARGIN * 2)) SI_GRIDY_R3C0
+			
+		#define UP_NAV(to)\
+			execkeyint DPAD_UP { setfocus to; } \
+			execkeyint APAD_UP { setfocus to; } 
+		
+		#define DOWN_NAV(to)\
+			execkeyint DPAD_DOWN { setfocus to; } \
+			execkeyint APAD_DOWN { setfocus to; } 
+
+		#define LEFT_NAV(to)\
+			execkeyint DPAD_LEFT { setfocus to; } \
+			execkeyint APAD_LEFT { setfocus to; } 
+
+		#define RIGHT_NAV(to)\
+			execkeyint DPAD_RIGHT { setfocus to; } \
+			execkeyint APAD_RIGHT { setfocus to; } 
+
+
+		#define UP_NAVT(to)\
+			execkeyint DPAD_UP { setfocus to; setfocus to"_disabled"; } \
+			execkeyint APAD_UP { setfocus to; setfocus to"_disabled"; } 
+		
+		#define DOWN_NAVT(to)\
+			execkeyint DPAD_DOWN { setfocus to; setfocus to"_disabled" } \
+			execkeyint APAD_DOWN { setfocus to; setfocus to"_disabled" } 
+
+		#define LEFT_NAVT(to)\
+			execkeyint DPAD_LEFT { setfocus to; setfocus to"_disabled" } \
+			execkeyint APAD_LEFT { setfocus to; setfocus to"_disabled" } 
+
+		#define RIGHT_NAVT(to)\
+			execkeyint DPAD_RIGHT { setfocus to; setfocus to"_disabled" } \
+			execkeyint APAD_RIGHT { setfocus to; setfocus to"_disabled" } 
+
+		//These are for the multi-state turret buttons. It will try to focus all three states of the button so that I don't have to write a shitload of extra nav lines for each state on each button.
+		#define UP_NAVC(to)\
+			execkeyint DPAD_UP { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; } \
+			execkeyint APAD_UP { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; }
+		
+		#define DOWN_NAVC(to)\
+			execkeyint DPAD_DOWN { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; } \
+			execkeyint APAD_DOWN { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; }
+
+		#define LEFT_NAVC(to)\
+			execkeyint DPAD_LEFT { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; } \
+			execkeyint APAD_LEFT { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; }
+
+		#define RIGHT_NAVC(to)\
+			execkeyint DPAD_RIGHT { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; } \
+			execkeyint APAD_RIGHT { setfocus to; setfocus to"_selected"; setfocus to"_purchased"; }
+
+		#define LEFT_NAV_BUY \
+			execkeyint DPAD_LEFT { setfocus "si_r0c0"; setfocus "si_r0c0_selected"; setfocus "si_r0c0_purchased"; setfocus "si_r0c1"; setfocus "si_r0c1_selected"; setfocus "si_r0c1_purchased"; setfocus "si_r0c2"; setfocus "si_r0c2_selected"; setfocus "si_r0c2_purchased"; } \
+			execkeyint APAD_LEFT { setfocus "si_r0c0"; setfocus "si_r0c0_selected"; setfocus "si_r0c0_purchased"; setfocus "si_r0c1"; setfocus "si_r0c1_selected"; setfocus "si_r0c1_purchased"; setfocus "si_r0c2"; setfocus "si_r0c2_selected"; setfocus "si_r0c2_purchased"; } \
+
+		#define LEFT_NAV_ERASE \
+			execkeyint DPAD_LEFT { setfocus "si_r2c0"; setfocus "si_r2c0_selected"; setfocus "si_r2c1"; setfocus "si_r2c1_selected"; setfocus "si_r2c2"; setfocus "si_r2c2_selected"; } \
+			execkeyint APAD_LEFT { setfocus "si_r2c0"; setfocus "si_r2c0_selected"; setfocus "si_r2c1"; setfocus "si_r2c1_selected"; setfocus "si_r2c2"; setfocus "si_r2c2_selected"; } \
+
+		#define DOWN_NAV_TAB \
+			execkeyint DPAD_DOWN { setfocus "si_r0c0"; setfocus "si_r0c0_selected"; setfocus "si_r0c0_purchased"; setfocus "si_r0c1"; setfocus "si_r0c1_selected"; setfocus "si_r0c1_purchased"; setfocus "si_r0c2"; setfocus "si_r0c2_selected"; setfocus "si_r0c2_purchased"; } \
+			execkeyint APAD_DOWN { setfocus "si_r0c0"; setfocus "si_r0c0_selected"; setfocus "si_r0c0_purchased"; setfocus "si_r0c1"; setfocus "si_r0c1_selected"; setfocus "si_r0c1_purchased"; setfocus "si_r0c2"; setfocus "si_r0c2_selected"; setfocus "si_r0c2_purchased"; } \
+
+		#include "ui/safearea.menu"
+
+		itemDef { name	"window_background_ammomatic"
+			rect			WINDOW_ORIGIN_AMMOMATIC WINDOW_RECT_AMMOMATIC DEFAULT_ALIGNMENT
+	 		style			WINDOW_STYLE_FILLED
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 1 1
+			forecolor		1 1 1 1
+			backcolor		0.18 0.18 0.18 1
+			visible			1
+			decoration
+			mouseExit { scriptMenuResponse "hover_reset" }
+		}
+
+		itemDef { name	"top_right_close_button"
+			type			ITEM_TYPE_BUTTON
+			rect			(BTN_ORIGINX + BTN_SIZEX) (SI_GRIDY_R0C0 - 7) 8 10 DEFAULT_ALIGNMENT
+			forecolor		1 1 1 1
+			visible			1
+			text 			"x"
+			textscale 		0.30
+			textalign		ITEM_ALIGN_BOTTOM_CENTER
+			style			WINDOW_STYLE_EMPTY
+			action { play "mouse_submenu_over"; scriptMenuResponse "close"; close self;}
+			onFocus { play "mouse_over"; setitemcolor "top_right_close_button" forecolor 1 0 0 1 ;}
+			leaveFocus { setitemcolor "top_right_close_button" forecolor 1 1 1 1;}
+		}
+
+		itemDef { name	"top_left_tab1"
+			type			ITEM_TYPE_BUTTON
+			rect			(CENTER_X - WINDOW_SIZEX_AMMOMATIC / 2) (CENTER_Y - BTN_SIZEY - WINDOW_SIZEY_AMMOMATIC / 2) BTN_MINI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.3 0.7 0.5 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "tab1_button"; setDvar "ugxm_skills_infobox_skill" " "; setDvar "ugxm_skills_infobox_text" " "; }
+			onFocus { play "mouse_over"; setitemcolor "top_left_tab1" backcolor 0.3 1 0.5 1 ;}
+			leaveFocus { setitemcolor "top_left_tab1" backcolor 0.3 0.7 0.5 1;}
+			DOWN_NAV("trap_button_1"); RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"top_left_tab1_disabled"
+			type			ITEM_TYPE_BUTTON
+			rect			(CENTER_X - WINDOW_SIZEX_AMMOMATIC / 2) (CENTER_Y - BTN_SIZEY - WINDOW_SIZEY_AMMOMATIC / 2) BTN_MINI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.7 0.7 0.7 1
+			visible			when(UGXM_SKILLS_TAB != 1)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; setDvar "ugxm_skills_tab" 1; setFocus "top_left_tab1" }
+			onFocus { play "mouse_over"; setitemcolor "top_left_tab1_disabled" backcolor 0.7 1 0.5 1 ;}
+			leaveFocus { setitemcolor "top_left_tab1_disabled" backcolor 0.7 0.7 0.7 1;}
+			DOWN_NAV_TAB; RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"top_left_tab1_text"
+			rect			(CENTER_X - WINDOW_SIZEX_AMMOMATIC / 2) (CENTER_Y - BTN_SIZEY - WINDOW_SIZEY_AMMOMATIC / 2) BTN_MINI_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Buyable Traps"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			1
+			decoration
+		}
+
+		itemDef { name	"top_left_tab2"
+			type			ITEM_TYPE_BUTTON
+			rect			(CENTER_X + BTN_MINI_SIZEX + SI_GRID_MARGIN - WINDOW_SIZEX_AMMOMATIC / 2) (CENTER_Y - BTN_SIZEY - WINDOW_SIZEY_AMMOMATIC / 2) BTN_MINI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.3 0.7 0.5 1
+			visible			when(UGXM_SKILLS_TAB == 2)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "tab2_button"; setDvar "ugxm_skills_infobox_skill" " "; setDvar "ugxm_skills_infobox_text" " "; }
+			onFocus { play "mouse_over"; setitemcolor "top_left_tab2" backcolor 0.3 1 0.5 1 ;}
+			leaveFocus { setitemcolor "top_left_tab2" backcolor 0.3 0.7 0.5 1;}
+			DOWN_NAV_TAB; LEFT_NAVT("top_left_tab1");
+		}
+		itemDef { name	"top_left_tab2_disabled"
+			type			ITEM_TYPE_BUTTON
+			rect			(CENTER_X + BTN_MINI_SIZEX + SI_GRID_MARGIN - WINDOW_SIZEX_AMMOMATIC / 2) (CENTER_Y - BTN_SIZEY - WINDOW_SIZEY_AMMOMATIC / 2) BTN_MINI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.7 0.7 0.7 1
+			visible			when(UGXM_SKILLS_TAB != 2)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; setDvar "ugxm_skills_tab" 2; setFocus "top_left_tab2" }
+			onFocus { play "mouse_over"; setitemcolor "top_left_tab2_disabled" backcolor 0.7 1 0.5 1 ;}
+			leaveFocus { setitemcolor "top_left_tab2_disabled" backcolor 0.7 0.7 0.7 1;}
+			DOWN_NAV("trap_button_1"); LEFT_NAVT("top_left_tab1");
+		}
+		itemDef { name	"top_left_tab2_text"
+			rect			(CENTER_X + BTN_MINI_SIZEX + SI_GRID_MARGIN - WINDOW_SIZEX_AMMOMATIC / 2) (CENTER_Y - BTN_SIZEY - WINDOW_SIZEY_AMMOMATIC / 2) BTN_MINI_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Buyable Turret"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			1
+			decoration
+		}
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\_Traps Tab_//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+		#define UGXACTION play "mouse_submenu_over"; scriptMenuResponse "trap_button_1";
+
+		itemDef { name	"trap_button_1"
+			type			ITEM_TYPE_BUTTON
+			rect			SI_GRIDX_R0C0 SI_GRIDY_R0C0 BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0.7 0 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			action { UGXACTION }
+			onFocus { play "mouse_over"; setitemcolor "trap_button_1" backcolor 0 1 0 1; scriptMenuResponse "hover_trap_button_1"; }
+			leaveFocus { setitemcolor "trap_button_1" backcolor 0 0.7 0 1;}
+			DOWN_NAV("trap_button_2");  UP_NAVT("top_left_tab1"); RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"trap_button_1_text"
+			rect			SI_GRIDX_R0C0 SI_GRIDY_R0C0 BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			exp text 		dvarString(ugxm_traps_button1_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration
+		}
+		itemDef { name	"trap_button_1_icon"
+			rect			(SI_GRIDX_R0C0 + BTN_SIZEX + 5) (SI_GRIDY_R0C0 + 1) 20 17 DEFAULT_ALIGNMENT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			background 		"hud_icon_electrip"
+			style			WINDOW_STYLE_SHADER
+			decoration
+		}
+
+		#undef UGXACTION
+		#define UGXACTION play "mouse_submenu_over"; scriptMenuResponse "trap_button_2";
+		itemDef { name	"trap_button_2"
+			type			ITEM_TYPE_BUTTON
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + SI_GRID_MARGIN + BTN_SIZEY) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0.7 0 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			action { UGXACTION }
+			onFocus { play "mouse_over"; setitemcolor "trap_button_2" backcolor 0 1 0 1; scriptMenuResponse "hover_trap_button_2"; }
+			leaveFocus { setitemcolor "trap_button_2" backcolor 0 0.7 0 1;}
+			DOWN_NAV("trap_button_3"); UP_NAV("trap_button_1"); RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"trap_button_2_text"
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + SI_GRID_MARGIN + BTN_SIZEY) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			exp text 		dvarString(ugxm_traps_button2_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration
+		}
+		itemDef { name	"trap_button_2_icon"
+			rect			(SI_GRIDX_R0C0 + BTN_SIZEX + 5) (SI_GRIDY_R0C0 + SI_GRID_MARGIN + BTN_SIZEY + 1) 20 17 DEFAULT_ALIGNMENT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			background 		"hud_icon_matchtrap"
+			style			WINDOW_STYLE_SHADER
+			decoration
+		}
+
+		#undef UGXACTION
+		#define UGXACTION play "mouse_submenu_over"; scriptMenuResponse "trap_button_3";
+		itemDef { name	"trap_button_3"
+			type			ITEM_TYPE_BUTTON
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + 2 * (SI_GRID_MARGIN + BTN_SIZEY)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0.7 0 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			action { UGXACTION }
+			onFocus { play "mouse_over"; setitemcolor "trap_button_3" backcolor 0 1 0 1; scriptMenuResponse "hover_trap_button_3"; }
+			leaveFocus { setitemcolor "trap_button_3" backcolor 0 0.7 0 1; }
+			DOWN_NAV("trap_button_4"); UP_NAV("trap_button_2"); RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"trap_button_3_text"
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + 2 * (SI_GRID_MARGIN + BTN_SIZEY)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			exp text 		dvarString(ugxm_traps_button3_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration
+		}
+		itemDef { name	"trap_button_3_icon"
+			rect			(SI_GRIDX_R0C0 + BTN_SIZEX + 5) (SI_GRIDY_R0C0 + 2 * (SI_GRID_MARGIN + BTN_SIZEY) + 1) 20 17 DEFAULT_ALIGNMENT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			background 		"hud_bounce_betty"
+			style			WINDOW_STYLE_SHADER
+			decoration
+		}
+
+		#undef UGXACTION
+		#define UGXACTION play "mouse_submenu_over"; scriptMenuResponse "trap_button_4";
+		itemDef { name	"trap_button_4"
+			type			ITEM_TYPE_BUTTON
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + 3 * (SI_GRID_MARGIN + BTN_SIZEY)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0.7 0 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			action { UGXACTION }
+			onFocus { play "mouse_over"; setitemcolor "trap_button_4" backcolor 0 1 0 1; scriptMenuResponse "hover_trap_button_4"; }
+			leaveFocus { setitemcolor "trap_button_4" backcolor 0 0.7 0 1; }
+			DOWN_NAV("trap_button_5"); UP_NAV("trap_button_3"); RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"trap_button_4_text"
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + 3 * (SI_GRID_MARGIN + BTN_SIZEY)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			exp text 		dvarString(ugxm_traps_button4_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration
+		}
+		itemDef { name	"trap_button_4_icon"
+			rect			(SI_GRIDX_R0C0 + BTN_SIZEX + 5) (SI_GRIDY_R0C0 + 3 * (SI_GRID_MARGIN + BTN_SIZEY) + 1) 20 17 DEFAULT_ALIGNMENT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			background 		"hud_bear_trap"
+			style			WINDOW_STYLE_SHADER
+			decoration
+		}
+
+		#undef UGXACTION
+		#define UGXACTION play "mouse_submenu_over"; scriptMenuResponse "trap_button_5";
+		itemDef { name	"trap_button_5"
+			type			ITEM_TYPE_BUTTON
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + 4 * (SI_GRID_MARGIN + BTN_SIZEY)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0.7 0 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			action 			{ UGXACTION }
+			onFocus { play "mouse_over"; setitemcolor "trap_button_5" backcolor 0 1 0 1; scriptMenuResponse "hover_trap_button_5"; }
+			leaveFocus { setitemcolor "trap_button_5" backcolor 0 0.7 0 1; }
+			UP_NAV("trap_button_4"); RIGHT_NAVT("top_left_tab2");
+		}
+		itemDef { name	"trap_button_5_text"
+			rect			SI_GRIDX_R0C0 (SI_GRIDY_R0C0 + 4 * (SI_GRID_MARGIN + BTN_SIZEY)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			exp text 		dvarString(ugxm_traps_button5_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration
+		}
+		itemDef { name	"trap_button_5_icon"
+			rect			(SI_GRIDX_R0C0 + BTN_SIZEX + 5) (SI_GRIDY_R0C0 + 4 * (SI_GRID_MARGIN + BTN_SIZEY) + 1) 20 17 DEFAULT_ALIGNMENT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			background 		"gersch_icon"
+			style			WINDOW_STYLE_SHADER
+			decoration
+		}
+
+		itemDef { name	"info_box_traps_main"
+			rect			BTN_ORIGINX SI_GRIDY_R0C0 INFOBOX_TRAPS_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			decoration
+		}
+		itemDef { name	"info_box_traps_main_text"
+			rect			(BTN_ORIGINX + TEXTBOX_MARGIN) (SI_GRIDY_R0C0 + (2 * SI_GRID_MARGIN) + TEXTBOX_MARGIN) INFOBOX_TRAPS_RECT DEFAULT_ALIGNMENT
+			forecolor		1 1 1 1
+			exp text 		dvarString(ugxm_skills_infobox_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		INFOBOX_TEXTSCALE
+			textalign		ITEM_ALIGN_TOP_LEFT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			autowrapped
+			decoration
+		}
+		itemDef { name	"info_box_traps_header"
+			rect			BTN_ORIGINX SI_GRIDY_R0C0 BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.3 0.3 0.3 1
+			visible			when(UGXM_SKILLS_TAB == 1)
+			style			WINDOW_STYLE_FILLED
+			decoration
+		}
+		itemDef { name		"info_box_traps_header_gradient"
+			style			WINDOW_STYLE_SHADER 
+			rect			BTN_ORIGINX (SI_GRIDY_R0C0 + 2) BTN_SIZEX (BTN_SIZEY - 1) DEFAULT_ALIGNMENT
+			background		"menu_button_backing_highlight" 
+			forecolor		HIGHLIGHT_COLOR 
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration 
+		} 
+		itemDef { name	"info_box_traps_header_text"
+			rect			(BTN_ORIGINX + 4) SI_GRIDY_R0C0 HDR_RECT DEFAULT_ALIGNMENT
+			forecolor		0.9 0.9 0.9 1
+			exp text 		dvarString(ugxm_skills_infobox_skill)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_LEFT
+			visible			when(UGXM_SKILLS_TAB == 1)
+			decoration
+		}
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\_Turret Tab_//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+		itemDef { name	"top_right_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_ORIGINX SI_GRIDY_R0C0 BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0.7 0 1
+			visible			when(UGXM_SKILLS_TAB == 2)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "buy_button"; }
+			onFocus { play "mouse_over"; setitemcolor "top_right_button" backcolor 0 1 0 1 ;}
+			leaveFocus { setitemcolor "top_right_button" backcolor 0 0.7 0 1;}
+			LEFT_NAV_BUY; DOWN_NAV("bottom_right_button");
+		}
+		itemDef { name	"top_right_button_text"
+			rect			BTN_ORIGINX SI_GRIDY_R0C0 BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			exp text 		dvarString(ugxm_skills_button1_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(UGXM_SKILLS_TAB == 2)
+			decoration
+		}
+
+		itemDef { name	"info_box_main"
+			rect			BTN_ORIGINX (SI_GRIDY_R0C0 + BTN_SIZEY + SI_GRID_MARGIN) INFOBOX_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 1
+			visible			when(UGXM_SKILLS_TAB == 2)
+			style			WINDOW_STYLE_FILLED
+			decoration
+			mouseExit { scriptMenuResponse "hover_reset" }
+		}
+		itemDef { name	"info_box_main_text"
+			rect			(BTN_ORIGINX + TEXTBOX_MARGIN) (SI_GRIDY_R0C0 + (BTN_SIZEY * 2) + SI_GRID_MARGIN + TEXTBOX_MARGIN) INFOBOX_REC_TEXT DEFAULT_ALIGNMENT
+			forecolor		1 1 1 1
+			exp text 		dvarString(ugxm_skills_infobox_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		INFOBOX_TEXTSCALE
+			textalign		ITEM_ALIGN_TOP_LEFT
+			visible			when(UGXM_SKILLS_TAB == 2)
+			autowrapped
+			decoration
+		}
+		itemDef { name	"info_box_header"
+			rect			BTN_ORIGINX (SI_GRIDY_R0C0 + BTN_SIZEY + SI_GRID_MARGIN) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.3 0.3 0.3 1
+			visible			when(UGXM_SKILLS_TAB == 2)
+			style			WINDOW_STYLE_FILLED
+			decoration
+		}
+		itemDef { name		"info_box_header_gradient"
+			style			WINDOW_STYLE_SHADER 
+			rect			BTN_ORIGINX (SI_GRIDY_R0C0 + BTN_SIZEY + SI_GRID_MARGIN + 2) BTN_SIZEX (BTN_SIZEY - 1) DEFAULT_ALIGNMENT
+			background		"menu_button_backing_highlight" 
+			forecolor		HIGHLIGHT_COLOR 
+			visible			when(UGXM_SKILLS_TAB == 2)
+			decoration 
+		} 
+		itemDef { name	"info_box_header_skilltext"
+			rect			(BTN_ORIGINX + 4) (SI_GRIDY_R0C0 + BTN_SIZEY + SI_GRID_MARGIN) HDR_RECT DEFAULT_ALIGNMENT
+			forecolor		0.9 0.9 0.9 1
+			exp text 		dvarString(ugxm_skills_infobox_skill)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_LEFT
+			visible			when(UGXM_SKILLS_TAB == 2)
+			decoration
+		}
+		itemDef { name	"info_box_header_lvltext" //using this for cost now instead of level.
+			rect			BTN_ORIGINX (SI_GRIDY_R0C0 + BTN_SIZEY + SI_GRID_MARGIN) HDR_RECT DEFAULT_ALIGNMENT
+			forecolor		0.9 0.9 0.9 1
+			exp text 		dvarString(ugxm_skills_infobox_level)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_RIGHT
+			visible			when(UGXM_SKILLS_TAB == 2)
+			decoration
+		}
+
+		itemDef { name	"bottom_right_button"
+			rect			BTN_ORIGINX ((CENTER_Y + WINDOW_SIZEY_AMMOMATIC / 2) - SI_GRID_MARGIN - BTN_SIZEY) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0.7 0 0 1
+			visible			when(UGXM_SKILLS_TAB == 2)
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; CLEAR_ALL_BORDER_COLORS; scriptMenuResponse "clear_tree" }
+			onFocus { play "mouse_over"; setitemcolor "bottom_right_button" backcolor 1 0 0 1 ;}
+			leaveFocus { setitemcolor "bottom_right_button" backcolor 0.7 0 0 1;}
+			LEFT_NAV_ERASE; UP_NAV("top_right_button");
+		}
+		itemDef { name	"bottom_right_button_text"
+			rect			BTN_ORIGINX ((CENTER_Y + WINDOW_SIZEY_AMMOMATIC / 2) - SI_GRID_MARGIN - BTN_SIZEY) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		1 1 1 1
+			exp text 		dvarString(ugxm_skills_button2_text)
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_BOTTOM_CENTER
+			visible			when(UGXM_SKILLS_TAB == 2)
+			decoration
+		}
+
+		itemDef { name	"skill_button_grid" //I used to have all the buttons as separate images but it's more efficient on asset usage to have them all in the same image, so here we are. | treminaor
+			rect			SI_GRIDR_R0C0 ((SI_SIZE * 3) + (SI_GRID_MARGIN * 2)) ((SI_SIZE * 4) + (SI_GRID_MARGIN * 3)) DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		0 0 0 0 //Blank border to keep the position correct, otherwise we don't need a border at all.
+			forecolor		1 1 1 1
+			backcolor		0 0 0 1
+			visible			when(UGXM_SKILLS_TAB == 2)
+			background 		"skill_combined_tree"
+			style			WINDOW_STYLE_SHADER
+			decoration
+			mouseExit { scriptMenuResponse "hover_reset" }
+		}
+
+		itemDef { name	"si_r0c0"
+			rect			SI_GRIDR_R0C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r0c0_selected) == 0 && dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_bullet"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "turret_bullet"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r0c0_selected" 1; setFocus "si_r0c0_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_bullet"; setitemcolor "si_r0c0" bordercolor SI_BORDER_HIGHLIGHT_COLOR;}
+			leaveFocus { setitemcolor "si_r0c0" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r0c1");
+		}
+		itemDef { name	"si_r0c0_disabled"
+			rect			SI_GRIDR_R0C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && dvarString(ugxm_skills_turret_type) != "bullet" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_bullet"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			//onFocus { scriptMenuResponse "hover_turret_bullet" }
+		}
+		itemDef { name	"si_r0c0_selected"
+			rect			SI_GRIDR_R0C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r0c0_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_bullet"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r0c0_selected" 0; setFocus "si_r0c0"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_bullet"; }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r0c1");
+		}
+		itemDef { name	"si_r0c0_purchased"
+			rect			SI_GRIDR_R0C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_PHIGHLIGHT_COLOR
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) == "bullet" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_bullet"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "turret_bullet"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r0c0_selected" 1; setFocus "si_r0c0_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_bullet"; setitemcolor "si_r0c0_purchased" bordercolor SI_BORDER_HIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "si_r0c0_purchased" bordercolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c0"); LEFT_NAV("top_right_button"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r0c1"
+			rect			SI_GRIDR_R0C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r0c1_selected) == 0 && dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_flame"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "turret_flame"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r0c1_selected" 1; setFocus "si_r0c1_selected";}
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_flame"; setitemcolor "si_r0c1" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r0c1" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c1"); RIGHT_NAVC("si_r0c2"); LEFT_NAVC("si_r0c0");
+		}
+		itemDef { name	"si_r0c1_disabled"
+			rect			SI_GRIDR_R0C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && dvarString(ugxm_skills_turret_type) != "flame" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_flame"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			//onFocus { scriptMenuResponse "hover_turret_flame" }
+		}
+		itemDef { name	"si_r0c1_selected"
+			rect			SI_GRIDR_R0C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r0c1_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_flame"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r0c1_selected" 0; setFocus "si_r0c1"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_flame"; }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c1"); RIGHT_NAVC("si_r0c2"); LEFT_NAVC("si_r0c0");
+		}
+		itemDef { name	"si_r0c1_purchased"
+			rect			SI_GRIDR_R0C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_PHIGHLIGHT_COLOR
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) == "flame" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_flame"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "turret_flame"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r0c1_selected" 1; setFocus "si_r0c1_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_flame"; setitemcolor "si_r0c1_purchased" bordercolor SI_BORDER_HIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "si_r0c1_purchased" bordercolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c1"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r0c2"
+			rect			SI_GRIDR_R0C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r0c2_selected) == 0 && dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_grenade"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "turret_grenade"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r0c2_selected" 1; setFocus "si_r0c2_selected";}
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_grenade"; setitemcolor "si_r0c2" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r0c2" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c2"); LEFT_NAVC("si_r0c1"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r0c2_disabled"
+			rect			SI_GRIDR_R0C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && dvarString(ugxm_skills_turret_type) != "grenade" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_grenade"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			//onFocus { scriptMenuResponse "hover_turret_grenade" }
+		}
+		itemDef { name	"si_r0c2_selected"
+			rect			SI_GRIDR_R0C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r0c2_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_grenade"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r0c2_selected" 0; setFocus "si_r0c2"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_grenade"; }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c2"); LEFT_NAVC("si_r0c1"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r0c2_purchased"
+			rect			SI_GRIDR_R0C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_PHIGHLIGHT_COLOR
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) == "grenade" && UGXM_SKILLS_TAB == 2)
+			//background 		"turret_grenade"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "turret_grenade"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r0c2_selected" 1; setFocus "si_r0c2_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_turret_grenade"; setitemcolor "si_r0c2_purchased" bordercolor SI_BORDER_HIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "si_r0c2_purchased" bordercolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			UP_NAVT("top_left_tab2"); DOWN_NAVC("si_r1c2"); RIGHT_NAV("top_right_button");
+		}
+
+		itemDef { name	"si_r1c0"
+			rect			SI_GRIDR_R1C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_armor"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_armor"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r1c0_selected" 1; setFocus "si_r1c0_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_armor"; setitemcolor "si_r1c0" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r1c0" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r0c0"); DOWN_NAVC("si_r2c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r1c1");
+		}
+		itemDef { name	"si_r1c0_disabled"
+			rect			SI_GRIDR_R1C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_armor"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r1c0_selected"
+			rect			SI_GRIDR_R1C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r1c0_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_armor"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r1c0_selected" 0; setFocus "si_r1c0"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_armor"; }
+			UP_NAVC("si_r0c0"); DOWN_NAVC("si_r2c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r1c1");
+		}
+		itemDef { name	"si_r1c1"
+			rect			SI_GRIDR_R1C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_precision"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_precision"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r1c1_selected" 1; setFocus "si_r1c1_selected"}
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_precision"; setitemcolor "si_r1c1" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r1c1" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r0c1"); DOWN_NAVC("si_r2c1"); LEFT_NAVC("si_r1c0"); RIGHT_NAVC("si_r1c2");
+		}
+		itemDef { name	"si_r1c1_disabled"
+			rect			SI_GRIDR_R1C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_precision"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r1c1_selected"
+			rect			SI_GRIDR_R1C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r1c1_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_precision"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r1c1_selected" 0; setFocus "si_r1c1"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_precision"; }
+			UP_NAVC("si_r0c1"); DOWN_NAVC("si_r2c1"); LEFT_NAVC("si_r1c0"); RIGHT_NAVC("si_r1c2");
+		}
+		itemDef { name	"si_r1c2"
+			rect			SI_GRIDR_R1C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_adreneline"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_adreneline"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r1c2_selected" 1; setFocus "si_r1c2_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_adreneline"; setitemcolor "si_r1c2" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r1c2" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r0c2"); DOWN_NAVC("si_r2c2"); LEFT_NAVC("si_r1c1"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r1c2_disabled"
+			rect			SI_GRIDR_R1C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_adreneline"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r1c2_selected"
+			rect			SI_GRIDR_R1C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r1c2_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_adreneline"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r1c2_selected" 0; setFocus "si_r1c2"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_adreneline"; }
+			UP_NAVC("si_r0c2"); DOWN_NAVC("si_r2c2"); LEFT_NAVC("si_r1c1"); RIGHT_NAV("top_right_button");
+		}
+
+		itemDef { name	"si_r2c0"
+			rect			SI_GRIDR_R2C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_ammo_regen"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_ammo_regen"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r2c0_selected" 1; setFocus "si_r2c0_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_ammo_regen"; setitemcolor "si_r2c0" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r2c0" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r1c0"); DOWN_NAVC("si_r3c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r2c1");
+		}
+		itemDef { name	"si_r2c0_disabled"
+			rect			SI_GRIDR_R2C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_ammo_regen"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r2c0_selected"
+			rect			SI_GRIDR_R2C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r2c0_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_ammo_regen"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r2c0_selected" 0; setFocus "si_r2c0"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_ammo_regen"; }
+			UP_NAVC("si_r1c0"); DOWN_NAVC("si_r3c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r2c1");
+		}
+		itemDef { name	"si_r2c1"
+			rect			SI_GRIDR_R2C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_engineer"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_engineer"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r2c1_selected" 1; setFocus "si_r2c1_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_engineer"; setitemcolor "si_r2c1" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r2c1" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r1c1"); DOWN_NAVC("si_r3c1"); LEFT_NAV("si_r2c0"); RIGHT_NAVC("si_r2c2");
+		}
+		itemDef { name	"si_r2c1_disabled"
+			rect			SI_GRIDR_R2C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_engineer"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r2c1_selected"
+			rect			SI_GRIDR_R2C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r2c1_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_engineer"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r2c1_selected" 0; setFocus "si_r2c1"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_engineer"; }
+			UP_NAVC("si_r1c1"); DOWN_NAVC("si_r3c1"); LEFT_NAV("si_r2c0"); RIGHT_NAVC("si_r2c2");
+		}
+		itemDef { name	"si_r2c2"
+			rect			SI_GRIDR_R2C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_turret_type) != "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_deployment"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_deployment"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r2c2_selected" 1; setFocus "si_r2c2"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_deployment"; setitemcolor "si_r2c2" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r2c2" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r1c2"); DOWN_NAVC("si_r3c2"); LEFT_NAV("si_r2c1"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r2c2_disabled"
+			rect			SI_GRIDR_R2C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(dvarString(ugxm_skills_turret_type) == "none" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_deployment"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r2c2_selected"
+			rect			SI_GRIDR_R2C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r2c2_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_deployment"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r2c2_selected" 0; setFocus "si_r2c2"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_deployment"; }
+			UP_NAVC("si_r1c2"); DOWN_NAVC("si_r3c2"); LEFT_NAV("si_r2c1"); RIGHT_NAV("top_right_button");
+		}
+
+		itemDef { name	"si_r3c0"
+			rect			SI_GRIDR_R3C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarInt(ugxm_skills_t3_enabled) == 1 && dvarString(ugxm_skills_t3) == "none" && dvarInt(ugxm_skills_emtl_disabled) == 0 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_damage"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_damage"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r3c0_selected" 1; setFocus "si_r3c0_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_damage"; setitemcolor "si_r3c0" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r3c0" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r2c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r3c1");
+		}
+		itemDef { name	"si_r3c0_disabled"
+			rect			SI_GRIDR_R3C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(((dvarString(ugxm_skills_t3) != "none" && dvarString(ugxm_skills_t3) != "damage") || dvarInt(ugxm_skills_t3_enabled) == 0 || dvarInt(ugxm_skills_emtl_disabled) == 1) && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_damage"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r3c0_selected"
+			rect			SI_GRIDR_R3C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r3c0_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_damage"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r3c0_selected" 0; setFocus "si_r3c0"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_damage"; }
+			UP_NAVC("si_r2c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r3c1");
+		}
+		itemDef { name	"si_r3c0_purchased"
+			rect			SI_GRIDR_R3C0 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_PHIGHLIGHT_COLOR
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_t3) == "damage" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_damage"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_damage"; setitemcolor "si_r3c0_purchased" bordercolor SI_BORDER_HIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "si_r3c0_purchased" bordercolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			UP_NAVC("si_r2c0"); LEFT_NAV("top_right_button"); RIGHT_NAVC("si_r3c1");
+		}
+		itemDef { name	"si_r3c1"
+			rect			SI_GRIDR_R3C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarInt(ugxm_skills_t3_enabled) == 1 && dvarString(ugxm_skills_t3) == "none" && dvarInt(ugxm_skills_emtl_disabled) == 0 && dvarString(ugxm_skills_turret_type) == "bullet" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_elemental"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_elemental"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r3c1_selected" 1; setFocus "si_r3c2_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_elemental"; setitemcolor "si_r3c1" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r3c1" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r2c1"); LEFT_NAV("si_r3c0"); RIGHT_NAVC("si_r3c2");
+		}
+		itemDef { name	"si_r3c1_disabled"
+			rect			SI_GRIDR_R3C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(((dvarString(ugxm_skills_t3) != "none" && dvarString(ugxm_skills_t3) != "elemental") || (dvarInt(ugxm_skills_t3_enabled) == 0 || dvarInt(ugxm_skills_emtl_disabled) == 1 || dvarString(ugxm_skills_turret_type) != "bullet")) && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_elemental"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r3c1_selected"
+			rect			SI_GRIDR_R3C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r3c1_selected) == 1 && dvarInt(ugxm_skills_emtl_disabled) == 0 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_elemental"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r3c1_selected" 0; setFocus "si_r3c1"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_elemental"; }
+			UP_NAVC("si_r2c1"); LEFT_NAV("si_r3c0"); RIGHT_NAVC("si_r3c2");
+		}
+		itemDef { name	"si_r3c1_purchased"
+			rect			SI_GRIDR_R3C1 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_PHIGHLIGHT_COLOR
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_t3) == "elemental" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_elemental"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_elemental"; setitemcolor "si_r3c1_purchased" bordercolor SI_BORDER_HIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "si_r3c1_purchased" bordercolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			UP_NAVC("si_r2c1"); LEFT_NAV("si_r3c0"); RIGHT_NAVC("si_r3c2");
+		}
+		itemDef { name	"si_r3c2"
+			rect			SI_GRIDR_R3C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			visible			when(dvarInt(ugxm_skills_t3_enabled) == 1 && dvarString(ugxm_skills_t3) == "none" && dvarInt(ugxm_skills_emtl_disabled) == 0 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_plague"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; scriptMenuResponse "skill_plague"; CLEAR_ALL_BORDER_COLORS; setLocalVarInt "si_r3c2_selected" 1; setFocus "si_r3c2_selected"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_plague"; setitemcolor "si_r3c2" bordercolor SI_BORDER_HIGHLIGHT_COLOR ;}
+			leaveFocus { setitemcolor "si_r3c2" bordercolor SI_BORDER_COLOR;  }
+			UP_NAVC("si_r2c2"); LEFT_NAV("si_r3c2"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r3c2_disabled"
+			rect			SI_GRIDR_R3C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		SI_COLOR_DISABLED
+			backcolor		0 0 0 0.75
+			visible			when(((dvarString(ugxm_skills_t3) != "none" && dvarString(ugxm_skills_t3) != "plague") || dvarInt(ugxm_skills_t3_enabled) == 0 || dvarInt(ugxm_skills_emtl_disabled) == 1) && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_plague"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+		}
+		itemDef { name	"si_r3c2_selected"
+			rect			SI_GRIDR_R3C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 0 1
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(localVarInt(si_r3c2_selected) == 1 && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_plague"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { play "mouse_submenu_over"; setLocalVarInt "si_r3c2_selected" 0; setFocus "si_r3c2"; }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_plague"; }
+			UP_NAVC("si_r2c2"); LEFT_NAV("si_r3c2"); RIGHT_NAV("top_right_button");
+		}
+		itemDef { name	"si_r3c2_purchased"
+			rect			SI_GRIDR_R3C2 SI_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_PHIGHLIGHT_COLOR
+			forecolor		1 1 1 0
+			backcolor		0 0 0 0
+			visible			when(dvarString(ugxm_skills_t3) == "plague" && UGXM_SKILLS_TAB == 2)
+			//background 		"skill_plague"
+			style			WINDOW_STYLE_FILLED
+			type			ITEM_TYPE_BUTTON
+			action { }
+			onFocus { play "mouse_over"; scriptMenuResponse "hover_plague"; setitemcolor "si_r3c2_purchased" bordercolor SI_BORDER_HIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "si_r3c2_purchased" bordercolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			UP_NAVC("si_r2c2"); LEFT_NAV("si_r3c2"); RIGHT_NAV("top_right_button");
+		}
+
+		//\\//\\//\\//\\//\\//\\//\\//\\//\\_Elemental Popup_//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+		#define WINDOW_SIZEX_ELEMENTAL		(BTN_SIZEX + SI_GRID_MARGIN + SI_GRID_MARGIN)
+		#define WINDOW_SIZEY_ELEMENTAL		((BTN_SIZEY * 6) + (SI_GRID_MARGIN * 7))
+
+		#define WINDOW_ORIGIN_ELEMENTAL		(CENTER_X - (WINDOW_SIZEX_ELEMENTAL / 2)) (CENTER_Y - (WINDOW_SIZEY_ELEMENTAL / 2))
+		#define WINDOW_RECT_ELEMENTAL		WINDOW_SIZEX_ELEMENTAL WINDOW_SIZEY_ELEMENTAL
+
+		#define BTN_LIST_ORIGINX			(CENTER_X - (WINDOW_SIZEX_ELEMENTAL / 2) + SI_GRID_MARGIN)
+		#define BTN_LIST_ORIGINY			(CENTER_Y - (WINDOW_SIZEY_ELEMENTAL / 2) + SI_GRID_MARGIN)
+
+		#define ELECTRIC_GRADIENT		0 0.847 1
+		#define FIRE_GRADIENT			1 0.315 0
+		#define ACID_GRADIENT			0.517 1 0
+		#define ICE_GRADIENT			0.58 1 0.95
+		#define EXPLOSIVE_GRADIENT		1 0.988 0
+		#define WIND_GRADIENT			0.827 0.827 0.827
+		#define SPECIAL_GRADIENT		0.588 0 1
+		#define SHOW_ELEMENTAL_POP		dvarInt(ugxm_skills_emtl_show)
+
+
+		itemDef { name	"window_background_dimmed"
+			type			ITEM_TYPE_BUTTON
+			rect			WINDOW_ORIGIN_AMMOMATIC WINDOW_RECT_AMMOMATIC DEFAULT_ALIGNMENT
+	 		style			WINDOW_STYLE_FILLED
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 1 1
+			forecolor		0 0 0 1
+			backcolor		0 0 0 0.75
+			visible			when(SHOW_ELEMENTAL_POP)
+			//decoration
+		}
+		itemDef { name	"window_background_elemental"
+			rect			WINDOW_ORIGIN_ELEMENTAL WINDOW_RECT_ELEMENTAL DEFAULT_ALIGNMENT
+	 		style			WINDOW_STYLE_FILLED
+	 		border			1
+			bordersize		1
+			bordercolor		1 1 1 1
+			forecolor		0 0 0 1
+			backcolor		0.18 0.18 0.18 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+		itemDef { name	"top_right_close_button"
+			type			ITEM_TYPE_BUTTON
+			rect			(BTN_LIST_ORIGINX + BTN_SIZEX) (BTN_LIST_ORIGINY - 7) 8 10 DEFAULT_ALIGNMENT
+			forecolor		1 1 1 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			text 			"x"
+			textscale 		0.30
+			textalign		ITEM_ALIGN_BOTTOM_CENTER
+			style			WINDOW_STYLE_EMPTY
+			action 			{ play "mouse_submenu_over"; scriptMenuResponse "emtl_close_popup"; close self; open "ugxm_ammomatic";}
+			onFocus 		{ play "mouse_over"; setitemcolor "top_right_close_button" forecolor 1 0 0 1 ;}
+			leaveFocus 		{ setitemcolor "top_right_close_button" forecolor 1 1 1 1;}
+		}
+
+		itemDef { name	"elemental_electric_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_LIST_ORIGINX BTN_LIST_ORIGINY BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		0 0 0 1
+			backcolor		ELECTRIC_GRADIENT 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "emtl_electric";  }
+			onFocus { play "mouse_over"; setitemcolor "elemental_electric_button" backcolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "elemental_electric_button" backcolor ELECTRIC_GRADIENT 1; }
+			DOWN_NAV("elemental_fire_button");
+		}
+		itemDef { name	"elemental_electruc_button_text"
+			rect			BTN_LIST_ORIGINX BTN_LIST_ORIGINY BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Electrical Ammo"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+
+		itemDef { name	"elemental_fire_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + BTN_SIZEY + SI_GRID_MARGIN) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		0 0 0 1
+			backcolor		FIRE_GRADIENT 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "emtl_fire";  }
+			onFocus { play "mouse_over"; setitemcolor "elemental_fire_button" backcolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "elemental_fire_button" backcolor FIRE_GRADIENT 1; }
+			DOWN_NAV("elemental_acid_button"); UP_NAV("elemental_electric_button");
+		}
+		itemDef { name	"elemental_fire_button_text"
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + BTN_SIZEY + SI_GRID_MARGIN) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Fire Ammo"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+
+		itemDef { name	"elemental_acid_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 2) + (SI_GRID_MARGIN * 2)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		0 0 0 1
+			backcolor		ACID_GRADIENT 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "emtl_acid";  }
+			onFocus { play "mouse_over"; setitemcolor "elemental_acid_button" backcolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "elemental_acid_button" backcolor ACID_GRADIENT 1; }
+			DOWN_NAV("elemental_ice_button"); UP_NAV("elemental_fire_button");
+		}
+		itemDef { name	"elemental_acid_button_text"
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 2) + (SI_GRID_MARGIN * 2)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Acid Ammo"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+
+		itemDef { name	"elemental_ice_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 3) + (SI_GRID_MARGIN * 3)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		0 0 0 1
+			backcolor		ICE_GRADIENT 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "emtl_ice";  }
+			onFocus { play "mouse_over"; setitemcolor "elemental_ice_button" backcolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "elemental_ice_button" backcolor ICE_GRADIENT 1; }
+			DOWN_NAV("elemental_explosive_button"); UP_NAV("elemental_acid_button");
+		}
+		itemDef { name	"elemental_ice_button_text"
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 3) + (SI_GRID_MARGIN * 3)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Ice Ammo"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+
+		itemDef { name	"elemental_explosive_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 4) + (SI_GRID_MARGIN * 4)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		0 0 0 1
+			backcolor		EXPLOSIVE_GRADIENT 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "emtl_explosive";  }
+			onFocus { play "mouse_over"; setitemcolor "elemental_explosive_button" backcolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "elemental_explosive_button" backcolor EXPLOSIVE_GRADIENT 1; }
+			DOWN_NAV("elemental_wind_button"); UP_NAV("elemental_ice_button");
+		}
+		itemDef { name	"elemental_explosive_button_text"
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 4) + (SI_GRID_MARGIN * 4)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Explosive Ammo"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+
+		itemDef { name	"elemental_wind_button"
+			type			ITEM_TYPE_BUTTON
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 5) + (SI_GRID_MARGIN * 5)) BTN_RECT DEFAULT_ALIGNMENT
+	 		border			1
+			bordersize		1
+			bordercolor		SI_BORDER_COLOR
+			forecolor		0 0 0 1
+			backcolor		WIND_GRADIENT 1
+			visible			when(SHOW_ELEMENTAL_POP)
+			style			WINDOW_STYLE_FILLED
+			action { play "mouse_submenu_over"; scriptMenuResponse "emtl_wind"; }
+			onFocus { play "mouse_over"; setitemcolor "elemental_wind_button" backcolor SI_BORDER_PHIGHLIGHT_COLOR; }
+			leaveFocus { setitemcolor "elemental_wind_button" backcolor WIND_GRADIENT 1; }
+			UP_NAV("elemental_explosive_button");
+		}
+		itemDef { name	"elemental_wind_button_text"
+			rect			BTN_LIST_ORIGINX (BTN_LIST_ORIGINY + (BTN_SIZEY * 5) + (SI_GRID_MARGIN * 5)) BTN_RECT DEFAULT_ALIGNMENT
+			forecolor		0 0 0 1
+			text 			"Wind Ammo"
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textscale		0.30
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+			visible			when(SHOW_ELEMENTAL_POP)
+			decoration
+		}
+	}
+}

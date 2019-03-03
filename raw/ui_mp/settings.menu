@@ -1,0 +1,313 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_X			150
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			65
+
+#define CHOICE_SEP_OFFSET_Y		-2
+#define CHOICE_SIDEITEM_SPACING	-310
+
+#define CHOICE_DVAR_OFFSET_X	(CHOICE_SIZE_X+20)
+#define CHOICE_DVAR_TEXTALIGN	ITEM_ALIGN_MIDDLE_LEFT
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui_mp/stats_info.inc"
+#include "ui_mp/overlaybg.inc"
+
+#define ORIGIN_DESCRIPTION		-190 0
+#define COLOR_DESC_TEXT			COLOR_BODY_TEXT
+
+#define ORIGIN_BUTTON_BACK		52 438
+#define ORIGIN_BUTTON_INVITE	390 86
+#define ORIGIN_BUTTON_KICK		529 98
+
+#define MENU_FONT_SIZE			TEXTSIZE_DEFAULT
+#define HIGHLIGHT_SIZE			142 22
+#define MENU_FONT_COLOR			1 1 1 0.5
+#define MENU_LOCKED_COLOR		0.25 0.25 0.25 1
+
+#define PLAYERLIST_WIDTH		270
+#define ORIGIN_PLAYERLIST		(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 36
+#define LISTBOX_WIDTH			204
+#define COLOR_DISABLE			0.3 0.3 0.3 1
+
+#define GAMEINFO_ORIENTATION		1
+#define GAMEINFO_ORIGIN_X			-200
+#define GAMEINFO_ORIGIN_Y			65
+#define GAMEINFO_ORIGIN				GAMEINFO_ORIGIN_X GAMEINFO_ORIGIN_Y
+
+#define GAMEINFO_WIDTH				200 
+#define GAMEINFO_HEIGHT				100
+
+#define GAMEINFO_RECT				GAMEINFO_ORIGIN GAMEINFO_WIDTH GAMEINFO_HEIGHT
+
+#undef	CHOICE_SIZE_X
+#define CHOICE_SIZE_X			(LISTBOX_WIDTH-15)
+
+{
+	menuDef	{
+		name			settings
+		rect			0 0 640 470 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen			{ setdvar invite_visible "0"; }
+		onEsc			{ close self; }
+		onClose			{ setdvar invite_visible "1"; setDvar ui_preview dvarString( ui_mapname ); }
+
+		// background from overlaybg.inc
+		OVERLAY_BACKGROUND
+		#include "ui_mp/navcontrols.inc"
+		#include "ui/safearea.menu"
+
+		CHOICE_OVERLAY_TITLE( "@MENU_SETTINGS" )
+
+		#define LOCAL_GAMERULES_ACTION \
+			uiScript openMenuOnDvar "ui_gametype" tdm	"settings_quick_tdm"; \
+			uiScript openMenuOnDvar "ui_gametype" sd	"settings_quick_sd"; \
+			uiScript openMenuOnDvar "ui_gametype" sab	"settings_quick_sab"; \
+			uiScript openMenuOnDvar "ui_gametype" dm	"settings_quick_dm"; \
+			uiScript openMenuOnDvar "ui_gametype" dom	"settings_quick_dom"; \
+			uiScript openMenuOnDvar "ui_gametype" ctf	"settings_quick_ctf"; \
+			uiScript openMenuOnDvar "ui_gametype" koth	"settings_quick_koth"; \
+			uiScript openMenuOnDvar "ui_gametype" twar	"settings_quick_twar"; \
+			uiScript openMenuOnDvar "ui_gametype" ctf	"settings_quick_ctf"; \
+			uiScript openMenuOnDvar "ui_gametype" sur	"settings_quick_sur"; 
+
+		#define SUBMENUS_NOT_OPENED		( !dvarBool( settings_map_selected ) && !dvarBool( settings_gametype_selected ) )
+
+		// ----------------------------map images------------------------------------
+		#include "ui_mp/game_info.inc"
+		#define MAP_IMAGE		tableLookup( "mp/mapsTable.csv",		0, dvarString( ui_mapname )	, 4 )
+		#define GAMETYPE_IMAGE	tableLookup( "mp/gametypesTable.csv",	0, dvarString( ui_gametype ), 3 )
+		#define GAMEMODE		tableLookup( "mp/gametypesTable.csv",	0, dvarString( ui_gametype ), 1 )
+		#define MAP_NAME		tableLookup( "mp/mapsTable.csv",		0, dvarString( ui_mapname )	, 3 )
+		#define GAMEMODE_DESC	tableLookup( "mp/gametypesTable.csv",	0, dvarString( ui_gametype ), 2 )
+		#define MAP_SIZE		tableLookup( "mp/mapsTable.csv",		0, dvarString( ui_mapname )	, 8 )
+		#define VEHICLE			tableLookup( "mp/mapsTable.csv",		0, dvarString( ui_mapname )	, 9 )
+		// faded shawdow background
+		THIRD_RIGHT_COL_GRADIENT
+		PREPROC_GRADIENT_DRAW_ALIGNED( -14, 10, 195, (115+10), HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, "menu_button_backing", 0 0 0 0.5 )
+
+		GAME_INFO3( MAP_IMAGE, GAMETYPE_IMAGE, "@" + GAMEMODE, "@" + MAP_NAME, "@" + GAMEMODE_DESC, "@MPUI_MAPSIZE_" + MAP_SIZE, "@MPUI_VEHICLEMAP_" + VEHICLE, 1 )
+		// ----------------------------map images------------------------------------
+
+		CHOICE_BUTTON_FOCUS_VIS_EX( 1, "@MPUI_CHANGE_MAP", setdvar settings_map_selected "1"; setfocus map_selection; setdvar ui_preview dvarString( ui_mapname ), ;, ;, when( dvarInt( settings_gametype_selected ) == 0 ), name change_map )
+		CHOICE_LEFTITEM2_VIS( 1, "@"+MAP_NAME, CHOICE_TEXTCOLOR, when( SUBMENUS_NOT_OPENED ) )
+		CHOICE_BUTTON_COLOR_VIS( 1, "@MPUI_CHANGE_MAP", COLOR_DISABLE, when( dvarInt( settings_gametype_selected ) ) )
+
+			PREPROC_GRADIENT_TOP_LINE_DRAW_ALIGNED_VIS( (LISTBOX_WIDTH-30), 65, 165, 308, HORIZONTAL_ALIGN_LEFT, VERTICAL_ALIGN_TOP, 0 0, "menu_button_backing", 0 0 0 0.4, when (dvarBool( settings_map_selected ) || dvarBool( settings_gametype_selected ) ) )
+			// map selection ===========================================
+			itemDef 
+			{
+				name						map_selection
+				type						ITEM_TYPE_LISTBOX
+				feeder						FEEDER_MAPS
+				rect						(LISTBOX_WIDTH-30) 62 175 308 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+				origin						0 0
+				elementwidth				20
+				elementheight				23
+				noscrollbars
+				textfont					CHOICE_TEXTFONT
+				textscale					CHOICE_TEXTSIZE
+				textalignx					-5
+				forecolor					CHOICE_TEXTCOLOR
+				focusColor					COLOR_TITLE
+				selectBorder				0.8 0.95 1 0	
+				outlinecolor				HIGHLIGHT_COLOR 
+				highlightTexture			"menu_button_backing_highlight" 
+				#ifdef XENON
+					selectIcon				"ui_button_xenon_3d_a_32x32"
+				#endif
+				#ifdef PS3
+					selectIcon				"ui_button_ps3_x_32x32"
+				#endif
+				disablecolor				COLOR_DISABLED
+				textstyle					ITEM_TEXTSTYLE_SHADOWED
+				visible						when( dvarBool( settings_map_selected ) )
+				columns						1 25 190 64
+				onfocus 					{ play "mouse_over"; }
+				onListboxSelectionChange	{ play "mouse_over"; }
+				doubleclick					{ play "mouse_click"; setdvar settings_map_selected "0"; setfocus change_map; execNow "xupdatepartystate"; }
+				execKeyInt BUTTON_B			{ setdvar settings_map_selected "0"; setdvar ui_mapname dvarString ( ui_preview ); setfocus change_map }
+			}
+
+		CHOICE_BUTTON_FOCUS_VIS_EX( 2, "@MPUI_CHANGE_GAME_MODE", setdvar settings_gametype_selected "1"; setfocus gametype_selection; setdvar ui_preview dvarString( ui_gametype ), ;, ;, when( dvarInt( settings_map_selected ) == 0 ), name change_gametype)
+		CHOICE_LEFTITEM2_VIS( 2, "@"+GAMEMODE, CHOICE_TEXTCOLOR, when( SUBMENUS_NOT_OPENED ) )
+		CHOICE_BUTTON_COLOR_VIS( 2, "@MPUI_CHANGE_GAME_MODE", COLOR_DISABLE, when( dvarInt( settings_map_selected ) ) )
+	
+			// gametype selection ===========================================
+			itemDef 
+			{
+				name						gametype_selection
+				type						ITEM_TYPE_LISTBOX
+				feeder						FEEDER_CUSTOM_GAMETYPES
+				rect						(LISTBOX_WIDTH-30) 62 185 308 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+				origin						0 0
+				elementwidth				20
+				elementheight				23
+				noscrollbars
+				textfont					CHOICE_TEXTFONT
+				textscale					CHOICE_TEXTSIZE
+				textalignx					-5
+				forecolor					CHOICE_TEXTCOLOR
+				focusColor					COLOR_TITLE
+				selectBorder				0.8 0.95 1 0
+				outlinecolor				HIGHLIGHT_COLOR
+				highlightTexture			"menu_button_backing_highlight" 
+				#ifdef XENON
+					selectIcon				"ui_button_xenon_3d_a_32x32"
+				#endif
+				#ifdef PS3
+					selectIcon				"ui_button_ps3_x_32x32"
+				#endif
+				disablecolor				COLOR_DISABLED
+				textstyle					ITEM_TEXTSTYLE_SHADOWED
+				visible						when( dvarBool( settings_gametype_selected ) )
+				columns						1 25 190 64
+				onfocus 					{ play "mouse_over"; }
+				onListboxSelectionChange	{ play "mouse_over"; }
+				doubleclick					{ play "mouse_click"; setdvar settings_gametype_selected "0"; setfocus change_gametype; execNow "xupdatepartystate"; exec "exec "XBOXLIVE_MP_CFG; }
+				execKeyInt BUTTON_B			{ setdvar settings_gametype_selected "0"; setdvar ui_gametype dvarString( ui_preview ); setfocus change_gametype }
+			}
+
+		CHOICE_BUTTON_VIS( 3, "@MPUI_GAME_RULES", LOCAL_GAMERULES_ACTION, when( dvarInt( settings_map_selected ) == 0 && dvarInt( settings_gametype_selected ) == 0 ) )
+		CHOICE_BUTTON_COLOR_VIS( 3, "@MPUI_GAME_RULES", COLOR_DISABLE, when( dvarInt( settings_map_selected ) || dvarInt( settings_gametype_selected ) ) )
+	}
+
+	#define FOCUS_CHECK( pnum ) \
+		dvartest "party_privacyStatus" focusdvar { pnum }	
+	
+	menuDef
+	{
+		name			popup_party_privacy
+		rect			0 0 640 470 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen			{ setfocusbydvar "party_privacyStatus";	setdvar invite_visible "0"; }
+		onEsc			{ close self; }
+		onClose			{ setdvar invite_visible "1"; exec "updategamerprofile"; }
+
+		// background from overlaybg.inc
+		OVERLAY_BACKGROUND
+		#include "ui_mp/navcontrols.inc"
+
+		CHOICE_OVERLAY_TITLE( "@MPUI_LOBBY_PRIVACY" )
+				
+		// actions
+		#define PARTY_PRIVACY_OPEN \
+				execNow "party_privacyStatus 0"; \
+				exec "xsessionupdateprivacy";
+			
+		#define PARTY_PRIVACY_OPEN2FRIENDS \
+				execNow "party_privacyStatus 1"; \
+				exec "xsessionupdateprivacy";
+			
+		#define PARTY_PRIVACY_INVITEONLY \
+				execNow "party_privacyStatus 2"; \
+				exec "xsessionupdateprivacy";
+			
+		#define PARTY_PRIVACY_CLOSE \
+				execNow "party_privacyStatus 3"; \
+				exec "xsessionupdateprivacy";
+
+		// onfocus
+		#define PRIVACY_OPEN_FOCUS \
+				exec "set ui_privacy_pref @MPUI_OPEN";  \
+				exec "set ui_privacy_pref_desc @MENU_OPEN_DESC"; \
+				exec "set ui_privacy_pref_icon menu_party_privacy_open"	
+
+		#define PRIVACY_FRIENDS_FOCUS \
+				exec "set ui_privacy_pref @MPUI_OPEN_FRIENDS"; \
+				exec "set ui_privacy_pref_desc @MENU_OPEN_FRIENDS_DESC"; \
+				exec "set ui_privacy_pref_icon menu_party_privacy_friends"
+
+		#define PRIVACY_INVITE_FOCUS \
+				exec "set ui_privacy_pref @MPUI_INVITE_ONLY"; \
+				exec "set ui_privacy_pref_desc @MENU_INVITE_ONLY_DESC"; \
+				exec "set ui_privacy_pref_icon menu_party_privacy_invite";
+
+		#define PRIVACY_CLOSE_FOCUS \
+				exec "set ui_privacy_pref @MPUI_CLOSE"; \
+				exec "set ui_privacy_pref_desc @MENU_CLOSE_DESC"; \
+				exec "set ui_privacy_pref_icon menu_party_privacy_close";
+
+#ifdef PS3
+		CHOICE_BUTTON_FOCUS_VIS_EX( 1, "@MPUI_INVITE_ONLY", close self; PARTY_PRIVACY_INVITEONLY, PRIVACY_INVITE_FOCUS;, ;, 1, FOCUS_CHECK( 2 ) )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 2, "@MPUI_CLOSE", close self; PARTY_PRIVACY_CLOSE, PRIVACY_CLOSE_FOCUS;, ;, 1, FOCUS_CHECK( 3 ) )		
+#else
+		CHOICE_BUTTON_FOCUS_VIS_EX( 1, "@MPUI_OPEN", close self; PARTY_PRIVACY_OPEN, PRIVACY_OPEN_FOCUS;, ;, 1, FOCUS_CHECK( 0 ) )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 2, "@MPUI_OPEN_FRIENDS", close self; PARTY_PRIVACY_OPEN2FRIENDS, PRIVACY_FRIENDS_FOCUS;, ;,1, FOCUS_CHECK( 1 )  )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 3, "@MPUI_INVITE_ONLY", close self; PARTY_PRIVACY_INVITEONLY, PRIVACY_INVITE_FOCUS;, ;, 1, FOCUS_CHECK( 2 )  )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 4, "@MPUI_CLOSE", close self; PARTY_PRIVACY_CLOSE, PRIVACY_CLOSE_FOCUS;, ;, 1, FOCUS_CHECK( 3 )  )
+#endif	
+
+
+		THIRD_RIGHT_COL_GRADIENT
+		PREPROC_GRADIENT_DRAW_ALIGNED( 0, -5, 185, (115+45), HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, "menu_button_backing", 0 0 0 0.5 )
+
+		//icon
+		PREPROC_SHADER_DRAW_ALIGNED( -170 45 128 128 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, dvarString( ui_privacy_pref_icon ), 1 1 1 1, 0, 0, 0 0 0 0 )
+		//name
+		PREPROC_TEXT_DRAW_ALIGNED( 3 -7 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, exp text( dvarString( ui_privacy_pref ) ), TEXTSIZE_DEFAULT, 0, 0, ITEM_ALIGN_LEFT, COLOR_FOCUSED )
+		//description
+		PREPROC_TEXT_DRAW_ALIGNED( 3 10 185 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, exp text( dvarString( ui_privacy_pref_desc ) ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_DESC_TEXT )
+	}
+
+#ifdef XENON
+
+	#define FOCUS_CHECK_SEARCH_PREF( pnum ) \
+		dvartest "geographicalMatchmaking" focusdvar { pnum }
+
+	menuDef
+	{
+		name			popup_geographicalMatchmaking
+		rect			0 0 640 470 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen			{ setfocusbydvar "geographicalMatchmaking"; setdvar invite_visible "0"; }
+		onEsc			{ close self; }
+		onClose			{ exec "updategamerprofile"; setdvar invite_visible "1" }
+
+		// background from overlaybg.inc
+		OVERLAY_BACKGROUND
+		#include "ui_mp/navcontrols.inc"
+
+		#define ANY_LOCALE_FOCUS \
+				exec "set ui_search_pref @MPUI_ANY_LOCALE";  \
+				exec "set ui_search_pref_desc @MPUI_ANY_LOCALE_DESC"; \
+				exec "set ui_search_pref_icon menu_matchmaking_locale_any"	
+
+		#define LOCALE_PREFERRED_FOCUS \
+				exec "set ui_search_pref @MPUI_LOCALE_PREFERRED"; \
+				exec "set ui_search_pref_desc @MPUI_LOCALE_PREFERRED_DESC"; \
+				exec "set ui_search_pref_icon menu_matchmaking_locale_preferred"
+
+		#define LOCALE_ONLY_FOCUS \
+				exec "set ui_search_pref @MPUI_LOCALE_ONLY"; \
+				exec "set ui_search_pref_desc @MPUI_LOCALE_ONLY_DESC"; \
+				exec "set ui_search_pref_icon menu_matchmaking_locale";
+
+		CHOICE_OVERLAY_TITLE( "@MPUI_MATCHMAKING_OPTIONS" )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 1, "@MPUI_ANY_LOCALE", close self; execNow "geographicalMatchmaking 0";, ANY_LOCALE_FOCUS, ;, 1, FOCUS_CHECK_SEARCH_PREF( 0 ) )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 2, "@MPUI_LOCALE_PREFERRED", close self; execNow "geographicalMatchmaking 1";, LOCALE_PREFERRED_FOCUS, ;, 1, FOCUS_CHECK_SEARCH_PREF( 1 ) )
+		CHOICE_BUTTON_FOCUS_VIS_EX( 3, "@MPUI_LOCALE_ONLY", close self; execNow "geographicalMatchmaking 2";, LOCALE_ONLY_FOCUS, ;, 1, FOCUS_CHECK_SEARCH_PREF( 2 ) )
+
+		THIRD_RIGHT_COL_GRADIENT
+		PREPROC_GRADIENT_DRAW_ALIGNED( 0, -5, 185, (115+45), HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, "menu_button_backing", 0 0 0 0.5 )
+
+		//icon
+		PREPROC_SHADER_DRAW_ALIGNED( -170 45 128 128 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, dvarString( ui_search_pref_icon ), 1 1 1 1, 0, 0, 0 0 0 0 )
+		//name
+		PREPROC_TEXT_DRAW_ALIGNED( 3 -7 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, exp text( dvarString( ui_search_pref ) ), TEXTSIZE_DEFAULT, 0, 0, ITEM_ALIGN_LEFT, COLOR_FOCUSED )
+		//description
+		PREPROC_TEXT_DRAW_ALIGNED( 3 10 185 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, exp text( dvarString( ui_search_pref_desc ) ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_DESC_TEXT )
+	}
+#endif // #ifdef XENON
+}

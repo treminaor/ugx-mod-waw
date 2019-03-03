@@ -1,0 +1,67 @@
+//====================================
+// Vid restart for single player only
+//====================================
+
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			150
+
+#define CHOICE_GROUP			"apply_settings"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#include "ui_mp/popupstyle.inc"	
+#include "ui/choices_setup_popmenu.menu"
+
+#undef CHOICE_SIZE_X
+#define CHOICE_SIZE_X			180
+
+#undef CHOICE_POPUP_TITLE_HEIGHT
+#define CHOICE_POPUP_TITLE_HEIGHT	24
+	
+#undef CHOICE_HORIZONTAL_ALIGN
+#define CHOICE_HORIZONTAL_ALIGN	HORIZONTAL_ALIGN_LEFT
+#undef CHOICE_VERTICAL_ALIGN
+#define CHOICE_VERTICAL_ALIGN	VERTICAL_ALIGN_TOP
+
+#undef CHOICE_X_START
+#define CHOICE_X_START			78
+#undef CHOICE_Y_START
+#define CHOICE_Y_START			230
+
+{
+	menuDef 
+	{
+		CENTER_POPUP_SETUP( vid_restart_popmenu, 3, ;, 1 )
+		//CENTER_POPUP_SETUP_ONOPEN( vid_restart_popmenu, 3, 230, 170, ;, 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_APPLY_SETTINGS" )
+
+		CHOICE_BUTTON( 2, "@MENU_YES", exec "exec options_graphics_set.cfg"; close self; exec "vid_restart" )
+		CHOICE_BUTTON( 3, "@MENU_NO", close self )
+	}
+
+	menuDef 
+	{
+		CENTER_POPUP_SETUP( vid_restart_popmenu_listen, 3, ;, 1 )
+		//CENTER_POPUP_SETUP_ONOPEN( vid_restart_popmenu_listen, 3, 230, 170, ;, 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_APPLY_SETTINGS" )
+
+		CHOICE_BUTTON( 2, "@MENU_YES", exec "exec options_graphics_set.cfg"; close self; exec "vid_restart" )
+		CHOICE_BUTTON( 3, "@MENU_NO", close self )
+	}
+
+	menuDef 
+	{
+		CENTER_POPUP_SETUP( vid_restart_popmenu_dead, 3, ;, 1 )
+		//CENTER_POPUP_SETUP_ONOPEN( vid_restart_popmenu_dead, 2, 230, 170, ;, 1 )
+
+		CHOICE_POPMENU_TITLE( "@MENU_CANT_CHANGE_SETTINGS_WHILE_DEAD" )
+
+		CHOICE_BUTTON( 3, "@MENU_OK", close self )
+	}
+}

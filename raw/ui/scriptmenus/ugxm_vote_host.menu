@@ -1,0 +1,1540 @@
+#include "ui/menudef.h"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+
+{
+	menuDef
+	{
+		#undef CHOICE_POPUP_TITLE_HEIGHT
+		#define CHOICE_POPUP_TITLE_HEIGHT	20
+
+		#undef CHOICE_SIZE_X
+		#define CHOICE_SIZE_X			180
+
+		#undef CHOICE_Y_START
+		#define CHOICE_Y_START			230
+		
+		CENTER_POPUP_SETUP_ONOPEN( ugxm_gamemode_not_allowed, 3, ;, ;, 1 )
+		CHOICE_POPMENU_TITLE( "Gamemode Disabled" )
+		CHOICE_POPMENU_SUBTITLE( "This gamemode has been disabled by the map maker." )
+		
+		CHOICE_BUTTON( 3, "OK", close self; )
+	}
+	
+	menuDef
+	{
+		name				"ugxm_vote_host"		
+		rect				FULLSCREEN_WIDE
+		focuscolor			1 1 1 1
+		disablecolor		0 0 0 0
+ 		style				WINDOW_STYLE_SHADER
+		background			"ugx_menu_overlay"
+		
+		onOpen
+		{
+			////setDvar ui_hint_quit 1;
+			//open verify_identity_menu;
+			setDvar ugxm_host_menu 1;
+			setLocalVarInt ugx_mutator_0 0;
+			setLocalVarInt ugx_mutator_1 0;
+			setLocalVarInt ugx_mutator_2 0;
+			setLocalVarInt ugx_mutator_3 0;
+			setLocalVarInt ugx_mutator_4 0;
+			setLocalVarInt ugx_mutator_5 0;
+			setLocalVarInt ugx_mutator_6 0;
+			setLocalVarInt ugx_mutator_7 0;
+			setLocalVarInt ugx_mutator_8 0;
+			setLocalVarInt ugx_mutator_9 0;
+			setLocalVarInt ugx_mutator_10 0;
+			setLocalVarInt ugx_mutator_11 0;
+			setLocalVarInt ugx_mutator_12 0;
+			setLocalVarInt ugx_mutator_13 0;
+			setLocalVarInt ugx_mutator_14 0;
+			setLocalVarInt ugx_mutator_15 0;
+			setLocalVarInt ugx_mutator_16 0;
+			setLocalVarInt ugx_mutator_17 0;
+			setLocalVarInt ugx_gamemode 0;
+			setLocalVarInt ugx_timed 0;
+			setLocalVarInt ugx_obj 0;
+			setLocalVarInt ugx_time_limit 0;
+			setLocalVarInt ugx_game_speed 1;
+			setLocalVarInt ugx_teams 0;
+			setLocalVarInt ugx_setting_0 0;
+			setLocalVarInt ugx_setting_1 0;
+			setLocalVarInt ugx_setting_2 0;
+			setLocalVarInt ugx_setting_3 0;
+			setLocalVarInt ugx_setting_4 0;
+			setLocalVarInt ugx_setting_5 0;
+			setLocalVarInt ugx_setting_6 0;
+			setLocalVarInt ugx_setting_7 0;
+			setLocalVarInt stackOffset 0;
+			setLocalVarInt page_num 0;
+			setLocalVarInt show_mutator_unlock_hint 0;
+
+			setdvar ui_hint_text ""
+
+			setdvar ugx_time_limit_slider 5;
+			setdvar ugxm_player_weaponame "0";
+			setdvar ugxm_player_weapocolor "none";
+			setdvar ugxm_player_ammo_clip "0";
+			setdvar ugxm_player_ammo_stock "0";
+			setdvar ugxm_player_ammo_grenade "0";
+			setdvar ugxm_player_ammo_secondgrenade "0";
+			setdvar ugxm_player_show_ammo "1";
+			setdvar ugxm_player_clip_ammo_low "0";
+			setdvar ugxm_player_stock_ammo_low "0";
+			setdvar ugxm_player_index "0";
+			setdvar ugxm_player_0_name "0";
+			setdvar ugxm_player_1_name "0";
+			setdvar ugxm_player_2_name "0";
+			setdvar ugxm_player_3_name "0";
+			setdvar ugxm_player_hatchet_hud "0";
+			setdvar ugxm_player_0_score "-1";
+			setdvar ugxm_player_1_score "-1";
+			setdvar ugxm_player_2_score "-1";
+			setdvar ugxm_player_3_score "-1";
+			setdvar ugxmenu_objectives	"No";
+			setdvar ugxmenu_timedgp	"No";
+			setdvar ugxmenu_buyabledoors "No";
+			setdvar ugxmenu_gamespeed "Normal";
+			setdvar ugxmenu_gamespeed_mult "(1x)";
+			setdvar ugxmenu_degredation "Enabled";
+			setdvar ugxm_cheats 1; //this will toggle all cheat mutator visibility - currently I have no use for it, but it's here in case.
+
+			execOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+			exec "setfromdvar cg_fov ugx_client_fov";
+
+			////execondvarintvalue dw_active 0 "set dw_active 1"; // BETA LOCK ONLY
+
+			focusFirst; // BETA LOCK ONLY - UNCOMMENT ONCE PROTECTION IS REMOVED. COMMENTED BECAUSE IT TAKES FOCUS AWAY FROM THE POPUP FOR X360 USERS
+
+			//_BETA_POPUP_AUTHORIZATION_XBOX_FOCUS_
+		}
+		onClose
+		{
+			setDvar ugxm_host_menu 0;
+
+			execOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+
+			////execondvarintvalue dw_active 0 "disconnect"; // BETA LOCK ONLY
+			////execondvarintvalue dw_loggedin 0 "disconnect"; // BETA LOCK ONLY
+			////execOnDvarIntValue ui_hint_quit 1 "disconnect"; // BETA LOCK ONLY
+
+			exec "setfromdvar cg_fov ugx_client_fov";
+		}
+		onEsc
+		{
+		}
+
+		#define ACTION_NOSAVE_QUIT \
+			play "mouse_click"; \
+			close self; \
+			setdvar ui_skipMainLockout "1"; \
+			exec "disconnect"; 
+		
+		
+		#undef CHOICE_SIZE_X
+		#undef CHOICE_SIZE_Y
+		#define CHOICE_SIZE_X								140
+		#define CHOICE_SIZE_Y								20
+		#undef CHOICE_TEXTCOLOR
+		#define CHOICE_TEXTCOLOR 					1 0 0 1//0.8 0.8 0.8 1
+		#undef HIGHLIGHT_BORDER_COLOR
+		#define HIGHLIGHT_BORDER_COLOR	0 0 0 0
+		#undef HIGHLIGHT_COLOR
+		#define HIGHLIGHT_COLOR			1 0 0 0.5
+		#undef BUTTON_BG_COLOR
+		#define BUTTON_BG_COLOR			0 0 0 0
+		
+		#define TIMED_GP ((localvarInt( ugx_timed ) == 1 && localvarInt(ugx_gamemode) != 3 && localvarInt(ugx_gamemode) != 4 && localvarInt(ugx_gamemode) != 5 && localvarInt(ugx_gamemode) != 6) || localvarInt(ugx_gamemode) == 3 || localvarInt(ugx_gamemode) == 4)
+		#define NOT_TIMED_GP (localvarInt( ugx_timed ) == 0 && localvarInt(ugx_gamemode) != 3 && localvarInt(ugx_gamemode) != 4 && localvarInt(ugx_gamemode) != 5 && localvarInt(ugx_gamemode) != 6)
+		#define OBJECTIVES (localvarInt( ugx_obj ) == 1)
+		#define NON_OBJECTIVES (localvarInt( ugx_obj ) == 0)
+		#define GAMEMODE (localvarInt(ugx_gamemode))
+		
+		#define ON_DISABLED_MODE ((dvarBool(ugxm_allow_classic) == 0 && GAMEMODE == 0) || (dvarBool(ugxm_allow_gungame) == 0 && GAMEMODE == 1) || (dvarBool(ugxm_allow_arcademode) == 0 && GAMEMODE == 2) || (dvarBool(ugxm_allow_sharpshooter) == 0 && GAMEMODE == 3) || (dvarBool(ugxm_allow_bountyhunter) == 0 && GAMEMODE == 4) || (dvarBool(ugxm_allow_kingofthehill) == 0 && GAMEMODE == 5) || (dvarBool(ugxm_allow_chaos) == 0 && GAMEMODE == 6))
+		#define ON_ENABLED_MODE ((dvarBool(ugxm_allow_classic) == 1 && GAMEMODE == 0) || (dvarBool(ugxm_allow_gungame) == 1 && GAMEMODE == 1) || (dvarBool(ugxm_allow_arcademode) == 1 && GAMEMODE == 2) || (dvarBool(ugxm_allow_sharpshooter) == 1 && GAMEMODE == 3) || (dvarBool(ugxm_allow_bountyhunter) == 1 && GAMEMODE == 4) || (dvarBool(ugxm_allow_kingofthehill) == 1 && GAMEMODE == 5) || (dvarBool(ugxm_allow_chaos) == 1 && GAMEMODE == 6))
+		
+		#define NO_GAMEMODES_ALLOWED (dvarBool(ugxm_allow_gungame) == 0 && dvarBool(ugxm_allow_classic) == 0 && dvarBool(ugxm_allow_sharpshooter) == 0 && dvarBool(ugxm_allow_arcademode) == 0 && dvarBool(ugxm_allow_bountyhunter) == 0)
+		#define GAMEMODES_ALLOWED (dvarBool(ugxm_allow_gungame) == 1 || dvarBool(ugxm_allow_classic) == 1 || dvarBool(ugxm_allow_sharpshooter) == 1 || dvarBool(ugxm_allow_arcademode) == 1 && dvarBool(ugxm_allow_bountyhunter) == 1 && dvarBool(ugxm_allow_kingofthehill) == 1 && dvarBool(ugxm_allow_chaos) == 1)
+		
+		#define HAS_TIME_LIMIT (GAMEMODE == 3 || GAMEMODE == 4 || GAMEMODE == 6)
+		#define DOESNT_HAVE_TIME_LIMIT (GAMEMODE == 0 || GAMEMODE == 1 || GAMEMODE == 2)
+		#define HAS_TIME_LIMIT_BUT_IS_UNLIMITED_OR_NONE  ((HAS_TIME_LIMIT && TIME_LIMIT_IS_UNLIMITED) || DOESNT_HAVE_TIME_LIMIT)
+		
+		
+		
+		#define MAP_HAS_TEAMS 								(GAMEMODE == 5)
+		#define MAP_HAS_ADJUSTABLE_TIME_ABILITY 			(GAMEMODE == 3 || GAMEMODE == 4 || GAMEMODE == 5)
+		#define MAP_DOESNT_HAVE_ADJUSTABLE_TIME_ABILITY 	(GAMEMODE == 0 || GAMEMODE == 1 || GAMEMODE == 2)
+		#define MAP_HAS_ADJUSTABLE_SPEED_ABILITY 			(GAMEMODE == 1)
+		#define MAP_DOESNT_HAVE_ADJUSTABLE_SPEED_ABILITY 	(GAMEMODE == 0 || GAMEMODE == 2 || GAMEMODE == 3 || GAMEMODE == 4 || GAMEMODE == 5 || GAMEMODE == 6)
+		#define TIME_LIMIT_IS_UNLIMITED 					(localvarInt(ugx_time_limit) == 4) // this is if it "has a time limit" but its set to unlimited by the user
+		#define TIME_LIMIT_IS_NOT_UNLIMITED 				(localvarInt(ugx_time_limit) != 4 && localvarInt(ugx_time_limit) != 6)
+		
+		#define IS_TIMED_GAMEPLAY_FORCED 					(MAP_HAS_ADJUSTABLE_TIME_ABILITY && TIME_LIMIT_IS_NOT_UNLIMITED)
+		#define IS_TIMED_GAMEPLAY_CHANGEABLE 				(((MAP_HAS_ADJUSTABLE_TIME_ABILITY && TIME_LIMIT_IS_UNLIMITED) || MAP_DOESNT_HAVE_ADJUSTABLE_TIME_ABILITY) && dvarBool(ugxm_allow_timed_gameplay) == 1)
+		#define IS_TIMED_GAMEPLAY_DISABLED					(((MAP_HAS_ADJUSTABLE_TIME_ABILITY && TIME_LIMIT_IS_UNLIMITED) || MAP_DOESNT_HAVE_ADJUSTABLE_TIME_ABILITY) && dvarBool(ugxm_allow_timed_gameplay) == 0)
+		
+		#define IS_COMPETITIVE_GAMEMODE						(localvarInt(ugx_gamemode) == 1 || localvarInt(ugx_gamemode) == 3 || localvarInt(ugx_gamemode) == 4 || localvarInt(ugx_gamemode) == 5 || localvarInt(ugx_gamemode) == 6)
+		#define IS_NOT_COMPETITIVE_GAMEMODE					(localvarInt(ugx_gamemode) != 1 && localvarInt(ugx_gamemode) != 3 && localvarInt(ugx_gamemode) != 4 && localvarInt(ugx_gamemode) != 5 || localvarInt(ugx_gamemode) != 6)
+
+		#define FORCE_NO_OBJECTIVES							(localvarInt(ugx_gamemode) != 6)
+		
+		#define TEXT_X_START 114//114
+		#define TEXT_Y_START 10
+
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START TEXT_Y_START 400 200 
+			origin 			TEXT_X_START TEXT_Y_START
+			forecolor		.8 .8 .8 1
+			exp text		dvarstring(ugxm_player_1)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			exp visible 	(dvarInt(ugxm_players) > 1)
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START (TEXT_Y_START+10) 400 200 
+			origin 			TEXT_X_START (TEXT_Y_START+10)
+			forecolor		.8 .8 .8 1
+			exp text 		dvarstring(ugxm_player_2)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			exp visible 	(dvarInt(ugxm_players) > 2)
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			visible			1
+			rect			TEXT_X_START (TEXT_Y_START+20) 400 200 
+			origin 			TEXT_X_START (TEXT_Y_START+20)
+			forecolor		.8 .8 .8 1
+			exp text 		dvarstring(ugxm_player_3)
+			textfont		UI_FONT_NORMAL
+			textscale		.3
+			exp visible 	(dvarInt(ugxm_players) > 3)
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"options_bg"
+						// 33.4% 16.5%
+			rect			-162 88 540 305 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+			//rect			-214 58 640 350 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+	 		style			WINDOW_STYLE_FILLED
+	 		border			1
+			bordersize		1
+			bordercolor		0.9 0.9 0.9 0.85
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0.8
+			visible			1
+			decoration
+		}
+
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START 270//450
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START 100
+
+		//This allows me to take advantage of columns without it actually moving the buttons into columns.
+		#undef CHOICE_X_SPACING
+		#define CHOICE_X_SPACING 0
+
+		#define CHOICE_BUTTON_VIS_NOHI_EX( itemIndex, textArg, hintArg, actionArg, visArg, extraArgs ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			extraArgs \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+			onFocus 		{ setLocalvarString ui_hint_text hintArg } \
+			leaveFocus 		{ setLocalvarString ui_hint_text "" } \
+		} 
+
+		// BETA LOCK ONLY
+		#define CHOICE_BUTTON_VIS_NOHI_EX_DIS( itemIndex, textArg, hintArg, actionArg, visArg, extraArgs ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_TEXTCOLOR_DISABLED \
+			visible			visArg \
+			extraArgs \
+			mouseEnter { play "mouse_over"; setLocalVarInt show_locked_hint 1; } \
+			mouseExit { setLocalVarInt show_locked_hint 0; } \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+			onFocus 		{ setLocalvarString ui_hint_text hintArg } \
+			leaveFocus 		{ setLocalvarString ui_hint_text "" } \
+		} 
+
+		// REQUIEM LOCK ONLY - These are no different than other buttons, its just for simplicity's sake later on when I have to delete them.
+		#define CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM( itemIndex, textArg, actionArg, visArg, extraArgs ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			extraArgs \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+		} 
+		#define CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM_DIS( itemIndex, textArg, actionArg, visArg, extraArgs ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_TEXTCOLOR_DISABLED \
+			visible			visArg \
+			extraArgs \
+			decoration \
+			mouseEnter { play "mouse_over"; setLocalVarInt show_not_yet_hint 1; } \
+			mouseExit { setLocalVarInt show_not_yet_hint 0; } \
+			CHOICE_SCRIPTS_ALL( itemIndex, ;, ;, ; ) \
+		} 
+
+		#define FOCUS_STARTBUTTON setFocus "StartGame0";setFocus "StartGame1";setFocus "StartGame2";setFocus "StartGame3";setFocus "StartGame4";setFocus "StartGame5";setFocus "StartGame6";setFocus "StartGame7";setFocus "StartGame8";setFocus "StartGame9";setFocus "StartGame10";setFocus "StartGame11";setFocus "StartGame12";
+
+		#define UP_NAV( pname, to )\
+				name pname \
+				execkeyint DPAD_UP { setfocus to; } \
+				execkeyint APAD_UP { setfocus to; }
+		
+		#define DOWN_NAV( pname, to )\
+				name pname \
+				execkeyint DPAD_DOWN { setfocus to; } \
+				execkeyint APAD_DOWN { setfocus to; }	
+
+		#define DOWN_NAVSTART( pname, to )\
+				name pname \
+				execkeyint DPAD_DOWN { FOCUS_STARTBUTTON; } \
+				execkeyint APAD_DOWN { FOCUS_STARTBUTTON }	
+
+		#define LEFT_NAV( pname, to )\
+				name pname \
+				execkeyint DPAD_LEFT { setfocus to; } \
+				execkeyint APAD_LEFT { setfocus to; }	
+
+		#define LEFT_NAV_EX( pname, a, b)\
+				name pname \
+				execkeyint DPAD_LEFT { setfocus a; setfocus b; } \
+				execkeyint APAD_LEFT { setfocus a; setfocus b; } 
+
+		#define LEFT_NAV_EX_9( pname, a, b, c, d, e, f, g, h, i)\
+				name pname \
+				execkeyint DPAD_LEFT { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; setfocus i; } \
+				execkeyint DPAD_LEFT { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; setfocus i; } 
+
+		#define RIGHT_NAV( pname, to )\
+				name pname \
+				execkeyint DPAD_RIGHT { setfocus to; } \
+				execkeyint APAD_RIGHT { setfocus to; }	
+
+		#define RIGHT_NAVSTART( pname, to )\
+				name pname \
+				execkeyint DPAD_RIGHT { FOCUS_STARTBUTTON; } \
+				execkeyint APAD_RIGHT { FOCUS_STARTBUTTON }	
+
+		#define RIGHT_NAV_EX( pname, a, b)\
+				name pname \
+				execkeyint DPAD_RIGHT { setfocus a; setfocus b; } \
+				execkeyint APAD_RIGHT { setfocus a; setfocus b; } 
+
+		#define RIGHT_NAV_EX_3( pname, a, b, c )\
+				name pname \
+				execkeyint DPAD_RIGHT { setfocus a; setfocus b; setfocus c; } \
+				execkeyint APAD_RIGHT { setfocus a; setfocus b; setfocus c; } 
+
+		//Parameter ordering: Most likely to be next selection go first, least likely go last. See Start Game button for perfect example where order is crucial
+		#define UP_NAV_EX_6( pname, a, b, c, d, e, f)\
+				name pname \
+				execkeyint DPAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; } \
+				execkeyint APAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; } 
+
+		#define UP_NAV_EX_7( pname, a, b, c, d, e, f, g)\
+				name pname \
+				execkeyint DPAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; } \
+				execkeyint APAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; } 
+
+		#define UP_NAV_EX_8( pname, a, b, c, d, e, f, g, h)\
+				name pname \
+				execkeyint DPAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; } \
+				execkeyint APAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; } 
+
+		#define UP_NAV_EX_9( pname, a, b, c, d, e, f, g, h, i)\
+				name pname \
+				execkeyint DPAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; setfocus i; } \
+				execkeyint APAD_UP { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; setfocus g; setfocus h; setfocus i; } 
+
+		#define UP_NAV_EX_3( pname, a, b, c)\
+				name pname \
+				execkeyint DPAD_UP { setfocus a; setfocus b; setfocus c; } \
+				execkeyint APAD_UP { setfocus a; setfocus b; setfocus c; } 
+
+		#define DOWN_NAV_EX_3( pname, a, b, c)\
+				name pname \
+				execkeyint DPAD_DOWN { setfocus a; setfocus b; setfocus c; } \
+				execkeyint APAD_DOWN { setfocus a; setfocus b; setfocus c; } 
+
+		#define DOWN_NAV_EX_5( pname, a, b, c, d, e)\
+				name pname \
+				execkeyint DPAD_DOWN { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; } \
+				execkeyint APAD_DOWN { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; } 
+
+		#define DOWN_NAV_EX_5START( pname, a, b, c, d, e)\
+				name pname \
+				execkeyint DPAD_DOWN { FOCUS_STARTBUTTON setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; } \
+				execkeyint APAD_DOWN { FOCUS_STARTBUTTON setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; } 
+
+		#define DOWN_NAV_EX_6( pname, a, b, c, d, e, f)\
+				name pname \
+				execkeyint DPAD_DOWN { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; } \
+				execkeyint APAD_DOWN { setfocus a; setfocus b; setfocus c; setfocus d; setfocus e; setfocus f; } 
+
+		#define UP_NAV_EX( pname, a, b)\
+				name pname \
+				execkeyint DPAD_UP { setfocus a; setfocus b; } \
+				execkeyint APAD_UP { setfocus a; setfocus b; } 
+
+		#define DOWN_NAV_EX( pname, a, b)\
+				name pname \
+				execkeyint DPAD_DOWN { setfocus a; setfocus b; } \
+				execkeyint APAD_DOWN { setfocus a; setfocus b; } 
+
+		
+		CHOICE_BUTTON_VIS_NOHI_EX( 7, "Exit to Main Menu", 	;, ACTION_NOSAVE_QUIT,  when(1);, UP_NAV_EX_7("Exit", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation"); RIGHT_NAVSTART("Exit", "StartGame"); )
+		
+		#undef CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START							116
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START							-155//-114 //-117 //closer to 0 is farther to right
+
+		#undef CHOICE_Y_SPACING
+		#define CHOICE_Y_SPACING		20
+
+		#define CHOICE_SELECTED_COLOR 	1 .75 0 1
+		#define CHOICE_UNSELECTED_COLOR	1 0 0 1
+
+		#define RESET_ALL_MENU_SETTINGS setLocalVarInt ugx_mutator_0 0; setLocalVarInt ugx_mutator_1 0; setLocalVarInt ugx_mutator_2 0; setLocalVarInt ugx_mutator_3 0; setLocalVarInt ugx_mutator_4 0; setLocalVarInt ugx_mutator_5 0; setLocalVarInt ugx_mutator_6 0; setLocalVarInt ugx_mutator_7 0; setLocalVarInt ugx_mutator_8 0; setLocalVarInt ugx_mutator_9 0; setLocalVarInt ugx_mutator_10 0; setLocalVarInt ugx_mutator_11 0; setLocalVarInt ugx_mutator_12 0; setLocalVarInt ugx_mutator_13 0; setLocalVarInt ugx_mutator_14 0; setLocalVarInt ugx_mutator_15 0; setLocalVarInt ugx_mutator_16 0; setLocalVarInt ugx_mutator_17 0; setlocalVarInt ugx_setting_0 0; setlocalVarInt ugx_setting_1 0; setlocalVarInt ugx_setting_2 0; setlocalVarInt ugx_setting_3 0; setlocalVarInt ugx_setting_4 0; setlocalVarInt ugx_setting_5 0; setlocalVarInt ugx_setting_6 0; setlocalVarInt ugx_setting_7 0; setlocalVarInt ugx_setting_8 0; setlocalVarInt ugx_setting_9 0; setlocalVarInt ugx_setting_10 0; setlocalVarInt ugx_setting_11 0; setlocalVarInt ugx_setting_12 0;  
+
+
+		#define CHOICE_BUTTON_YELLOW( itemIndex, textArg, hintArg, actionArg, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_SELECTED_COLOR \
+			visible			visArg \
+			extraArg \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+			onFocus 		{ setLocalvarString ui_hint_text hintArg } \
+			leaveFocus 		{ setLocalvarString ui_hint_text "" } \
+		} \
+
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			-112 96 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			text 			"Gamemode:"
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		0.4
+			textalign		ITEM_ALIGN_TOP_CENTER
+			visible			1
+			decoration
+		}
+		
+		// REQUIEM LOCK ONLY - script controls which gamemodes are unlocked.
+		#define CLASSIC_HAS_BEEN_PLAYED (dvarBool(ugx_requiem_unlocked) == 1)
+		#define CLASSIC_HAS_NOT_BEEN_PLAYED (dvarBool(ugx_requiem_unlocked) != 1)
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 1, "None Allowed", 				;, 	play "mouse_click";, 																												when(NO_GAMEMODES_ALLOWED);, DOWN_NAV("G1", "S1"); )
+
+		// After Requiem just delete the requiem lines and uncomment the original lines.
+		CHOICE_BUTTON_VIS_NOHI_EX( 1, "Classic", 						ui_hint_g_0, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "cl"; setLocalVarInt ugx_gamemode 0; setLocalVarInt stackOffset 0; setFocus "Classic_Y";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 0);, DOWN_NAV_EX("Classic", "Gungame", "Gungame_Y"); 											RIGHT_NAV_EX_3("Classic", "M1A", "M1B", "M1C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX( 2, "Gungame", 						ui_hint_g_1, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "gg"; setLocalVarInt ugx_gamemode 1; setLocalVarInt stackOffset 1; setFocus "Gungame_Y";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 1);, DOWN_NAV_EX("Gungame", "Arcade", "Arcade_Y"); UP_NAV_EX("Gungame", "Classic", "Classic_Y"); RIGHT_NAV_EX_3("Gungame", "M2A", "M2B", "M2C"); )
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM( 2, "Gungame", 				play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "gg"; setLocalVarInt ugx_gamemode 1; setLocalVarInt stackOffset 1; setFocus "Gungame_Y";, 	when(CLASSIC_HAS_BEEN_PLAYED && localVarInt(ugx_gamemode) != 1);, DOWN_NAV_EX("Gungame", "Arcade", "Arcade_Y"); UP_NAV_EX("Gungame", "Classic", "Classic_Y"); RIGHT_NAV_EX_3("Gungame", "M2A", "M2B", "M2C"); )
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM_DIS( 2, "Gungame", 			play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "gg"; setLocalVarInt ugx_gamemode 1; setLocalVarInt stackOffset 1; setFocus "Gungame_Y";, 	when(CLASSIC_HAS_NOT_BEEN_PLAYED && localVarInt(ugx_gamemode) != 1);, DOWN_NAV_EX("Gungame", "Arcade", "Arcade_Y"); UP_NAV_EX("Gungame", "Classic", "Classic_Y"); RIGHT_NAV_EX_3("Gungame", "M2A", "M2B", "M2C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX( 3, "Arcademode", 					ui_hint_g_2, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ar"; setLocalVarInt ugx_gamemode 2; setLocalVarInt stackOffset 0; setFocus "Arcade_Y";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 2);, DOWN_NAV_EX("Arcade", "King", "King_Y"); UP_NAV_EX("Arcade", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX_3("Arcade", "M3A", "M3B", "M3C"); 	)
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM( 3, "Arcademode", 			play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ar"; setLocalVarInt ugx_gamemode 2; setLocalVarInt stackOffset 0; setFocus "Arcade_Y";, 	when(CLASSIC_HAS_BEEN_PLAYED && localVarInt(ugx_gamemode) != 2);, DOWN_NAV_EX("Arcade", "King", "King_Y"); UP_NAV_EX("Arcade", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX_3("Arcade", "M3A", "M3B", "M3C"); 	)
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM_DIS( 3, "Arcademode", 		play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ar"; setLocalVarInt ugx_gamemode 2; setLocalVarInt stackOffset 0; setFocus "Arcade_Y";, 	when(CLASSIC_HAS_NOT_BEEN_PLAYED && localVarInt(ugx_gamemode) != 2);, DOWN_NAV_EX("Arcade", "King", "King_Y"); UP_NAV_EX("Arcade", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX_3("Arcade", "M3A", "M3B", "M3C"); 	)
+		// KoH BETA LOCK ONLY
+		//CHOICE_BUTTON_VIS_NOHI_EX( 4, "King of the Hill", 			ui_hint_g_5, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "kh"; setLocalVarInt ugx_gamemode 5; setLocalVarInt stackOffset 0; setFocus "King_Y";, 					when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 5);, DOWN_NAV_EX("King", "Sharp", "Sharp_Y"); UP_NAV_EX("King", "Arcade", "Arcade_Y");			RIGHT_NAV_EX_3("King", "M4A", "M4B", "M4C"); 	)
+		CHOICE_BUTTON_VIS_NOHI_EX_DIS( 4, "King of the Hill", 			ui_hint_g_5, play "mouse_click"; RESET_ALL_MENU_SETTINGS;, 																												when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 5);, DOWN_NAV_EX("King", "Sharp", "Sharp_Y"); UP_NAV_EX("King", "Arcade", "Arcade_Y");			RIGHT_NAV_EX_3("King", "M4A", "M4B", "M4C"); 	)
+		CHOICE_BUTTON_VIS_NOHI_EX( 5, "Sharpshooter",					ui_hint_g_3, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ss"; setLocalVarInt ugx_gamemode 3; setLocalVarInt stackOffset 1; setFocus "Sharp_Y";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 3);, DOWN_NAV_EX("Sharp", "Bounty", "Bounty_Y"); UP_NAV_EX("Sharp", "King","King_Y");			RIGHT_NAV_EX_3("Sharp", "M5A", "M5B", "M5C"); 	)
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM( 5, "Sharpshooter",			play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ss"; setLocalVarInt ugx_gamemode 3; setLocalVarInt stackOffset 1; setFocus "Sharp_Y";, 	when(CLASSIC_HAS_BEEN_PLAYED && localVarInt(ugx_gamemode) != 3);, DOWN_NAV_EX("Sharp", "Bounty", "Bounty_Y"); UP_NAV_EX("Sharp", "King","King_Y");			RIGHT_NAV_EX_3("Sharp", "M5A", "M5B", "M5C"); 	)
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM_DIS( 5, "Sharpshooter",		play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ss"; setLocalVarInt ugx_gamemode 3; setLocalVarInt stackOffset 1; setFocus "Sharp_Y";, 	when(CLASSIC_HAS_NOT_BEEN_PLAYED && localVarInt(ugx_gamemode) != 3);, DOWN_NAV_EX("Sharp", "Bounty", "Bounty_Y"); UP_NAV_EX("Sharp", "King","King_Y");			RIGHT_NAV_EX_3("Sharp", "M5A", "M5B", "M5C"); 	)
+		CHOICE_BUTTON_VIS_NOHI_EX( 6, "Bounty Hunter",					ui_hint_g_4, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "bh"; setLocalVarInt ugx_gamemode 4; setLocalVarInt stackOffset 0; setFocus "Bounty_Y";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 4);, DOWN_NAV_EX("Bounty", "CHAOS","CHAOS_Y"); UP_NAV_EX("Bounty", "Sharp","Sharp_Y"); 			RIGHT_NAV_EX_3("Bounty", "M6A", "M6B", "M6C"); 	)
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM( 6, "Bounty Hunter",		play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "bh"; setLocalVarInt ugx_gamemode 4; setLocalVarInt stackOffset 0; setFocus "Bounty_Y";, 	when(CLASSIC_HAS_BEEN_PLAYED && localVarInt(ugx_gamemode) != 4);, DOWN_NAV_EX("Bounty", "CHAOS","CHAOS_Y"); UP_NAV_EX("Bounty", "Sharp","Sharp_Y"); 			RIGHT_NAV_EX_3("Bounty", "M6A", "M6B", "M6C"); 	)
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM_DIS( 6, "Bounty Hunter",	play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "bh"; setLocalVarInt ugx_gamemode 4; setLocalVarInt stackOffset 0; setFocus "Bounty_Y";, 	when(CLASSIC_HAS_NOT_BEEN_PLAYED && localVarInt(ugx_gamemode) != 4);, DOWN_NAV_EX("Bounty", "CHAOS","CHAOS_Y"); UP_NAV_EX("Bounty", "Sharp","Sharp_Y"); 			RIGHT_NAV_EX_3("Bounty", "M6A", "M6B", "M6C"); 	)
+		CHOICE_BUTTON_VIS_NOHI_EX( 7, "CHAOS Mode",						ui_hint_g_6, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "cm"; setLocalVarInt ugx_gamemode 6; setLocalVarInt stackOffset 0; setFocus "CHAOS_Y";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) != 6);, DOWN_NAV_EX_5START("CHAOS", "Degredation", "Gamespeed", "Objectives", "TimeLimit", "Timed"); UP_NAV_EX("CHAOS", "Bounty", "Bounty_Y"); RIGHT_NAV_EX_3("CHAOS", "M7A", "M7B", "M7C"); )
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM( 7, "CHAOS Mode",			play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "cm"; setLocalVarInt ugx_gamemode 6; setLocalVarInt stackOffset 0; setFocus "CHAOS_Y";, 	when(CLASSIC_HAS_BEEN_PLAYED && localVarInt(ugx_gamemode) != 6);, DOWN_NAV_EX_5START("CHAOS", "Degredation", "Gamespeed", "Objectives", "TimeLimit", "Timed"); UP_NAV_EX("CHAOS", "Bounty", "Bounty_Y"); RIGHT_NAV_EX_3("CHAOS", "M7A", "M7B", "M7C"); )
+		//CHOICE_BUTTON_VIS_NOHI_EX_REQUIEM_DIS( 7, "CHAOS Mode",		play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "cm"; setLocalVarInt ugx_gamemode 6; setLocalVarInt stackOffset 0; setFocus "CHAOS_Y";, 	when(CLASSIC_HAS_NOT_BEEN_PLAYED && localVarInt(ugx_gamemode) != 6);, DOWN_NAV_EX_5START("CHAOS", "Degredation", "Gamespeed", "Objectives", "TimeLimit", "Timed"); UP_NAV_EX("CHAOS", "Bounty", "Bounty_Y"); RIGHT_NAV_EX_3("CHAOS", "M7A", "M7B", "M7C"); )
+
+		CHOICE_BUTTON_YELLOW( 1, "Classic", 							ui_hint_g_0, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "cl"; setLocalVarInt ugx_gamemode 0; setFocus "Classic";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 0);, DOWN_NAV_EX("Classic_Y", 	"Gungame", 	"Gungame_Y"); 														RIGHT_NAV_EX_3("Classic_Y", "M1A", "M1B", "M1C"); )
+		CHOICE_BUTTON_YELLOW( 2, "Gungame", 							ui_hint_g_1, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "gg"; setLocalVarInt ugx_gamemode 1; setFocus "Gungame";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 1);, DOWN_NAV_EX("Gungame_Y", 	"Arcade", 	"Arcade_Y"); 	UP_NAV_EX("Gungame_Y", 	"Classic", 	"Classic_Y"); 	RIGHT_NAV_EX_3("Gungame_Y", "M2A", "M2B", "M2C"); )
+		CHOICE_BUTTON_YELLOW( 3, "Arcademode", 							ui_hint_g_2, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ar"; setLocalVarInt ugx_gamemode 2; setFocus "Arcade";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 2);, DOWN_NAV_EX("Arcade_Y", 	"King", 	"King_Y"); 		UP_NAV_EX("Arcade_Y", 	"Gungame", 	"Gungame_Y"); 	RIGHT_NAV_EX_3("Arcade_Y", "M3A", "M3B", "M3C");  )
+		// KoH BETA LOCK ONLY	
+		//CHOICE_BUTTON_YELLOW( 4, "King of the Hill", 					ui_hint_g_5, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "kh"; setLocalVarInt ugx_gamemode 5; setFocus "King";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 5);, DOWN_NAV_EX("King_Y", 		"Sharp", 	"Sharp_Y"); 	UP_NAV_EX("King_Y", 	"Arcade", 	"Arcade_Y"); 	RIGHT_NAV_EX_3("King_Y", "M4A", "M4B", "M4C"); 	  )
+		CHOICE_BUTTON_YELLOW( 5, "Sharpshooter",						ui_hint_g_3, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "ss"; setLocalVarInt ugx_gamemode 3; setFocus "Sharp";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 3);, DOWN_NAV_EX("Sharp_Y", 		"Bounty", 	"Bounty_Y"); 	UP_NAV_EX("Sharp_Y", 	"King",		"King_Y"); 		RIGHT_NAV_EX_3("Sharp_Y", "M5A", "M5B", "M5C");   )
+		CHOICE_BUTTON_YELLOW( 6, "Bounty Hunter",						ui_hint_g_4, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "bh"; setLocalVarInt ugx_gamemode 4; setFocus "Bounty";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 4);, DOWN_NAV_EX("Bounty_Y", 	"CHAOS",	"CHAOS_Y"); 	UP_NAV_EX("Bounty_Y", 	"Sharp",	"Sharp_Y");	 	RIGHT_NAV_EX_3("Bounty_Y", "M6A", "M6B", "M6C");  )
+		CHOICE_BUTTON_YELLOW( 7, "CHAOS Mode",							ui_hint_g_6, play "mouse_click"; RESET_ALL_MENU_SETTINGS; scriptMenuResponse "cm"; setLocalVarInt ugx_gamemode 6; setFocus "CHAOS";, 	when(GAMEMODES_ALLOWED && localVarInt(ugx_gamemode) == 6);, DOWN_NAV_EX_5START("CHAOS_Y", "Degredation", "Gamespeed", "Objectives", "TimeLimit", "Timed"); UP_NAV_EX("CHAOS_Y", "Bounty", "Bounty"); RIGHT_NAV_EX_3("CHAOS_Y", "M7A", "M7B", "M7C"); )
+
+		itemDef	
+		{
+			name 			"gmode_0"
+			rect			-146 121 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 0);
+		}
+
+		itemDef	
+		{
+			name 			"gmode_1"
+			rect			-146 141 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 1);
+		}
+
+		itemDef	
+		{
+			name 			"gmode_2"
+			rect			-146 161 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 2);
+		}
+
+		itemDef	
+		{
+			name 			"gmode_3"
+			rect			-146 181 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 5);
+		}
+
+		itemDef	
+		{
+			name 			"gmode_4"
+			rect			-146 201 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 3);
+		}
+
+		itemDef	
+		{
+			name 			"gmode_5"
+			rect			-146 221 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 4);
+		}
+
+		itemDef	
+		{
+			name 			"gmode_6"
+			rect			-146 241 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(GAMEMODE == 6);
+		}
+
+		#define MUTATORS_START_X 50
+
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			MUTATORS_START_X 96 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			text 			"Mutators:"
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		0.4
+			textalign		ITEM_ALIGN_TOP_CENTER
+			visible			1
+			decoration
+		}
+
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START	MUTATORS_START_X - 35
+
+		#define CHOICE_RECT_PAGE( itemIndex ) CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X - 100) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN
+
+		#define CHOICE_BUTTON_PAGE( itemIndex, pageIndex, textArg, actionArg, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT_PAGE( itemIndex ) \
+			exp rect 		X(CHOICE_X(itemIndex) + 20 + (50 * pageIndex)) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg  \
+			extraArg \
+			CHOICE_SCRIPTS_ALL( itemIndex, play "mouse_click"; setLocalVarInt page_num pageIndex; actionArg;, ;, ; ) \
+		} \
+
+		#define CHOICE_BUTTON_PAGE_L( itemIndex, pageIndex, textArg, actionArg, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT_PAGE( itemIndex ) \
+			exp rect 		X(CHOICE_X(itemIndex) + 20 + (50 * pageIndex)) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			forecolor		.5 .5 .5 1 \
+			visible			visArg  \
+			extraArg \
+			mouseEnter { play "mouse_over"; setLocalVarInt show_mutator_unlock_hint 1; } \
+			mouseExit { setLocalVarInt show_mutator_unlock_hint 0; } \
+		} \
+
+		#define CHOICE_BUTTON_PAGE_C( itemIndex, pageIndex, textArg, actionArg, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT_PAGE( itemIndex ) \
+			exp rect 		X(CHOICE_X(itemIndex) + 20 + (50 * pageIndex)) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			forecolor		CHOICE_SELECTED_COLOR \
+			visible			visArg  \
+			extraArg \
+			CHOICE_SCRIPTS_ALL( itemIndex, play "mouse_click"; setLocalVarInt page_num pageIndex; actionArg; , ;, ; ) \
+		} \
+
+		//dynamic Y for stacking, allows me to have one button move between multiple positions
+		#define CHOICE_BUTTON_STACKABLE( itemIndex, textArg, actionArg, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp rect 		Y(CHOICE_Y( localVarint(stackOffset) + itemIndex ) - 20) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg  \
+			extraArg \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+		} \
+
+		#define CHOICE_BUTTON_STACKABLE_Y( itemIndex, textArg, actionArg, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp rect 		Y(CHOICE_Y( localVarint(stackOffset) + itemIndex ) - 20) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_SELECTED_COLOR \
+			visible			visArg  \
+			extraArg \
+			CHOICE_SCRIPTS_ALL( itemIndex, actionArg, ;, ; ) \
+		} \
+
+		#define CHOICE_BUTTON_STACKABLE_L( itemIndex, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp rect 		Y(CHOICE_Y( localVarint(stackOffset) + itemIndex ) - 20) \
+			text			"[Not Unlocked]"; \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		.5 .5 .5 1 \
+			visible			visArg \
+			extraArg \
+			mouseEnter { play "mouse_over"; setLocalVarInt show_mutator_unlock_hint 1; } \
+			mouseExit { setLocalVarInt show_mutator_unlock_hint 0; } \
+		} \
+
+		#define CHOICE_BUTTON_L( itemIndex, visArg, extraArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			text			"[Not Unlocked]"; \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		.5 .5 .5 1 \
+			visible			visArg \
+			extraArg \
+			mouseEnter { play "mouse_over"; setLocalVarInt show_mutator_unlock_hint 1; } \
+			mouseExit { setLocalVarInt show_mutator_unlock_hint 0; } \
+		} \
+
+		#define FIND_MUTATOR_STAT_INDEX(mutator_index) \
+		int(tablelookup("mp/ugxm_tier1.csv", 5, string("UGXM_PRIZE_MUT_" + mutator_index), 8 ))
+
+		#define FIND_MUTATOR_TOTAL_REQUIRED(mutator_index) \
+		int(tablelookup("mp/ugxm_tier1.csv", 5, string("UGXM_PRIZE_MUT_" + mutator_index), 6 ))
+
+		//Will return 1 if the current value is greater than or equal to the max required for the row, 0 if it isn't
+		#define IS_MUTATOR_UNLOCKED(mutator_index) \
+		1 \
+		//Disabled, not used anymore.
+		//(int(stat(FIND_MUTATOR_STAT_INDEX(mutator_index))) >= FIND_MUTATOR_TOTAL_REQUIRED(mutator_index))
+
+		itemDef { name		"hint_bg"
+			rect			-162 49 540 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+	 		style			WINDOW_STYLE_FILLED
+	 		border			1
+			bordersize		1
+			bordercolor		0.9 0.9 0.9 0.85
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0.8
+			visible			when( dvarString(localVarString(ui_hint_text)) != "" );
+			decoration
+		}
+
+		itemDef	{ name 		"ui_hint_display"
+			type			ITEM_TYPE_TEXT
+			rect			-162 49 540 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+			exp				text( dvarString( localVarString(ui_hint_text) ) )
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textalign 		ITEM_ALIGN_TOP_CENTER
+			//textaligny		16
+			textaligny		4
+			forecolor		1 1 1 0.85
+			visible			when( dvarString(localVarString(ui_hint_text)) != "" );
+			decoration
+			autowrapped
+		}
+
+		itemDef	{ name 		"mutator_hint_display"
+			type			ITEM_TYPE_TEXT
+			rect			-162 320 540 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+			exp				text( dvarString( ui_hint_text ) )
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textalign 		ITEM_ALIGN_TOP_CENTER
+			textaligny		16
+			forecolor		1 1 1 0.85
+			//visible			when( localvarint(show_mutator_unlock_hint) == 1 ); 	
+			visible 		0
+			decoration
+			autowrapped
+		}
+		itemDef	{
+			name 			"locked_display"
+			type			ITEM_TYPE_TEXT
+			rect			-162 320 540 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+			text 			"This has been disabled because it is not finished. Please check again after a future update!"
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textalign 		ITEM_ALIGN_TOP_CENTER
+			textaligny		16
+			forecolor		1 1 1 0.85
+			visible			when( localvarint(show_locked_hint) == 1 ); 	
+			decoration
+			autowrapped
+		}
+		itemDef	{ // REQUIEM LOCK ONLY
+			name 			"not_yet_display"
+			type			ITEM_TYPE_TEXT
+			rect			-162 320 540 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN
+			text 			"You are not allowed to play this gamemode until you try Classic Mode!"
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textalign 		ITEM_ALIGN_TOP_CENTER
+			textaligny		16
+			forecolor		1 1 1 0.85
+			visible			when( localvarint(show_not_yet_hint) == 1 ); 	
+			decoration
+			autowrapped
+		}
+
+		
+		//	Page 1
+		CHOICE_BUTTON_VIS_NOHI_EX( 1, "Custom Weapons List", 		ui_hint_custom_weaps_list, play "mouse_click"; scriptMenuResponse "mut_0"; setLocalVarInt ugx_mutator_0 1; setLocalVarInt ugx_setting_0 1; setFocus "M1B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_0) != 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX_3("M1A", "M2A", "M2B", "M2C"); 							  LEFT_NAV_EX("M1A", "Classic", "Classic_Y"); 		RIGHT_NAV_EX("M1A", "C1", "C1_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   1, "Custom Weapons List", 		ui_hint_custom_weaps_list, play "mouse_click"; scriptMenuResponse "mut_0"; setLocalVarInt ugx_mutator_0 0; setFocus "M1A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX_3("M1B", "M2A", "M2B", "M2C"); 							  LEFT_NAV_EX("M1B", "Classic", "Classic_Y"); 		RIGHT_NAV_EX("M1B", "C1", "C1_Y"); )
+																																																																																																																				
+		CHOICE_BUTTON_STACKABLE(   2, "Zombie Birthday Party", 		play "mouse_click"; scriptMenuResponse "mut_1"; setLocalVarInt ugx_mutator_1 1; setFocus "M2B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_1) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(1) > 0);, DOWN_NAV_EX_3("M2A", "M3A", "M3B", "M3C"); UP_NAV_EX("M2A", "M1A", "M1B"); 		  LEFT_NAV_EX("M2A", "Gungame", "Gungame_Y");		RIGHT_NAV_EX("M2A", "C2", "C2_Y"); )
+		CHOICE_BUTTON_STACKABLE_Y( 2, "Zombie Birthday Party", 		play "mouse_click"; scriptMenuResponse "mut_1"; setLocalVarInt ugx_mutator_1 0; setFocus "M2A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_1) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(1) > 0);, DOWN_NAV_EX_3("M2B", "M3A", "M3B", "M3C"); UP_NAV_EX("M2B", "M1A", "M1B");		  LEFT_NAV_EX("M2B", "Gungame", "Gungame_Y");		RIGHT_NAV_EX("M2B", "C2", "C2_Y"); )
+		CHOICE_BUTTON_STACKABLE_L( 2 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(1) <= 0);, 								  DOWN_NAV_EX_3("M2C", "M3A", "M3B", "M3C"); UP_NAV_EX("M2C", "M1A", "M1B"); 		  LEFT_NAV_EX("M2C", "Gungame", "Gungame_Y");		RIGHT_NAV_EX("M2C", "C2", "C2_Y"); )
+																																																																																																																						
+		CHOICE_BUTTON_STACKABLE(   3, "More Gore", 					play "mouse_click"; scriptMenuResponse "mut_2"; setLocalVarInt ugx_mutator_2 1; setFocus "M3B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_2) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(2) > 0);, DOWN_NAV_EX_3("M3A", "M4A", "M4B", "M4C"); UP_NAV_EX_3("M3A", "M2A", "M2B", "M2C"); LEFT_NAV_EX("M3A", "Arcade", "Arcade_Y");			RIGHT_NAV_EX("M3A", "C3", "C3_Y"); )
+		CHOICE_BUTTON_STACKABLE_Y( 3, "More Gore", 					play "mouse_click"; scriptMenuResponse "mut_2"; setLocalVarInt ugx_mutator_2 0; setFocus "M3A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_2) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(2) > 0);, DOWN_NAV_EX_3("M3B", "M4A", "M4B", "M4C"); UP_NAV_EX_3("M3B", "M2A", "M2B", "M2C"); LEFT_NAV_EX("M3B", "Arcade", "Arcade_Y");			RIGHT_NAV_EX("M3B", "C3", "C3_Y"); )
+		CHOICE_BUTTON_STACKABLE_L( 3 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(2) <= 0);, 					   			  DOWN_NAV_EX_3("M3C", "M4A", "M4B", "M4C"); UP_NAV_EX_3("M3C", "M2A", "M2B", "M2C"); LEFT_NAV_EX("M3C", "Arcade", "Arcade_Y");			RIGHT_NAV_EX("M3C", "C3", "C3_Y"); )
+		
+		//CHOICE_BUTTON_STACKABLE_L( 3 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1);, 					   			  DOWN_NAV_EX_3("M3C", "M4A", "M4B", "M4C"); UP_NAV_EX_3("M3C", "M2A", "M2B", "M2C"); LEFT_NAV_EX("M3C", "Arcade", "Arcade_Y");			RIGHT_NAV_EX("M3C", "C3", "C3_Y"); )
+																																																																																																																				
+		CHOICE_BUTTON_STACKABLE(   4, "Peek-a-boo!", 				play "mouse_click"; scriptMenuResponse "mut_3"; setLocalVarInt ugx_mutator_3 1; setFocus "M4B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_3) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(3) > 0);, DOWN_NAV_EX_3("M4A", "M5A", "M5B", "M5C"); UP_NAV_EX_3("M4A", "M3A", "M3B", "M3C"); LEFT_NAV_EX("M4A", "King", "King_Y");				RIGHT_NAV_EX("M4A", "C4", "C4_Y"); )
+		CHOICE_BUTTON_STACKABLE_Y( 4, "Peek-a-boo!", 				play "mouse_click"; scriptMenuResponse "mut_3"; setLocalVarInt ugx_mutator_3 0; setFocus "M4A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_3) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(3) > 0);, DOWN_NAV_EX_3("M4B", "M5A", "M5B", "M5C"); UP_NAV_EX_3("M4B", "M3A", "M3B", "M3C"); LEFT_NAV_EX("M4B", "King", "King_Y");				RIGHT_NAV_EX("M4B", "C4", "C4_Y"); )
+		CHOICE_BUTTON_STACKABLE_L( 4 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(3) <= 0);, 								  DOWN_NAV_EX_3("M4C", "M5A", "M5B", "M5C"); UP_NAV_EX_3("M4C", "M3A", "M3B", "M3C"); LEFT_NAV_EX("M4C", "King", "King_Y");				RIGHT_NAV_EX("M4C", "C4", "C4_Y"); )
+																																																																																																																				
+		CHOICE_BUTTON_STACKABLE(   5, "Flickering Glimpse", 		play "mouse_click"; scriptMenuResponse "mut_4"; setLocalVarInt ugx_mutator_4 1; setFocus "M5B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_4) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(4) > 0);, DOWN_NAV_EX_3("M5A", "M6A", "M6B", "M6C"); UP_NAV_EX_3("M5A", "M4A", "M4B", "M4C"); LEFT_NAV_EX("M5A", "Sharp", "Sharp_Y");			RIGHT_NAV_EX("M5A", "C5", "C5_Y"); )
+		CHOICE_BUTTON_STACKABLE_Y( 5, "Flickering Glimpse", 		play "mouse_click"; scriptMenuResponse "mut_4"; setLocalVarInt ugx_mutator_4 0; setFocus "M5A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_4) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(4) > 0);, DOWN_NAV_EX_3("M5B", "M6A", "M6B", "M6C"); UP_NAV_EX_3("M5B", "M4A", "M4B", "M4C"); LEFT_NAV_EX("M5B", "Sharp", "Sharp_Y");			RIGHT_NAV_EX("M5B", "C5", "C5_Y"); )
+		CHOICE_BUTTON_STACKABLE_L( 5 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(4) <= 0);, 								  DOWN_NAV_EX_3("M5C", "M6A", "M6B", "M6C"); UP_NAV_EX_3("M5C", "M4A", "M4B", "M4C"); LEFT_NAV_EX("M5C", "Sharp", "Sharp_Y");			RIGHT_NAV_EX("M5C", "C5", "C5_Y"); )
+		//CHOICE_BUTTON_STACKABLE_L( 5 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1);, 								  DOWN_NAV_EX_3("M5C", "M6A", "M6B", "M6C"); UP_NAV_EX_3("M5C", "M4A", "M4B", "M4C"); LEFT_NAV_EX("M5C", "Sharp", "Sharp_Y");			RIGHT_NAV_EX("M5C", "C5", "C5_Y"); )
+																																																																																																																				
+		CHOICE_BUTTON_STACKABLE(   6, "Rag Doll",			 		play "mouse_click"; scriptMenuResponse "mut_5"; setLocalVarInt ugx_mutator_5 1; setFocus "M6B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_5) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(5) > 0);, DOWN_NAV_EX_3("M6A", "M7A", "M7B", "M7C"); UP_NAV_EX_3("M6A", "M5A", "M5B", "M5C"); LEFT_NAV_EX("M6A", "Bounty", "Bounty_Y");			RIGHT_NAV_EX("M6A", "C6", "C6_Y"); )
+		CHOICE_BUTTON_STACKABLE_Y( 6, "Rag Doll", 					play "mouse_click"; scriptMenuResponse "mut_5"; setLocalVarInt ugx_mutator_5 0; setFocus "M6A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_5) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(5) > 0);, DOWN_NAV_EX_3("M6B", "M7A", "M7B", "M7C"); UP_NAV_EX_3("M6B", "M5A", "M5B", "M5C"); LEFT_NAV_EX("M6B", "Bounty", "Bounty_Y");			RIGHT_NAV_EX("M6B", "C6", "C6_Y"); )
+		CHOICE_BUTTON_STACKABLE_L( 6 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(5) <= 0);, 								  DOWN_NAV_EX_3("M6C", "M7A", "M7B", "M7C"); UP_NAV_EX_3("M6C", "M5A", "M5B", "M5C"); LEFT_NAV_EX("M6C", "Bounty", "Bounty_Y");			RIGHT_NAV_EX("M6C", "C6", "C6_Y"); )
+																																																																																																																				
+		CHOICE_BUTTON_STACKABLE(   7, "Head's Up!",			 		play "mouse_click"; scriptMenuResponse "mut_6"; setLocalVarInt ugx_mutator_6 1; setFocus "M7B";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_6) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(6) > 0);, DOWN_NAV_EX("M7A", "page1", "page1_Y"); 	 UP_NAV_EX_3("M7A", "M6A", "M6B", "M6C"); LEFT_NAV_EX("M7A", "CHAOS", "CHAOS_Y");			RIGHT_NAV_EX("M7A", "C7", "C7_Y"); )
+		CHOICE_BUTTON_STACKABLE_Y( 7, "Head's Up!", 				play "mouse_click"; scriptMenuResponse "mut_6"; setLocalVarInt ugx_mutator_6 0; setFocus "M7A";, when(localVarInt(page_num) == 0 && localVarInt(ugx_mutator_6) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(6) > 0);, DOWN_NAV_EX("M7B", "page1", "page1_Y"); 	 UP_NAV_EX_3("M7B", "M6A", "M6B", "M6C"); LEFT_NAV_EX("M7B", "CHAOS", "CHAOS_Y");			RIGHT_NAV_EX("M7B", "C7", "C7_Y"); )
+		CHOICE_BUTTON_STACKABLE_L( 7 																											   				   , when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(6) <= 0);,								 	  DOWN_NAV_EX("M7C", "page1", "page1_Y"); 	 UP_NAV_EX_3("M7C", "M6A", "M6B", "M6C"); LEFT_NAV_EX("M7C", "CHAOS", "CHAOS_Y");			RIGHT_NAV_EX("M7C", "C7", "C7_Y"); )
+																																																																																																																				
+		//	Page 2
+		CHOICE_BUTTON_VIS_NOHI_EX( 1, "Give up the Ghost",			;, play "mouse_click"; scriptMenuResponse "mut_7"; setLocalVarInt ugx_mutator_7 1; setFocus "K1B";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_7) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(7) > 0);, DOWN_NAV_EX_3("K1A", "K2A", "K2B", "K2C"); 								 		  LEFT_NAV_EX("K1A", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K1A", "C1", "C1_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   1, "Give up the Ghost", 			;, play "mouse_click"; scriptMenuResponse "mut_7"; setLocalVarInt ugx_mutator_7 0; setFocus "K1A";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_7) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(7) > 0);, DOWN_NAV_EX_3("K1B", "K2A", "K2B", "K2C"); 										  LEFT_NAV_EX("K1B", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K1B", "C1", "C1_Y"); )
+		CHOICE_BUTTON_L( 		   1 																											   , 	when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(7) <= 0);, 												  DOWN_NAV_EX_3("K1C", "K2A", "K2B", "K2C"); 								 		  LEFT_NAV_EX("K1C", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K1C", "C1", "C1_Y"); )
+		//CHOICE_BUTTON_L( 		   1 																											   , 	when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(7) <= 0);, 												  DOWN_NAV_EX_3("K1C", "K2A", "K2B", "K2C"); 								 		  LEFT_NAV_EX("K1C", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K1C", "C1", "C1_Y"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 2, "Laugh Track",				;, play "mouse_click"; scriptMenuResponse "mut_8"; setLocalVarInt ugx_mutator_8 1; setFocus "K2B";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_8) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(8) > 0);, DOWN_NAV_EX_3("K2A", "K3A", "K3B", "K3C"); UP_NAV_EX_3("K2A", "K1A", "K1B", "K1C"); LEFT_NAV_EX("K2A", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K2A", "C2", "C2_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   2, "Laugh Track", 				;, play "mouse_click"; scriptMenuResponse "mut_8"; setLocalVarInt ugx_mutator_8 0; setFocus "K2A";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_8) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(8) > 0);, DOWN_NAV_EX_3("K2B", "K3A", "K3B", "K3C"); UP_NAV_EX_3("K2B", "K1A", "K1B", "K1C"); LEFT_NAV_EX("K2B", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K2B", "C2", "C2_Y"); )
+		CHOICE_BUTTON_L( 		   2 																											   , 	when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(8) <= 0);,  											  DOWN_NAV_EX_3("K2C", "K3A", "K3B", "K3C"); UP_NAV_EX_3("K2C", "K1A", "K1B", "K1C"); LEFT_NAV_EX("K2C", "Gungame", "Gungame_Y"); 		RIGHT_NAV_EX("K2C", "C2", "C2_Y"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 3, "Brain Damage",				;, play "mouse_click"; scriptMenuResponse "mut_9"; setLocalVarInt ugx_mutator_9 1; setFocus "K3B";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_9) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(9) > 0);, DOWN_NAV_EX_3("K3A", "K4A", "K4B", "K4C"); UP_NAV_EX_3("K3A", "K2A", "K2B", "K2C"); LEFT_NAV_EX("K3A", "Arcade", "Arcade_Y"); 		RIGHT_NAV_EX("K3A", "C3", "C3_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   3, "Brain Damage", 				;, play "mouse_click"; scriptMenuResponse "mut_9"; setLocalVarInt ugx_mutator_9 0; setFocus "K3A";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_9) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(9) > 0);, DOWN_NAV_EX_3("K3B", "K4A", "K4B", "K4C"); UP_NAV_EX_3("K3B", "K2A", "K2B", "K2C"); LEFT_NAV_EX("K3B", "Arcade", "Arcade_Y"); 		RIGHT_NAV_EX("K3B", "C3", "C3_Y"); )
+		CHOICE_BUTTON_L( 		   3 																											   , 	when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(9) <= 0);,  											  DOWN_NAV_EX_3("K3C", "K4A", "K4B", "K4C"); UP_NAV_EX_3("K3C", "K2A", "K2B", "K2C"); LEFT_NAV_EX("K3C", "Arcade", "Arcade_Y"); 		RIGHT_NAV_EX("K3C", "C3", "C3_Y"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 4, "Nicolas Cage",				;, play "mouse_click"; scriptMenuResponse "mut_10"; setLocalVarInt ugx_mutator_10 1; setFocus "K4B";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_10) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(10) > 0);, DOWN_NAV_EX_3("K4A", "K5A", "K5B", "K5C"); UP_NAV_EX_3("K4A", "K3A", "K3B", "K3C"); LEFT_NAV_EX("K4A", "King", "King_Y"); 		RIGHT_NAV_EX("K4A", "C4", "C4_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   4, "Nicolas Cage", 				;, play "mouse_click"; scriptMenuResponse "mut_10"; setLocalVarInt ugx_mutator_10 0; setFocus "K4A";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_10) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(10) > 0);, DOWN_NAV_EX_3("K4B", "K5A", "K5B", "K5C"); UP_NAV_EX_3("K4B", "K3A", "K3B", "K3C"); LEFT_NAV_EX("K4B", "King", "King_Y"); 		RIGHT_NAV_EX("K4B", "C4", "C4_Y"); )
+		CHOICE_BUTTON_L( 		   4 																											     , when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(10) <= 0);,  												  DOWN_NAV_EX_3("K4C", "K5A", "K5B", "K5C"); UP_NAV_EX_3("K4C", "K3A", "K3B", "K3C"); LEFT_NAV_EX("K4C", "King", "King_Y"); 		RIGHT_NAV_EX("K4C", "C4", "C4_Y"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 5, "Fireworks",					;, play "mouse_click"; scriptMenuResponse "mut_11"; setLocalVarInt ugx_mutator_11 1; setFocus "K5B";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_11) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(11) > 0);, DOWN_NAV_EX_3("K5A", "K6A", "K6B", "K6C"); UP_NAV_EX_3("K5A", "K4A", "K4B", "K4C"); LEFT_NAV_EX("K5A", "Sharp", "Sharp_Y"); 		RIGHT_NAV_EX("K5A", "C5", "C5_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   5, "Fireworks", 					;, play "mouse_click"; scriptMenuResponse "mut_11"; setLocalVarInt ugx_mutator_11 0; setFocus "K5A";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_11) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(11) > 0);, DOWN_NAV_EX_3("K5B", "K6A", "K6B", "K6C"); UP_NAV_EX_3("K5B", "K4A", "K4B", "K4C"); LEFT_NAV_EX("K5B", "Sharp", "Sharp_Y"); 		RIGHT_NAV_EX("K5B", "C5", "C5_Y"); )
+		CHOICE_BUTTON_L( 		   5  																											     , when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(11) <= 0);,  												  DOWN_NAV_EX_3("K5C", "K6A", "K6B", "K6C"); UP_NAV_EX_3("K5C", "K4A", "K4B", "K4C"); LEFT_NAV_EX("K5C", "Sharp", "Sharp_Y"); 		RIGHT_NAV_EX("K5C", "C5", "C5_Y"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 6, "Ragtime",					;, play "mouse_click"; scriptMenuResponse "mut_12"; setLocalVarInt ugx_mutator_12 1; setFocus "K6B";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_12) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(12) > 0);, DOWN_NAV_EX("K6A", "page2", "page2_Y"); 	UP_NAV_EX_3("K6A", "K5A", "K5B", "K5C"); LEFT_NAV_EX("K6A", "Bounty", "Bounty_Y"); 	RIGHT_NAV_EX("K6A", "C6", "C6_Y"); )
+		CHOICE_BUTTON_YELLOW( 	   6, "Ragtime", 					;, play "mouse_click"; scriptMenuResponse "mut_12"; setLocalVarInt ugx_mutator_12 0; setFocus "K6A";, when(localVarInt(page_num) == 1 && localVarInt(ugx_mutator_12) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(12) > 0);, DOWN_NAV_EX("K6B", "page2", "page2_Y");	UP_NAV_EX_3("K6B", "K5A", "K5B", "K5C"); LEFT_NAV_EX("K6B", "Bounty", "Bounty_Y"); 	RIGHT_NAV_EX("K6B", "C6", "C6_Y"); )
+		CHOICE_BUTTON_L( 		   6  																											     , when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(12) <= 0);, 													  DOWN_NAV_EX("K6C", "page2", "page2_Y"); 	UP_NAV_EX_3("K6C", "K5A", "K5B", "K5C"); LEFT_NAV_EX("K6C", "Bounty", "Bounty_Y"); 	RIGHT_NAV_EX("K6C", "C6", "C6_Y"); )
+
+		//	Page 3
+		CHOICE_BUTTON_VIS_NOHI_EX( 1, "ADS Only",					;, play "mouse_click"; scriptMenuResponse "mut_13"; setLocalVarInt ugx_mutator_13 1;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_13) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(13) > 0);, DOWN_NAV_EX_3("L1A", "L2A", "L2B", "L2C"); 								 		  LEFT_NAV_EX("L1A", "Gungame", "Gungame_Y"); 					RIGHT_NAV_EX("L1A", "C1", "C1_Y");) 
+		CHOICE_BUTTON_YELLOW( 	   1, "ADS Only", 					;, play "mouse_click"; scriptMenuResponse "mut_13"; setLocalVarInt ugx_mutator_13 0;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_13) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(13) > 0);, DOWN_NAV_EX_3("L1B", "L2A", "L2B", "L2C"); 										  LEFT_NAV_EX("L1B", "Gungame", "Gungame_Y"); 					RIGHT_NAV_EX("L1B", "C1", "C1_Y");) 
+		CHOICE_BUTTON_L( 		   1  																											     , when(localVarInt(page_num) == 2 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(13) <= 0);, 									  DOWN_NAV_EX_3("L1C", "L2A", "L2B", "L2C"); 								 		  LEFT_NAV_EX("L1C", "Gungame", "Gungame_Y"); 					RIGHT_NAV_EX("L1C", "C1", "C1_Y");) 
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 2, "Super Mario Bros.",			;, play "mouse_click"; scriptMenuResponse "mut_15"; setLocalVarInt ugx_mutator_15 1;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_15) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(15) > 0);, DOWN_NAV_EX_3("L2A", "L3A", "L3B", "L3C"); UP_NAV_EX_3("L2A", "L1A", "L1B", "L1C"); LEFT_NAV_EX("L2A", "Gungame", "Gungame_Y"); 					RIGHT_NAV_EX("L2A", "C2", "C2_Y");)
+		CHOICE_BUTTON_YELLOW( 	   2, "Super Mario Bros.", 			;, play "mouse_click"; scriptMenuResponse "mut_15"; setLocalVarInt ugx_mutator_15 0;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_15) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(15) > 0);, DOWN_NAV_EX_3("L2B", "L3A", "L3B", "L3C"); UP_NAV_EX_3("L2B", "L1A", "L1B", "L1C"); LEFT_NAV_EX("L2B", "Gungame", "Gungame_Y"); 					RIGHT_NAV_EX("L2B", "C2", "C2_Y");)
+		CHOICE_BUTTON_L( 		   2  																											     , when(localVarInt(page_num) == 2 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(15) <= 0);,									  DOWN_NAV_EX_3("L2C", "L3A", "L3B", "L3C"); UP_NAV_EX_3("L2C", "L1A", "L1B", "L1C"); LEFT_NAV_EX("L2C", "Gungame", "Gungame_Y"); 					RIGHT_NAV_EX("L2C", "C2", "C2_Y");)
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 3, "Darkness",					;, play "mouse_click"; scriptMenuResponse "mut_17"; setLocalVarInt ugx_mutator_17 1;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_17) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(17) > 0);, DOWN_NAV_EX_3("L3A", "L4A", "L4B", "L4C"); UP_NAV_EX_3("L3A", "L2A", "L2B", "L2C"); LEFT_NAV_EX("L3A", "Arcade", "Arcade_Y"); 					RIGHT_NAV_EX("L3A", "C3", "C3_Y");)
+		CHOICE_BUTTON_YELLOW( 	   3, "Darkness", 					;, play "mouse_click"; scriptMenuResponse "mut_17"; setLocalVarInt ugx_mutator_17 0;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_17) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(17) > 0);, DOWN_NAV_EX_3("L3B", "L4A", "L4B", "L4C"); UP_NAV_EX_3("L3B", "L2A", "L2B", "L2C"); LEFT_NAV_EX("L3B", "Arcade", "Arcade_Y"); 					RIGHT_NAV_EX("L3B", "C3", "C3_Y");)
+		CHOICE_BUTTON_L( 		   3  																												 , when(localVarInt(page_num) == 2 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(18) <= 0);,									  DOWN_NAV_EX_3("L3C", "L4A", "L4B", "L4C"); UP_NAV_EX_3("L3C", "L2A", "L2B", "L2C"); LEFT_NAV_EX("L3C", "Arcade", "Arcade_Y"); 					RIGHT_NAV_EX("L3C", "C3", "C3_Y");)
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 4, "Disco Party",				;, play "mouse_click"; scriptMenuResponse "mut_16"; setLocalVarInt ugx_mutator_16 1;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_16) != 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(16) > 0);, DOWN_NAV_EX("L4A", "page3", "page3_Y");	 UP_NAV_EX_3("L4A", "L3A", "L3B", "L3C"); 	LEFT_NAV_EX("L4A", "King", "King_Y"); 						RIGHT_NAV_EX("L4A", "C4", "C4_Y");)
+		CHOICE_BUTTON_YELLOW( 	   4, "Disco Party",	 			;, play "mouse_click"; scriptMenuResponse "mut_16"; setLocalVarInt ugx_mutator_16 0;, when(localVarInt(page_num) == 2 && localVarInt(ugx_mutator_16) == 1 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(16) > 0);, DOWN_NAV_EX("L4B", "page3", "page3_Y"); 	UP_NAV_EX_3("L4B", "L3A", "L3B", "L3C"); 	LEFT_NAV_EX("L4B", "King", "King_Y"); 						RIGHT_NAV_EX("L4B", "C4", "C4_Y");)
+		CHOICE_BUTTON_L( 		   4  																											     , when(localVarInt(page_num) == 2 && dvarInt(ugxm_cheats) == 1 && IS_MUTATOR_UNLOCKED(16) <= 0);,									  DOWN_NAV_EX("L4C", "page3", "page3_Y"); 	UP_NAV_EX_3("L4C", "L3A", "L3B", "L3C"); 	LEFT_NAV_EX("L4C", "King", "King_Y"); 						RIGHT_NAV_EX("L4C", "C4", "C4_Y");)
+		//Page 4
+		// None
+
+		//	Page buttons
+		CHOICE_BUTTON_PAGE_C( 8, 0, "Page 1", setFocus "page1";, when(localVarInt(page_num) == 0 && dvarInt(ugxm_cheats) == 1);,   DOWN_NAVSTART("page1_Y", "StartGame");	UP_NAV_EX_9("page1_Y", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAV_EX("page1_Y", "page2", "page2_Y"); )
+		CHOICE_BUTTON_PAGE(   8, 0, "Page 1", setFocus "page1_Y";, when(localVarInt(page_num) != 0 && dvarInt(ugxm_cheats) == 1);, DOWN_NAVSTART("page1", "StartGame"); 		UP_NAV_EX_9("page1", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAV_EX("page1", "page2", "page2_Y"); )
+
+		CHOICE_BUTTON_PAGE_C( 8, 1, "Page 2", setFocus "page2";, when(localVarInt(page_num) == 1 && dvarInt(ugxm_cheats) == 1);,   DOWN_NAVSTART("page2_Y", "StartGame"); 	UP_NAV_EX_9("page2_Y", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAV_EX("page2_Y", "page3", "page3_Y");	LEFT_NAV_EX("page2_Y", "page1", "page1_Y"); )
+		CHOICE_BUTTON_PAGE(   8, 1, "Page 2", setFocus "page2_Y";, when(localVarInt(page_num) != 1 && dvarInt(ugxm_cheats) == 1);, DOWN_NAVSTART("page2", "StartGame"); 		UP_NAV_EX_9("page2", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAV_EX("page2", "page3", "page3_Y");		LEFT_NAV_EX("page2", "page1", "page1_Y"); )
+		//CHOICE_BUTTON_PAGE_L(   8, 1, "Page 2", setFocus "page2_Y";, when(localVarInt(page_num) != 1 && dvarInt(ugxm_cheats) == 1);, DOWN_NAVSTART("page2", "StartGame"); 		UP_NAV_EX_9("page2", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAV_EX("page2", "page3", "page3_Y");		LEFT_NAV_EX("page2", "page1", "page1_Y"); )
+
+		CHOICE_BUTTON_PAGE_C( 8, 2, "Page 3", setFocus "page3";, when(localVarInt(page_num) == 2 && dvarInt(ugxm_cheats) == 1);,   DOWN_NAVSTART("page3_Y", "StartGame"); 	UP_NAV_EX_9("page3_Y", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAVSTART("page3_Y", "StartGame");					LEFT_NAV_EX("page3_Y", "page2", "page2_Y"); )
+		CHOICE_BUTTON_PAGE(   8, 2, "Page 3", setFocus "page3_Y";, when(localVarInt(page_num) != 2 && dvarInt(ugxm_cheats) == 1);, DOWN_NAVSTART("page3", "StartGame"); 		UP_NAV_EX_9("page3", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAVSTART("page3", "StartGame");					LEFT_NAV_EX("page3", "page2", "page2_Y"); )
+		//CHOICE_BUTTON_PAGE_L(   8, 2, "Page 3", setFocus "page3_Y";, when(localVarInt(page_num) != 2 && dvarInt(ugxm_cheats) == 1);, DOWN_NAVSTART("page3", "StartGame"); 		UP_NAV_EX_9("page3", "M7A", "M7B", "M7C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); 		RIGHT_NAVSTART("page3", "StartGame");					LEFT_NAV_EX("page3", "page2", "page2_Y"); )
+
+		//	Mutator arrows 	//	Could have incorporated this into the button defs but its already here and it works - it ain't broke.
+		//	Page 1
+		itemDef	
+		{
+			name 			"mutator_0"
+			rect			(MUTATORS_START_X - 26) 121 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_0) == 1 && localVarInt(page_num) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_1"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(121 + (20 * localVarInt(stackOffset)))
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_1) == 1 && localVarInt(page_num) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_2"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(141 + (20 * localVarInt(stackOffset)))
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_2) == 1 && localVarInt(page_num) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_3"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(161 + (20 * localVarInt(stackOffset)))
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_3) == 1 && localVarInt(page_num) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_4"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(181 + (20 * localVarInt(stackOffset)))
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_4) == 1 && localVarInt(page_num) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_5"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(201 + (20 * localVarInt(stackOffset)))
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_5) == 1 && localVarInt(page_num) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_6"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(221 + (20 * localVarInt(stackOffset)))
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_6) == 1 && localVarInt(page_num) == 0);
+		}
+
+		//	Page 2
+		itemDef	
+		{
+			name 			"mutator_7"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(121)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_7) == 1 && localVarInt(page_num) == 1);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_8"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(141)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_8) == 1 && localVarInt(page_num) == 1);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_9"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(161)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_9) == 1 && localVarInt(page_num) == 1);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_10"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(181)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_10) == 1 && localVarInt(page_num) == 1);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_11"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(201)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_11) == 1 && localVarInt(page_num) == 1);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_12"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(221)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_12) == 1 && localVarInt(page_num) == 1);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_13"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(121)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_13) == 1 && localVarInt(page_num) == 2);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_15"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(141)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_15) == 1 && localVarInt(page_num) == 2);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_17"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(161)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_17) == 1 && localVarInt(page_num) == 2);
+		}
+
+		itemDef	
+		{
+			name 			"mutator_16"
+			rect			(MUTATORS_START_X - 26) 0 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			exp rect 		Y(181)
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_mutator_16) == 1 && localVarInt(page_num) == 2);
+		}
+
+
+
+		#define SETTINGS_START_X 295
+
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			(SETTINGS_START_X - 26) 96 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			text 			"Settings:"
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		0.4
+			textalign		ITEM_ALIGN_TOP_CENTER
+			visible			1
+			decoration
+		}
+
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START	SETTINGS_START_X - 60
+
+		#define UNSET_ALL setlocalVarInt ugx_setting_0 0; setlocalVarInt ugx_setting_1 0; setlocalVarInt ugx_setting_2 0; setlocalVarInt ugx_setting_3 0; setlocalVarInt ugx_setting_4 0; setlocalVarInt ugx_setting_5 0; setlocalVarInt ugx_setting_6 0; setlocalVarInt ugx_setting_7 0; setlocalVarInt ugx_setting_8 0;
+		#define IS_ANY_SET (localVarInt(ugx_setting_0) || localVarInt(ugx_setting_1) || localVarInt(ugx_setting_2) || localVarInt(ugx_setting_3) || localVarInt(ugx_setting_4) || localVarInt(ugx_setting_5) || localVarInt(ugx_setting_6) || localVarInt(ugx_setting_9))
+
+		#define UNSET_RANDOM setlocalVarInt ugx_setting_9 0;
+
+		CHOICE_BUTTON_VIS_NOHI_EX(1, "Rifles", 					;, play "mouse_click"; scriptMenuResponse "set_0"; setLocalVarInt ugx_setting_0 1; setFocus "C1_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_0) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C1", "C2", "C2_Y"); 										LEFT_NAV_EX_9("C1", "M1A", "M1B", "M1C", "K1A", "K1B", "K1C", "L1A", "L1B", "L1C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(2, "SMGs", 					;, play "mouse_click"; scriptMenuResponse "set_1"; setLocalVarInt ugx_setting_1 1; setFocus "C2_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_1) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C2", "C3", "C3_Y"); 	UP_NAV_EX("C2", "C1", "C1_Y"); 		LEFT_NAV_EX_9("C2", "M2A", "M2B", "M2C", "K2A", "K2B", "K2C", "L2A", "L2B", "L2C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(3, "Shotguns", 				;, play "mouse_click"; scriptMenuResponse "set_2"; setLocalVarInt ugx_setting_2 1; setFocus "C3_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_2) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C3", "C4", "C4_Y"); 	UP_NAV_EX("C3", "C2", "C2_Y"); 		LEFT_NAV_EX_9("C3", "M3A", "M3B", "M3C", "K3A", "K3B", "K3C", "L3A", "L3B", "L3C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(4, "Pistols", 				;, play "mouse_click"; scriptMenuResponse "set_3"; setLocalVarInt ugx_setting_3 1; setFocus "C4_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_3) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C4", "C5", "C5_Y"); 	UP_NAV_EX("C4", "C3", "C3_Y"); 		LEFT_NAV_EX_9("C4", "M4A", "M4B", "M4C", "K4A", "K4B", "K4C", "L4A", "L4B", "L4C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(5, "LMGs",					;, play "mouse_click"; scriptMenuResponse "set_4"; setLocalVarInt ugx_setting_4 1; setFocus "C5_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_4) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C5", "C6", "C6_Y"); 	UP_NAV_EX("C5", "C4", "C4_Y"); 		LEFT_NAV_EX_9("C5", "M5A", "M5B", "M5C", "K5A", "K5B", "K5C", "L5A", "L5B", "L5C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(6, "Snipers",					;, play "mouse_click"; scriptMenuResponse "set_5"; setLocalVarInt ugx_setting_5 1; setFocus "C6_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_5) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C6", "C7", "C7_Y"); 	UP_NAV_EX("C6", "C5", "C5_Y"); 		LEFT_NAV_EX_9("C6", "M6A", "M6B", "M6C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(7, "Wonder-Weapons", 			;, play "mouse_click"; scriptMenuResponse "set_6"; setLocalVarInt ugx_setting_6 1; setFocus "C7_Y"; UNSET_RANDOM;,  when(localVarInt(ugx_setting_6) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAV_EX("C7", "C8", "C8_Y"); 	UP_NAV_EX("C7", "C6", "C6_Y"); 		LEFT_NAV_EX_9("C7", "M7A", "M7B", "M7C", "K7A", "K7B", "K7C", "L7A", "L7B", "L7C"); )
+		CHOICE_BUTTON_VIS_NOHI_EX(8, "Add PaP Guns", 			;, play "mouse_click"; scriptMenuResponse "set_7"; setLocalVarInt ugx_setting_7 1; setFocus "C8_Y"; UNSET_RANDOM;,  when(IS_ANY_SET && (localVarInt(ugx_setting_7) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3)));, DOWN_NAV_EX("C8", "C9", "C9_Y"); 	UP_NAV_EX("C8", "C7", "C7_Y"); 		)
+		CHOICE_BUTTON_VIS_NOHI_EX(9, "Add Elemental Guns",	 	;, play "mouse_click"; scriptMenuResponse "set_8"; setLocalVarInt ugx_setting_8 1; setFocus "C9_Y"; UNSET_RANDOM;,  when(IS_ANY_SET && (localVarInt(ugx_setting_8) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3)));, DOWN_NAV_EX("C9", "C0", "C0_Y"); 	UP_NAV_EX("C9", "C8", "C8_Y");		)
+		CHOICE_BUTTON_VIS_NOHI_EX(10, "Random", 				;, play "mouse_click"; scriptMenuResponse "set_9"; setLocalVarInt ugx_setting_9 1; setFocus "C0_Y"; UNSET_ALL;, 	when(localVarInt(ugx_setting_9) == 0 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));, DOWN_NAVSTART("C0", "StartGame"); UP_NAV_EX("C0", "C9", "C9_Y"); 		)
+
+		CHOICE_BUTTON_YELLOW( 1, "Rifles", 						;, play "mouse_click"; scriptMenuResponse "set_0"; setLocalVarInt ugx_setting_0 0; setFocus "C1";, when(localVarInt(ugx_setting_0) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C1_Y", "C2", "C2_Y"); 									LEFT_NAV_EX_9("C1_Y", "M1A", "M1B", "M1C", "K1A", "K1B", "K1C", "L1A", "L1B", "L1C"); )
+		CHOICE_BUTTON_YELLOW( 2, "SMGs", 						;, play "mouse_click"; scriptMenuResponse "set_1"; setLocalVarInt ugx_setting_1 0; setFocus "C2";, when(localVarInt(ugx_setting_1) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C2_Y", "C3", "C3_Y"); UP_NAV_EX("C2_Y", "C1", "C1_Y");	LEFT_NAV_EX_9("C2_Y", "M2A", "M2B", "M2C", "K2A", "K2B", "K2C", "L2A", "L2B", "L2C"); )
+		CHOICE_BUTTON_YELLOW( 3, "Shotguns", 					;, play "mouse_click"; scriptMenuResponse "set_2"; setLocalVarInt ugx_setting_2 0; setFocus "C3";, when(localVarInt(ugx_setting_2) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C3_Y", "C4", "C4_Y"); UP_NAV_EX("C3_Y", "C2", "C2_Y");	LEFT_NAV_EX_9("C3_Y", "M3A", "M3B", "M3C", "K3A", "K3B", "K3C", "L3A", "L3B", "L3C"); )
+		CHOICE_BUTTON_YELLOW( 4, "Pistols", 					;, play "mouse_click"; scriptMenuResponse "set_3"; setLocalVarInt ugx_setting_3 0; setFocus "C4";, when(localVarInt(ugx_setting_3) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C4_Y", "C5", "C5_Y"); UP_NAV_EX("C4_Y", "C3", "C3_Y");	LEFT_NAV_EX_9("C4_Y", "M4A", "M4B", "M4C", "K4A", "K4B", "K4C", "L4A", "L4B", "L4C"); )
+		CHOICE_BUTTON_YELLOW( 5, "LMGs",			 			;, play "mouse_click"; scriptMenuResponse "set_4"; setLocalVarInt ugx_setting_4 0; setFocus "C5";, when(localVarInt(ugx_setting_4) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C5_Y", "C6", "C6_Y"); UP_NAV_EX("C5_Y", "C4", "C4_Y");	LEFT_NAV_EX_9("C5_Y", "M5A", "M5B", "M5C", "K5A", "K5B", "K5C", "L5A", "L5B", "L5C"); )
+		CHOICE_BUTTON_YELLOW( 6, "Snipers", 					;, play "mouse_click"; scriptMenuResponse "set_5"; setLocalVarInt ugx_setting_5 0; setFocus "C6";, when(localVarInt(ugx_setting_5) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C6_Y", "C7", "C7_Y"); UP_NAV_EX("C6_Y", "C5", "C5_Y");	LEFT_NAV_EX_9("C6_Y", "M6A", "M6B", "M6C", "K6A", "K6B", "K6C", "L6A", "L6B", "L6C"); )
+		CHOICE_BUTTON_YELLOW( 7, "Wonder-Weapons", 				;, play "mouse_click"; scriptMenuResponse "set_6"; setLocalVarInt ugx_setting_6 0; setFocus "C7";, when(localVarInt(ugx_setting_6) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAV_EX("C7_Y", "C8", "C8_Y"); UP_NAV_EX("C7_Y", "C6", "C6_Y");	LEFT_NAV_EX_9("C7_Y", "M7A", "M7B", "M7C", "K7A", "K7B", "K7C", "L7A", "L7B", "L7C"); )
+		CHOICE_BUTTON_YELLOW( 8, "Add PaP Guns", 				;, play "mouse_click"; scriptMenuResponse "set_7"; setLocalVarInt ugx_setting_7 0; setFocus "C8";, when(IS_ANY_SET && (localVarInt(ugx_setting_7) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3)));,				 DOWN_NAV_EX("C8_Y", "C9", "C9_Y"); UP_NAV_EX("C8_Y", "C7", "C7_Y");	)
+		CHOICE_BUTTON_YELLOW( 9, "Add Elemental Guns",	 		;, play "mouse_click"; scriptMenuResponse "set_8"; setLocalVarInt ugx_setting_8 0; setFocus "C9";, when(IS_ANY_SET && (localVarInt(ugx_setting_8) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3)));,				 DOWN_NAV_EX("C9_Y", "C0", "C0_Y"); UP_NAV_EX("C9_Y", "C8", "C8_Y");	)
+		CHOICE_BUTTON_YELLOW( 10, "Random", 					;, play "mouse_click"; scriptMenuResponse "set_9"; setLocalVarInt ugx_setting_9 0; setFocus "C0";, when(localVarInt(ugx_setting_9) == 1 && localVarInt(ugx_mutator_0) == 1 && (localVarInt(ugx_gamemode) == 1 || localVarInt(ugx_gamemode) == 3));,				 DOWN_NAVSTART("C0_Y", "StartGame"); UP_NAV_EX("C0_Y", "C9", "C9_Y");	)
+
+		itemDef	// Settings arrows
+		{
+			name 			"setting_0"
+			rect			(SETTINGS_START_X - 51) 121 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_0) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_1"
+			rect			(SETTINGS_START_X - 51) 141 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_1) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_2"
+			rect			(SETTINGS_START_X - 51) 161 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_2) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_3"
+			rect			(SETTINGS_START_X - 51) 181 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_3) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_4"
+			rect			(SETTINGS_START_X - 51) 201 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_4) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_5"
+			rect			(SETTINGS_START_X - 51) 221 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_5) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_6"
+			rect			(SETTINGS_START_X - 51) 241 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_6) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_7"
+			rect			(SETTINGS_START_X - 51) 261 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(IS_ANY_SET && localVarInt(ugx_setting_7) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_8"
+			rect			(SETTINGS_START_X - 51) 281 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(IS_ANY_SET && localVarInt(ugx_setting_8) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+		itemDef	
+		{
+			name 			"setting_9"
+			rect			(SETTINGS_START_X - 51) 301 12 12 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			origin			0 0
+			forecolor		CHOICE_SELECTED_COLOR
+			style			WINDOW_STYLE_SHADER
+			background		"ugxm_menu_arrow"
+			decoration
+			visible			when(localVarInt(ugx_setting_9) == 1 && localVarInt(ugx_mutator) == 0);
+		}
+
+
+		#define ADDITIONAL_SETTINGS_START_X	-90
+		
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			ADDITIONAL_SETTINGS_START_X 270 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			text 			"Additional Settings:"
+			forecolor		1 0 0 1
+			textfont		UI_FONT_NORMAL
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		0.4
+			textalign		ITEM_ALIGN_TOP_CENTER
+			visible			1
+			decoration
+		}
+
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START	ADDITIONAL_SETTINGS_START_X - 64
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START 290
+
+		#define CHOICE_DVARSLIDER_FULL_VIS( itemIndex, textArg, hintArg, dvarArg, defaultArg, minArg, maxArg, actionArg, visArg, extraArg ) \
+		CHOICE_CAPTION_FULL_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_SLIDER \
+			dvarfloat		dvarArg defaultArg minArg maxArg \
+			rect			CHOICE_ORIGIN( itemIndex ) (CHOICE_SIZE_X+CHOICE_DVAR_WIDTH_OFFSET) CHOICE_SIZE_Y CHOICE_HORIZONTAL_ALIGN CHOICE_VERTICAL_ALIGN \
+			textalign		ITEM_ALIGN_MIDDLE_LEFT \
+			textalignx		(CHOICE_SIZE_X+20) \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		ITEM_TEXTSTYLE_SHADOWED \
+			style			WINDOW_STYLE_FILLED \
+			forecolor		CHOICE_TEXTCOLOR \
+			visible			visArg \
+			extraArg \
+			CHOICE_SCRIPTS_ACTION( itemIndex, actionArg ) \
+			onFocus 		{ setLocalvarString ui_hint_text hintArg } \
+			leaveFocus 		{ setLocalvarString ui_hint_text "" } \
+		}
+
+		#define CHOICE_CAPTION_FULL_VIS( itemIndex, textArg, visArg ) \
+		itemDef \
+		{ \
+			type			ITEM_TYPE_BUTTON \
+			rect			CHOICE_RECT( itemIndex ) \
+			exp				text( textArg ); \
+			textfont		CHOICE_TEXTFONT \
+			textscale		CHOICE_TEXTSIZE \
+			textstyle		CHOICE_TEXTSTYLE \
+			textAlign		CHOICE_TEXTALIGN \
+			textAlignX		CHOICE_TEXT_OFFSET_X \
+			forecolor		CHOICE_UNSELECTED_COLOR \
+			visible			visArg \
+			decoration \
+		}
+
+		itemDef
+		{
+			name			"time_display" 
+			type			ITEM_TYPE_TEXT
+			rect			-63 309 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		CHOICE_TEXTSIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_NORMAL
+			forecolor		CHOICE_SELECTED_COLOR
+			exp text		dvarInt(ugx_time_limit_slider);
+			visible 		when(MAP_HAS_ADJUSTABLE_TIME_ABILITY)
+			decoration
+		}
+		itemDef
+		{
+			name			"minutes" 
+			type			ITEM_TYPE_TEXT
+			rect			-52 309 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		CHOICE_TEXTSIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_NORMAL
+			forecolor		CHOICE_SELECTED_COLOR
+			text			"min";
+			visible 		when(dvarInt(ugx_time_limit_slider) < 10 && MAP_HAS_ADJUSTABLE_TIME_ABILITY)
+			decoration
+		}
+
+		itemDef
+		{
+			name			"minutes" 
+			type			ITEM_TYPE_TEXT
+			rect			-45 309 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textscale		CHOICE_TEXTSIZE
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		UI_FONT_NORMAL
+			forecolor		CHOICE_SELECTED_COLOR
+			text			"min";
+			visible 		when(dvarInt(ugx_time_limit_slider) > 9 && MAP_HAS_ADJUSTABLE_TIME_ABILITY)
+			decoration
+		}
+
+		#undef CHOICE_SIZE_X
+		#define CHOICE_SIZE_X								200
+		
+		CHOICE_BUTTON_VIS_NOHI_EX( 1, ("Timed Gameplay: " + dvarString(ugxmenu_timedgp)), ui_hint_timed_gameplay, play "mouse_click"; scriptMenuResponse "timed"; execnow "toggle ugxmenu_timedgp Yes No";,  						when(IS_TIMED_GAMEPLAY_CHANGEABLE);,																DOWN_NAV_EX_5START("Timed", "Degredation", "BuyableDoors", "Gamespeed", "Objectives", "TimeLimit"); UP_NAV_EX_6("Timed", "CHAOS_Y","CHAOS",;,;,;,;); RIGHT_NAVSTART("Timed", "StartGame"); )
+		
+		CHOICE_DVARSLIDER_FULL_VIS( 1, "Time Limit: ", ui_hint_time_limit, ugx_time_limit_slider, 5.0, 5.0, 60.0, ;, 																					 							when(MAP_HAS_ADJUSTABLE_TIME_ABILITY);, 															DOWN_NAV_EX_5START("TimeLimit", "Degredation", "BuyableDoors", "Gamespeed", "Objectives", ;); UP_NAV_EX_6("TimeLimit", "CHAOS_Y","CHAOS", "Timed",;,;,; ); RIGHT_NAVSTART("TimeLimit", "StartGame"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 2, ("Objectives: " + dvarString(ugxmenu_objectives)), ui_hint_objectives, play "mouse_click"; scriptMenuResponse "obj"; execnow "toggle ugxmenu_objectives Yes No";,  							when(FORCE_NO_OBJECTIVES && IS_NOT_COMPETITIVE_GAMEMODE && dvarBool(ugxm_allow_objectives) == 1);, 	DOWN_NAV_EX_5START("Objectives", "Exit", "Degredation", "BuyableDoors", "Gamespeed",;); UP_NAV_EX_6("Objectives", "CHAOS_Y","CHAOS", "Timed", "TimeLimit",;,;); RIGHT_NAVSTART("Objectives", "StartGame"); )
+		#define TOGGLE_GAMESPEED execnow "toggle ugxmenu_gamespeed Normal Fast Fastest; toggle ugxmenu_gamespeed_mult (1x) (2.5x) (3.5x)"
+		CHOICE_BUTTON_VIS_NOHI_EX( 2, ("Game Speed Multiplier: " + dvarString(ugxmenu_gamespeed) + " " + dvarString(ugxmenu_gamespeed_mult)), ui_hint_gamespeed, play "mouse_click"; scriptMenuResponse "gs"; TOGGLE_GAMESPEED;,  	when(MAP_HAS_ADJUSTABLE_SPEED_ABILITY);, 															DOWN_NAV_EX_5START("Gamespeed", "Exit", "Degredation", "BuyableDoors",;,;); UP_NAV_EX_6("Gamespeed", "CHAOS_Y","CHAOS", "Timed", "TimeLimit", "Objectives",;); RIGHT_NAVSTART("Gamespeed", "StartGame"); )
+
+		CHOICE_BUTTON_VIS_NOHI_EX( 3, ("Remove Buyable Doors: " + dvarString(ugxmenu_buyabledoors)), ui_hint_remove_doors, play "mouse_click"; scriptMenuResponse "doors"; execnow "toggle ugxmenu_buyabledoors Yes No";, 		 	when(GAMEMODE == 1 || GAMEMODE == 3 || GAMEMODE == 4 || GAMEMODE == 5 || GAMEMODE == 6);, 			DOWN_NAV_EX_5START("BuyableDoors", "Exit", "Degredation", ;,;,;); UP_NAV_EX_6("BuyableDoors", "CHAOS_Y","CHAOS", "Timed", "TimeLimit", "Objectives", "Gamespeed"); RIGHT_NAVSTART("BuyableDoors", "StartGame"); )
+		CHOICE_BUTTON_VIS_NOHI_EX( 4, ("Degredation Powerup: " + dvarString(ugxmenu_degredation)), ui_hint_degradation, play "mouse_click"; scriptMenuResponse "deg"; execnow "toggle ugxmenu_degredation Enabled Disabled";, 		when(IS_TIMED_GAMEPLAY_CHANGEABLE && GAMEMODE == 1);, 												DOWN_NAVSTART("Degredation", "StartGame"); UP_NAV_EX_7("Degredation", "CHAOS_Y", "CHAOS","Timed", "TimeLimit", "Objectives", "Gamespeed", "BuyableDoors"); RIGHT_NAVSTART("Degredation", "StartGame"); )
+		
+		//CHOICE_BUTTON_VIS_NOHI( 5, "Enable Teams: No",			 		ui_hint_teams, play "mouse_click"; scriptMenuResponse "teams"; setLocalVarInt ugx_teams 1;,  		when(localvarInt(ugx_teams) == 0 && MAP_HAS_TEAMS); )
+		//CHOICE_BUTTON_VIS_NOHI( 5, "Enable Teams: Yes", 					ui_hint_teams, play "mouse_click"; scriptMenuResponse "teams"; setLocalVarInt ugx_teams 0;,  		when(localvarInt(ugx_teams) == 1 && MAP_HAS_TEAMS); )
+
+
+
+		
+		#undef CHOICE_TEXTSIZE
+		#define CHOICE_TEXTSIZE .6
+		#undef	CHOICE_Y_START
+		#define CHOICE_Y_START 245
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START	249
+
+		#define SAVE_PLAYER_0_SETTINGS \
+			setDvar ugxm_client_0_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_0_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_0_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_0_fov dvarString(ugx_client_fov);
+		#define SAVE_PLAYER_1_SETTINGS \
+			setDvar ugxm_client_1_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_1_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_1_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_1_fov dvarString(ugx_client_fov); 
+		#define SAVE_PLAYER_2_SETTINGS \
+			setDvar ugxm_client_2_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_2_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_2_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_2_fov dvarString(ugx_client_fov); 
+		#define SAVE_PLAYER_3_SETTINGS \
+			setDvar ugxm_client_3_ads dvarString(ugx_client_ads); \
+			setDvar ugxm_client_3_xbox dvarString(ugx_client_xbox); \
+			setDvar ugxm_client_3_hitmarker dvarString(ugx_client_hitmarker); \
+			setDvar ugxm_client_3_fov dvarString(ugx_client_fov); 
+
+		#define ON_ON_YES			scriptMenuResponse "ugx_On_On_Yes"; close self;
+		#define CON_ON_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_ON_YES			scriptMenuResponse "ugx_Muted_On_Yes"; close self;
+		#define CMUTED_ON_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_ON_YES			scriptMenuResponse "ugx_Off_On_Yes"; close self;
+		#define COFF_ON_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_REDUCED_YES			scriptMenuResponse "ugx_On_Reduced_Yes"; close self;
+		#define CON_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_REDUCED_YES			scriptMenuResponse "ugx_Muted_Reduced_Yes"; close self;
+		#define CMUTED_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_REDUCED_YES			scriptMenuResponse "ugx_Off_Reduced_Yes"; close self;
+		#define COFF_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_OFF_YES			scriptMenuResponse "ugx_On_Off_Yes"; close self;
+		#define CON_OFF_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_OFF_YES			scriptMenuResponse "ugx_Muted_Off_Yes"; close self;
+		#define CMUTED_OFF_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_OFF_YES			scriptMenuResponse "ugx_Off_Off_Yes"; close self;
+		#define COFF_OFF_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_ON_NO			scriptMenuResponse "ugx_On_On_No"; close self;
+		#define CON_ON_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_ON_NO			scriptMenuResponse "ugx_Muted_On_No"; close self;
+		#define CMUTED_ON_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_ON_NO			scriptMenuResponse "ugx_Off_On_No"; close self;
+		#define COFF_ON_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define ON_REDUCED_NO			scriptMenuResponse "ugx_On_Reduced_No"; close self;
+		#define CON_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_REDUCED_NO			scriptMenuResponse "ugx_Muted_Reduced_No"; close self;
+		#define CMUTED_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_REDUCED_NO			scriptMenuResponse "ugx_Off_Reduced_No"; close self;
+		#define COFF_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define ON_OFF_NO			scriptMenuResponse "ugx_On_Off_No"; close self;
+		#define CON_OFF_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_OFF_NO			scriptMenuResponse "ugx_Muted_Off_No"; close self;
+		#define CMUTED_OFF_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_OFF_NO			scriptMenuResponse "ugx_Off_Off_No"; close self;
+		#define COFF_OFF_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+
+
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; ON_ON_YES;, when(CON_ON_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame0", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame0", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; MUTED_ON_YES;, when(CMUTED_ON_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame1", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame1", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; OFF_ON_YES;, when(COFF_ON_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame2", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame2", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; ON_REDUCED_YES;, when(CON_REDUCED_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame3", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame3", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; MUTED_REDUCED_YES;, when(CMUTED_REDUCED_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame4", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame4", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; OFF_REDUCED_YES;, when(COFF_REDUCED_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame5", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame5", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; ON_OFF_YES;, when(CON_OFF_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame6", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame6", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; MUTED_OFF_YES;, when(CMUTED_OFF_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame7", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame7", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; OFF_OFF_YES;, when(COFF_OFF_YES && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame8", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame8", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; ON_ON_NO;, when(CON_ON_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame9", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame9", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; MUTED_ON_NO;, when(CMUTED_ON_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame10", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame10", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; OFF_ON_NO;, when(COFF_ON_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame11", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame11", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; ON_REDUCED_NO;, when(CON_REDUCED_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame12", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame12", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; MUTED_REDUCED_NO;, when(CMUTED_REDUCED_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame13", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame13", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; OFF_REDUCED_NO;, when(COFF_REDUCED_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame14", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame14", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; ON_OFF_NO;, when(CON_OFF_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame15", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame15", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; MUTED_OFF_NO;, when(CMUTED_OFF_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame16", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame16", "xbox"); )
+		CHOICE_BUTTON_YELLOW( 7, "Start Game", ;, play "mouse_click"; OFF_OFF_NO;, when(COFF_OFF_NO && GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame17", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame17", "xbox"); )
+
+		//CHOICE_BUTTON_YELLOW( 7, "Start Game", 								play "mouse_click"; scriptMenuResponse "StartGame"; close ugxm_vote_host; SAVE_PLAYER_0_SETTINGS;,			when(GAMEMODES_ALLOWED && ON_ENABLED_MODE && dvarInt(ugxm_player_index) == 0);, UP_NAV_EX_8("StartGame", "CHAOS", "CHAOS_Y", "Timed", "Objectives", "TimeLimit", "Gamespeed", "Degredation", "C0"); LEFT_NAV("StartGame", "Exit"); )
+
+		#undef CHOICE_TEXTSIZE
+		#define CHOICE_TEXTSIZE .3
+		#undef	CHOICE_X_START
+		#define CHOICE_X_START	200
+		
+		CHOICE_BUTTON_YELLOW( 7, "Gamemode Disabled by Mapper", 			;, play "mouse_click";,															when(GAMEMODES_ALLOWED && ON_DISABLED_MODE),;)
+	}
+}

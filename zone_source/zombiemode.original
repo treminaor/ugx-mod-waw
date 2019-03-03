@@ -1,0 +1,407 @@
+include,flamethrower
+
+// strings - PC moved this one to a localized_nazi_zombie_*.csv files
+//localize,zombie
+
+// coop model
+mptype,nazi_zombie_heroes
+
+// viewmodel arms
+xmodel,viewmodel_usa_marine_arms
+xmodel,viewmodel_usa_marine_player
+
+// player zombie melee arms - the "weapon"
+weapon,sp/zombie_melee
+
+// Needed for laststand
+weapon,sp/fraggrenade
+weapon,sp/colt
+weapon,sp/zombie_perk_bottle_doubletap
+weapon,sp/zombie_perk_bottle_jugg
+weapon,sp/zombie_perk_bottle_revive
+weapon,sp/zombie_perk_bottle_sleight
+weapon,sp/zombie_bowie_flourish
+weapon,sp/zombie_knuckle_crack
+
+
+// zombie anims
+xanim,ai_zombie_attack_forward_v1
+xanim,ai_zombie_attack_forward_v2
+xanim,ai_zombie_attack_v1
+xanim,ai_zombie_attack_v2
+xanim,ai_zombie_attack_v3
+xanim,ai_zombie_attack_v4
+xanim,ai_zombie_attack_v6
+xanim,ai_zombie_walk_attack_v1
+xanim,ai_zombie_walk_attack_v2
+xanim,ai_zombie_walk_attack_v3
+xanim,ai_zombie_walk_attack_v4
+xanim,ai_zombie_run_attack_v1
+xanim,ai_zombie_run_attack_v2
+xanim,ai_zombie_run_attack_v3
+xanim,ai_zombie_run_attack_v4
+xanim,ai_zombie_crawl_death_v1
+xanim,ai_zombie_crawl_death_v2
+xanim,ai_zombie_death_v1
+xanim,ai_zombie_death_v2
+xanim,ai_zombie_tesla_death_a
+xanim,ai_zombie_tesla_death_b
+xanim,ai_zombie_tesla_death_c
+xanim,ai_zombie_tesla_death_d
+xanim,ai_zombie_tesla_death_e
+xanim,ai_zombie_tesla_crawl_death_a
+xanim,ai_zombie_tesla_crawl_death_b
+xanim,ai_zombie_door_pound_v1
+xanim,ai_zombie_door_pound_v2
+xanim,ai_zombie_door_tear_v1
+xanim,ai_zombie_idle_v1
+xanim,ai_zombie_idle_v1_delta
+xanim,ai_zombie_shot_arm_left
+xanim,ai_zombie_shot_arm_right
+xanim,ai_zombie_shot_leg_left_2_crawl
+xanim,ai_zombie_shot_leg_right_2_crawl
+xanim,ai_zombie_sprint_v1
+xanim,ai_zombie_sprint_v2
+// xanim,ai_zombie_sprint_v3 <-- removed
+xanim,ai_zombie_sprint_v4
+xanim,ai_zombie_sprint_v5
+xanim,ai_zombie_run_v1
+xanim,ai_zombie_run_v2
+xanim,ai_zombie_run_v3
+xanim,ai_zombie_run_v4
+xanim,ai_zombie_walk_fast_v1
+xanim,ai_zombie_walk_fast_v2
+xanim,ai_zombie_walk_fast_v3
+xanim,ai_zombie_walk_v1
+xanim,ai_zombie_walk_v2
+xanim,ai_zombie_walk_v3
+xanim,ai_zombie_walk_v4
+xanim,ai_zombie_walk_v6
+xanim,ai_zombie_walk_v7
+xanim,ai_zombie_walk_v8
+xanim,ai_zombie_walk_v9
+xanim,ai_zombie_door_tear_v2
+xanim,ai_zombie_walk_fast_v1
+xanim,ai_zombie_walk_fast_v2
+xanim,ai_zombie_walk_fast_v3
+xanim,ai_zombie_sprint_v1
+xanim,ai_zombie_sprint_v2
+xanim,ai_zombie_crawl
+xanim,ai_zombie_crawl_v1
+xanim,ai_zombie_crawl_v2
+xanim,ai_zombie_crawl_v3
+xanim,ai_zombie_crawl_v4
+xanim,ai_zombie_crawl_v5
+xanim,ai_zombie_crawl_death_v1
+xanim,ai_zombie_crawl_death_v2	
+xanim,ai_zombie_crawl_sprint
+xanim,ai_zombie_crawl_sprint_1
+xanim,ai_zombie_crawl_sprint_2
+xanim,ai_zombie_idle_crawl
+xanim,ai_zombie_idle_crawl_base
+xanim,ai_zombie_idle_crawl_delta
+xanim,ai_zombie_attack_crawl
+xanim,ai_zombie_attack_crawl_lunge
+xanim,ai_zombie_walk_on_hands_a
+xanim,ai_zombie_walk_on_hands_b
+xanim,ai_zombie_walk_on_hands_shot_a
+xanim,ai_zombie_walk_on_hands_shot_b
+
+// taunt anims
+// xanim,ai_zombie_taunts_1
+// xanim,ai_zombie_taunts_2
+// xanim,ai_zombie_taunts_3
+xanim,ai_zombie_taunts_4
+// xanim,ai_zombie_taunts_5
+xanim,ai_zombie_taunts_5b
+xanim,ai_zombie_taunts_5c
+xanim,ai_zombie_taunts_5d
+xanim,ai_zombie_taunts_5e
+xanim,ai_zombie_taunts_5f
+// xanim,ai_zombie_taunts_6
+xanim,ai_zombie_taunts_7
+// xanim,ai_zombie_taunts_8
+xanim,ai_zombie_taunts_9
+// xanim,ai_zombie_taunts_v10
+// xanim,ai_zombie_taunts_v11
+// xanim,ai_zombie_taunts_v12
+// xanim,ai_zombie_taunts_v13
+// xanim,ai_zombie_taunts_v14
+
+// monkey anims
+xanim,o_monkey_bomb
+
+// window attacks
+xanim,ai_zombie_window_attack_arm_L_out
+xanim,ai_zombie_window_attack_arm_R_out
+
+// window boar tear
+xanim,ai_zombie_boardtear_l_1
+xanim,ai_zombie_boardtear_l_2
+xanim,ai_zombie_boardtear_l_3
+xanim,ai_zombie_boardtear_l_4
+xanim,ai_zombie_boardtear_l_5
+xanim,ai_zombie_boardtear_l_6
+xanim,ai_zombie_boardtear_m_1
+xanim,ai_zombie_boardtear_m_2
+xanim,ai_zombie_boardtear_m_3
+xanim,ai_zombie_boardtear_m_4
+xanim,ai_zombie_boardtear_m_5
+xanim,ai_zombie_boardtear_m_6
+xanim,ai_zombie_boardtear_r_1
+xanim,ai_zombie_boardtear_r_2
+xanim,ai_zombie_boardtear_r_3
+xanim,ai_zombie_boardtear_r_4
+xanim,ai_zombie_boardtear_r_5
+xanim,ai_zombie_boardtear_r_6
+xanim,ai_zombie_boardtear_crawl_l_1
+xanim,ai_zombie_boardtear_crawl_l_2
+xanim,ai_zombie_boardtear_crawl_l_3
+xanim,ai_zombie_boardtear_crawl_l_4
+xanim,ai_zombie_boardtear_crawl_l_5
+xanim,ai_zombie_boardtear_crawl_l_6
+xanim,ai_zombie_boardtear_crawl_m_1
+xanim,ai_zombie_boardtear_crawl_m_2
+xanim,ai_zombie_boardtear_crawl_m_3
+xanim,ai_zombie_boardtear_crawl_m_4
+xanim,ai_zombie_boardtear_crawl_m_5
+xanim,ai_zombie_boardtear_crawl_m_6
+xanim,ai_zombie_boardtear_crawl_r_1
+xanim,ai_zombie_boardtear_crawl_r_2
+xanim,ai_zombie_boardtear_crawl_r_3
+xanim,ai_zombie_boardtear_crawl_r_4
+xanim,ai_zombie_boardtear_crawl_r_5
+xanim,ai_zombie_boardtear_crawl_r_6
+
+
+
+
+// tear anims
+xanim,ai_zombie_door_tear_v1
+xanim,ai_zombie_door_tear_v2
+xanim,ai_zombie_door_tear_high
+xanim,ai_zombie_door_tear_left
+xanim,ai_zombie_door_tear_right
+xanim,ai_zombie_door_tear_low
+
+// pound door animations
+xanim,ai_zombie_door_pound_v1
+xanim,ai_zombie_door_pound_v2
+
+// after gib shot anims
+xanim,ai_zombie_shot_arm_left
+xanim,ai_zombie_shot_arm_right
+xanim,ai_zombie_shot_leg_left_2_crawl
+xanim,ai_zombie_shot_leg_right_2_crawl
+
+// melee anims
+xanim,ai_zombie_attack_forward_v1
+xanim,ai_zombie_attack_forward_v2
+xanim,ai_zombie_attack_v1
+xanim,ai_zombie_attack_v2
+
+// idle
+xanim,ai_zombie_idle_v1
+xanim,ai_zombie_idle_base
+
+// traverse
+xanim,ai_zombie_traverse_v1
+xanim,ai_zombie_traverse_v2
+xanim,ai_zombie_traverse_v4
+xanim,ai_zombie_traverse_v5
+xanim,ai_zombie_traverse_v6
+xanim,ai_zombie_traverse_v7
+xanim,ai_zombie_traverse_crawl_v1
+xanim,ai_zombie_lighthouse_crawl_down
+xanim,ai_zombie_climb_chain
+xanim,ai_zombie_climb_chain_fast
+xanim,ai_zombie_ladder_climb_loop
+xanim,ai_zombie_ladder_climb_off
+xanim,ai_zombie_ladder_climb_on
+xanim,ai_zombie_crawl_jump_down_72
+xanim,ai_zombie_crawl_jump_down_97
+xanim,ai_zombie_crawl_jump_down_127
+xanim,ai_zombie_crawl_jump_down_184
+xanim,ai_zombie_crawl_jump_down_189
+xanim,ai_zombie_jump_down_190
+xanim,ai_zombie_jump_down_120
+xanim,ai_zombie_jump_down_96
+xanim,ai_zombie_jump_down_72
+xanim,ai_zombie_jump_down_40
+xanim,ai_zombie_jump_up_2_climb
+xanim,ai_zombie_jump_up
+xanim,ai_zombie_crawl_jump_up_2_climb
+
+// rise out of ground
+xanim,ai_zombie_traverse_ground_v1_crawl
+xanim,ai_zombie_traverse_ground_v1_crawlfast
+xanim,ai_zombie_traverse_ground_v1_deathinside
+xanim,ai_zombie_traverse_ground_v1_deathinside_alt
+xanim,ai_zombie_traverse_ground_v1_deathoutside
+xanim,ai_zombie_traverse_ground_v1_deathoutside_alt
+//xanim,ai_zombie_traverse_ground_v1_idle // I don't think we need this
+xanim,ai_zombie_traverse_ground_v1_run
+xanim,ai_zombie_traverse_ground_v1_walk
+xanim,ai_zombie_traverse_ground_v2_death_high
+xanim,ai_zombie_traverse_ground_v2_death_high_alt
+xanim,ai_zombie_traverse_ground_v2_death_low
+xanim,ai_zombie_traverse_ground_v2_death_low_alt
+xanim,ai_zombie_traverse_ground_v2_walk
+xanim,ai_zombie_traverse_ground_v2_walk_altA
+xanim,ai_zombie_traverse_ground_v2_walk_altB
+xanim,ai_zombie_traverse_ground_climbout_fast
+
+// player anims
+xanim,p_zombie_perkacola_drink
+	
+// script		
+rawfile,maps/_zombiemode.gsc
+rawfile,maps/_zombiemode_net.gsc
+rawfile,maps/_zombiemode_score.gsc
+rawfile,maps/_zombiemode_blockers_new.gsc
+rawfile,maps/_zombiemode_bowie.gsc
+rawfile,maps/_zombiemode_utility.gsc
+rawfile,maps/_zombiemode_spawner.gsc
+rawfile,maps/_zombiemode_weapons.gsc
+rawfile,maps/_zombiemode_powerups.gsc
+rawfile,maps/_zombiemode_radio.gsc
+rawfile,maps/_zombiemode_perks.gsc
+rawfile,maps/_zombiemode_devgui.gsc
+rawfile,maps/_zombiemode_tesla.gsc
+rawfile,maps/_zombiemode_cymbal_monkey.gsc
+rawfile,maps/nazi_zombie_sumpf_blockers.gsc
+rawfile,maps/_zombiemode_betty.gsc
+rawfile,maps/_zombiemode_achievement.gsc
+rawfile,maps/_zombiemode_zone_manager.gsc
+rawfile,maps/_zombiemode_timer.gsc
+rawfile,maps/_zombiemode_auto_turret.gsc
+rawfile,maps/_zombiemode_server_throttle.gsc
+
+rawfile,clientscripts/_zombiemode_tesla.csc
+
+rawfile,animscripts/traverse/wall_hop_zombie.gsc
+
+rawfile,vision/zombie.vision
+
+// materials 
+material,hud_chalk_1
+material,hud_chalk_2
+material,hud_chalk_3
+material,hud_chalk_4
+material,hud_chalk_5
+
+// stopwatch
+material,zombie_stopwatch
+material,zombie_stopwatchneedle
+material,zombie_stopwatch_glass
+
+material,specialty_juggernaut_zombies
+material,specialty_fastreload_zombies
+material,specialty_doubletap_zombies
+material,specialty_quickrevive_zombies
+material,specialty_doublepoints_zombies
+material,specialty_instakill_zombies
+
+// leaderboard materials
+material,scorebar_zom_1
+material,scorebar_zom_2
+material,scorebar_zom_3
+material,scorebar_zom_4
+material,scorebar_zom_long_1
+material,scorebar_zom_long_2
+material,scorebar_zom_long_3
+material,scorebar_zom_long_4
+
+// fog at edge of level
+fx,env/smoke/fx_fog_zombie_amb
+fx,env/light/fx_ray_sun_sm_short
+
+// Vending models
+xmodel,zombie_vending_doubletap_on
+xmodel,zombie_vending_jugg_on
+xmodel,zombie_vending_revive_on
+xmodel,zombie_vending_sleight_on
+xmodel,zombie_vending_packapunch_on
+xmodel,zombie_sign_please_wait
+
+// neckstump
+xmodel,char_ger_honorgd_zomb_behead
+
+// head gib stuff
+fx,misc/fx_zombie_bloodsplat
+fx,misc/fx_zombie_bloodspurt
+fx,maps/zombie/fx_zombie_tesla_neck_spurt
+
+// rise fx
+fx,maps/mp_maps/fx_mp_zombie_hand_dirt_burst
+fx,maps/mp_maps/fx_mp_zombie_body_dirt_billowing
+fx,maps/mp_maps/fx_mp_zombie_body_dust_falling
+fx,maps/zombie/fx_zombie_body_wtr_burst
+fx,maps/zombie/fx_zombie_body_wtr_billowing
+fx,maps/zombie/fx_zombie_body_wtr_falling
+
+
+// eye piece
+xmodel,char_ger_zombieeye
+
+// SRS 9/2/2008: for playing fx that we need to stop
+xmodel,tag_origin
+
+// FX for the eyes
+fx,misc/fx_zombie_eye_single
+
+// FX for player being a zombie
+fx,misc/fx_zombie_grain_cloud
+
+//zombie powerups
+fx,misc/fx_zombie_powerup_on
+fx,misc/fx_zombie_powerup_grab
+fx,misc/fx_zombie_powerup_wave
+fx,misc/fx_zombie_mini_nuke
+fx,misc/fx_zombie_mini_nuke_hotness
+xmodel,zombie_bomb
+xmodel,zombie_skull
+xmodel,zombie_x2_icon
+xmodel,zombie_ammocan
+xmodel,zombie_carpenter
+
+// radio fx
+fx,env/electrical/fx_elec_short_oneshot
+xmodel,static_berlin_ger_radio
+
+//Bouncing betty stuff
+weapon,sp/mine_bouncing_betty
+fx,weapon/bouncing_betty/fx_explosion_betty_generic
+fx,weapon/bouncing_betty/fx_betty_trail
+
+
+fx,maps/zombie/fx_zombie_dog_lightning_buildup
+fx,misc/fx_zombie_perk_lottery_start
+fx,misc/fx_zombie_perk_lottery_end
+fx,misc/fx_zombie_perk_lottery_flash
+
+// magic box
+fx,maps/zombie/fx_zombie_lght_marker
+fx,maps/zombie/fx_zombie_lght_marker_flare
+
+// Tesla Weapon
+fx,maps/zombie/fx_zombie_tesla_bolt_secondary
+fx,maps/zombie/fx_zombie_tesla_shock
+fx,maps/zombie/fx_zombie_tesla_shock_secondary
+fx,maps/zombie/fx_zombie_tesla_rail_view
+fx,maps/zombie/fx_zombie_tesla_tube_view
+fx,maps/zombie/fx_zombie_tesla_tube_view2
+fx,maps/zombie/fx_zombie_tesla_tube_view3
+fx,maps/zombie/fx_zombie_tesla_rail_view_ug
+fx,maps/zombie/fx_zombie_tesla_tube_view_ug
+fx,maps/zombie/fx_zombie_tesla_tube_view2_ug
+fx,maps/zombie/fx_zombie_tesla_tube_view3_ug
+fx,maps/zombie/fx_zombie_tesla_shock_eyes
+rawfile,shock/electrocution.shock
+material,ammo_counter_tesla
+
+//LDS - Added for Monkey
+fx,maps/zombie/fx_zombie_monkey_light
+
+// intro movie
+//rawfile,video/nazi_zombie_sumpf.bik

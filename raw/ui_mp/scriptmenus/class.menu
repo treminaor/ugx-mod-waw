@@ -1,0 +1,998 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+
+#define CHOICE_SIZE_X			150
+#define CHOICE_SIZE_Y			22
+
+#ifdef PC	
+	#define CHOICE_X_START			30
+	#define CHOICE_Y_START			75
+	#define CHOICE_SEP_1			5
+#else
+	#define CHOICE_X_START			0
+	#define CHOICE_Y_START			204
+	#define CHOICE_SEP_1			3
+#endif
+
+#define CUSTOM_MATCH \
+		( dvarbool( systemlink ) || dvarbool( xblive_privatematch ) )
+#define NOT_CUSTOM_MATCH \
+		( !dvarbool( systemlink ) && !dvarbool( xblive_privatematch ) )
+
+// ------------------ preprocessing function definitions ------------------
+#define PAD_LEFT \
+		execKeyInt DPAD_LEFT { \
+			setDvar squad_member_selected "0"; \ 
+			focusFirst; \
+			show selection_left; \
+			hide selection_right; \
+		} \
+		execKeyInt APAD_LEFT { \
+			setDvar squad_member_selected "0"; \ 
+			focusFirst; \
+			show selection_left; \
+			hide selection_right; \
+		} 
+
+#define PAD_RIGHT \
+	execKeyInt DPAD_RIGHT { \
+		setDvar squad_member_selected "1"; \ 
+		setFocus squadMemberList; \
+		exec "set ui_hint_text @MPUI_DESC_PLAYER_OPTIONS" \
+	} \
+	execKeyInt APAD_RIGHT { \
+		setDvar squad_member_selected "1"; \ 
+		setFocus squadMemberList; \
+		exec "set ui_hint_text @MPUI_DESC_PLAYER_OPTIONS" \
+	} 
+
+
+#include "ui_mp/menustyle.inc"
+#include "ui_mp/choices_setup_teams.menu"
+#include "ui/choices_setup_popmenu.menu"
+
+#ifdef PC
+#define ORIGIN_DESCRIPTION		(CHOICE_X_START + 15) 170
+#else// PC
+#define ORIGIN_DESCRIPTION		(CHOICE_X_START + 15) 190
+#endif// PC
+
+#undef CHOICE_GROUP
+#define CHOICE_GROUP			"class"
+
+	menuDef
+	{
+		name			"class"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_EMPTY
+#ifdef CONSOLE
+		blurWorld		7.0
+#endif
+		onOpen
+		{
+			focusFirst;
+			hide selection_right;
+#ifdef PC
+			setDvar squad_member_selected "1";
+#endif
+			execNow "setHighlightedToCurrentSquad";
+			exec "selectSquad";
+			setDvar ui_reset_squad_index "1";
+		}
+		onFocus
+		{
+			focusFirst;
+		}
+		onEsc 
+		{
+			scriptMenuResponse "back";
+		}
+		
+		#ifndef PC
+		execkeyint BUTTON_START
+		{
+			scriptMenuResponse "back";
+		}
+		#endif
+		
+		PAD_RIGHT
+		PAD_LEFT
+
+#ifdef CONSOLE
+		// background overlay
+		itemDef
+		{
+			style			WINDOW_STYLE_FILLED
+			rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			backcolor		0 0 0 0.75 //0 0.05 0.15 0.5
+			visible			1
+			decoration
+		}
+
+		// gradient_top
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_top"
+			visible			1
+			decoration
+		}
+
+		// gradient_bottom
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			0 405 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_bottom"
+			visible			1
+			decoration
+		}
+#else // #ifdef CONSOLE
+		#define	PC_INGAME
+		#include "ui_mp/overlaybg.inc"
+		BACKGROUND_BLACK_LETTERBOX_BLURWORLD( 1.0 )
+		OVERLAY_BACKGROUND
+#endif
+
+		// -------- GAME TYPE NAME AND DESCRIPTION --------
+		#define MAPNAME tableLookup( "mp/mapstable.csv", 0, dvarString( mapname ), 3 )
+#ifdef CONSOLE
+		itemDef	{
+			rect			22 39 400 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_TITLE
+			textalign		ITEM_ALIGN_LEFT
+			forecolor		1 1 1 0.85
+			exp text ( "@"+MAPNAME );
+			visible			1	decoration	}
+		itemDef	{
+			rect			22 70 400 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_TITLE
+			textalign		ITEM_ALIGN_LEFT
+			forecolor		1 1 1 0.85
+			exp text ( gametypename() );
+			visible			1	decoration	}
+		itemDef	{
+			rect			22 85 230 60 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textalign		ITEM_ALIGN_LEFT
+			forecolor		1 1 1 0.75
+			exp text( gametypedescription() );
+			autowrapped
+			visible			1	decoration	}
+
+#endif
+#ifdef PC
+		#define MAPNAME_PC	"@"+MAPNAME
+		#define GAMETYPE_PC	gametypename()
+		#define GAMETYPE_DESC_PC	gametypedescription()
+		#undef CHOICE_TEXTSIZE
+		#define CHOICE_TEXTSIZE TEXTSIZE_SMALL
+
+		CHOICE_MENU_TITLE( MAPNAME_PC )
+		CHOICE_OVERLAY_TITLE( GAMETYPE_PC )
+		CHOICE_OVERLAY_SUB_TITLE( GAMETYPE_DESC_PC )
+
+		#undef CHOICE_TEXTSIZE
+		#define CHOICE_TEXTSIZE TEXTSIZE_DEFAULT
+#endif
+
+		
+		// ------------------ buttons ---------------------
+		#define BACK_OPEN	;
+		#include "ui_mp/navcontrols.inc"
+
+		//=========================================================
+		//===================== MENU SELECTION ====================
+		//=========================================================
+		#include "ui_mp/teamicon.inc"
+
+		#ifdef PC	
+			#undef CHOICE_Y_START
+			#define CHOICE_Y_START			-10
+			#undef CHOICE_SEP_1
+			#define CHOICE_SEP_1			4
+			#undef CHOICE_SIZE_X			
+			#define CHOICE_SIZE_X			180
+		#else
+			#undef CHOICE_Y_START
+			#define CHOICE_Y_START			0
+			#undef CHOICE_SEP_1
+			#define CHOICE_SEP_1			3
+		#endif
+
+		#undef CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN	HORIZONTAL_ALIGN_LEFT
+		#undef CHOICE_VERTICAL_ALIGN
+		#define CHOICE_VERTICAL_ALIGN	VERTICAL_ALIGN_CENTER
+
+		//// PC widescreen fix
+		//#ifdef PC
+		//	#undef  CHOICE_X_START
+		//	#define CHOICE_X_START	-320
+
+		//	#undef  CHOICE_Y_START
+		//	#define CHOICE_Y_START	-55
+		//	
+		//	#undef	CHOICE_HORIZONTAL_ALIGN
+		//	#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+		//#endif
+	
+		CHOICE_BUTTON_BG( 1, when( (TEAM_IS_MARINES || TEAM_IS_OPFOR) && MAY_CHOOSE_CLASS ) )
+		CHOICE_HIGHLIGHT( 1, (TEAM_IS_MARINES || TEAM_IS_OPFOR) && MAY_CHOOSE_CLASS )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 1, "@MPUI_CHOOSE_CLASS", scriptMenuResponse "changeclass_marines", ;, ;, when( TEAM_IS_MARINES && MAY_CHOOSE_CLASS ) )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 1, "@MPUI_CHOOSE_CLASS", scriptMenuResponse "changeclass_opfor", ;, ;, when( TEAM_IS_OPFOR && MAY_CHOOSE_CLASS ) )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 1, "@MPUI_CHOOSE_CLASS", scriptMenuResponse "changeclass_opfor", ;, ;, when( dvarInt( scr_oldschool ) == 1 ) )
+		CHOICE_DBUTTON_VIS( 1, "@MPUI_CHOOSE_CLASS", when( dvarInt( scr_oldschool ) == 1 ); )
+
+		#define RANKEDGAME		(dvarBool( onlinegame ) && !dvarBool( xblive_privatematch ))
+		#define ISHOST			(dvarBool( sv_running ))
+		#define TEAMGAME		( team( name ) != "TEAM_FREE")
+		#define NOTTEAMGAME		( team( name ) == "TEAM_FREE" )
+		#define ISSQUADLEADER ( TEAMGAME && getsquadid() && issquadleader() )
+		#define ISNOTSQUADLEADER	( NOTTEAMGAME || !getsquadid() || !issquadleader() )
+	
+#ifdef CONSOLE	
+	
+		CHOICE_BUTTON_BG( 2, when( TEAMGAME ) )
+		CHOICE_HIGHLIGHT( 2, TEAMGAME )
+		
+		// PUBLIC MATCH
+		CHOICE_BUTTON_VIS_NOHI( 2, "@MPUI_CREATEJOIN_SQUAD", open popup_createjoin_squad, when ( !spectatingClient() && ( getsquadid() == 0 ) && TEAMGAME && NOT_CUSTOM_MATCH ) )
+		CHOICE_BUTTON_VIS_NOHI( 2, "@MPUI_LEAVE_SQUAD", open popup_leave_squad,  when( !spectatingClient() && getsquadid() && TEAMGAME && NOT_CUSTOM_MATCH ) )
+		CHOICE_NEWICON_VIS( 2, "menu_icon_invite", when( dvarBool( ui_invitedToSquad ) ) )
+
+		CHOICE_BUTTON_VIS( 3, "@MPUI_CHANGE_TEAM", scriptMenuResponse "changeteam", when( MAY_CHOOSE_TEAM && NOT_CUSTOM_MATCH ); )
+		CHOICE_DBUTTON_VIS( 3, "@MPUI_CHANGE_TEAM", when( MAY_NOT_CHOOSE_TEAM && NOT_CUSTOM_MATCH ); )
+
+		CHOICE_BUTTON_VIS( 4, "@MENU_OPTIONS", close self; open ingameoptions, when( NOT_CUSTOM_MATCH ) )
+
+		// SYSTEMLINK or PRIVATE MATCH
+		CHOICE_BUTTON_VIS( 2, "@MPUI_CHANGE_TEAM", scriptMenuResponse "changeteam", when( MAY_CHOOSE_TEAM && CUSTOM_MATCH ); )
+		CHOICE_DBUTTON_VIS( 2, "@MPUI_CHANGE_TEAM", when( MAY_NOT_CHOOSE_TEAM && CUSTOM_MATCH ); )
+
+		CHOICE_BUTTON_VIS( 3, "@MENU_OPTIONS", close self; open ingameoptions, when( CUSTOM_MATCH ) )
+
+		CHOICE_BUTTON_BG( 5, 1 )
+		CHOICE_HIGHLIGHT( 5, 1 )
+
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 5, "@MENU_END_GAME", open popup_endgame, ;, ;, when( RANKEDGAME == 0 && ISHOST ) )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 5, "@MENU_LEAVE_GAME", open popup_leavegameandparty, ;, ;, when( RANKEDGAME == 0 && (ISHOST == 0) && (InPrivateParty() && !PrivatePartyHost() && PrivatePartyHostInLobby()) ) )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 5, "@MENU_LEAVE_GAME", open popup_leavegame, ;, ;, when( RANKEDGAME == 0 && (ISHOST == 0) && (!InPrivateParty() || PrivatePartyHost() || !PrivatePartyHostInLobby()) ) )
+
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 5, "@MENU_LEAVE_GAME", open popup_endgame_ranked, ;, ;, when( RANKEDGAME && ISHOST ) )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 5, "@MENU_LEAVE_GAME", open popup_leavegameandparty_ranked, ;, ;, when( RANKEDGAME && ISHOST == 0 && (InPrivateParty() && !PrivatePartyHost() && PrivatePartyHostInLobby()) ) )
+		CHOICE_BUTTON_FOCUS_VIS_NOHI( 5, "@MENU_LEAVE_GAME", open popup_leavegame_ranked, ;, ;, when( RANKEDGAME && ISHOST == 0 && (!InPrivateParty() || PrivatePartyHost() || !PrivatePartyHostInLobby()) ) )
+		
+// --------- button ----------
+		itemDef
+		{
+			rect			-140 -4 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+			origin			0 0
+			text			"@PLATFORM_LOCK_SQUAD"
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textalign		ITEM_ALIGN_BOTTOM_LEFT
+			execkeyint		BUTTON_X {scriptMenuResponse "locksquad";}
+			visible			when( ( getsquadid()< 8192 ) && ISSQUADLEADER )
+			decoration
+		}
+		
+		itemDef
+		{
+			rect			-140 -4 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+			origin			0 0
+			text			"@PLATFORM_UNLOCK_SQUAD"
+			textfont		CHOICE_TEXTFONT
+			textscale		TEXTSIZE_SMALL
+			textalign		ITEM_ALIGN_BOTTOM_LEFT
+			execkeyint		BUTTON_X {scriptMenuResponse "unlocksquad";}
+			visible			when( ( getsquadid()& 8192 ) && ISSQUADLEADER )
+			decoration
+		}
+		#define SHOULD_SHOW_MAP CUSTOM_MATCH
+		#include "ui_mp/tactical_map.inc"
+#endif // #ifdef CONSOLE
+#ifdef PC
+		#define SQUAD_CAP 12
+		#define INVITE_MEMBER 1
+		#define KICK_MEMBER 2
+		#define SQUAD_BUTTON_START_X -439
+		#define SQUAD_BUTTON_START_Y -65
+
+		CHOICE_BUTTON( 2, "@MPUI_CHANGE_TEAM", scriptMenuResponse "changeteam" )
+		//CHOICE_DBUTTON_VIS( 2, "@MPUI_CHANGE_TEAM", when( MAY_NOT_CHOOSE_TEAM ); )
+
+		
+ 		CHOICE_BUTTON_VIS( 3, "@MPUI_CALL_VOTE", open callvote; close self;, when( dvarbool( ui_allowvote ) ); )
+ 		CHOICE_DBUTTON_VIS( 3, "@MPUI_CALL_VOTE", when( !dvarbool( ui_allowvote ) ); )
+ 		
+ 		CHOICE_BUTTON_VIS( 4, "@MPUI_MUTE_PLAYERS", open muteplayer_menu; close self;, when( 1 ); )
+
+		CHOICE_BUTTON( 5, "@MENU_FRIENDS", close self; open menu_pc_friends; )
+#undef	NEW_X_OFFSET
+#define	NEW_X_OFFSET -60
+		CHOICE_NEWICON_VIS( 5, "specialty_new", when( hasinvites() || haspendingfriends() ); )
+
+		CHOICE_BUTTON( 6, "@MENU_OPTIONS", close self; open options_new_pc; execnow "set ui_allow_graphic_change 0"; )
+
+		CHOICE_HIGHLIGHT( 7, 1 )
+		CHOICE_BUTTON_BG( 7, 1 )
+		CHOICE_BUTTON_VIS_NOHI( 7, "@MENU_LEAVE_GAME", open popup_endgame, when( dvarbool( sv_running ) ) )
+		CHOICE_BUTTON_VIS_NOHI( 7, "@MENU_LEAVE_GAME", open popup_leavegame, when( !dvarbool( sv_running ) ) )
+
+		// Create Squad Button 
+		itemDef 
+		{ 
+			rect			SQUAD_BUTTON_START_X SQUAD_BUTTON_START_Y (CHOICE_SIZE_Y*4) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_CREATE_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( dvarInt( ui_squad_count ) < SQUAD_CAP && !spectatingClient() && ( getsquadid() == 0 ) && TEAMGAME && team( name ) != "TEAM_SPECTATOR" && !dvarBool( ui_squad_spectating ) )
+			action
+			{ 
+				play "mouse_click"; 
+				setDvar squad_previous getSquadId; 
+				setDvar ui_reset_squad_index "1";
+				exec "clearAllInvites"; 
+				scriptMenuResponse "createsquad"; 
+			}
+		}
+
+		// Lock Squad Button 
+		itemDef 
+		{ 
+			rect			SQUAD_BUTTON_START_X SQUAD_BUTTON_START_Y (CHOICE_SIZE_Y*4) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_LOCK_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( !spectatingClient() && ( getsquadid()< 8192 ) && ISSQUADLEADER && !dvarBool( ui_squad_spectating ) )
+			action
+			{ 
+				play "mouse_click"; 
+				scriptMenuResponse "locksquad";
+			}
+		}
+
+		// Unlock Squad Button 
+		itemDef 
+		{ 
+			rect			SQUAD_BUTTON_START_X SQUAD_BUTTON_START_Y (CHOICE_SIZE_Y*4) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_UNLOCK_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( !spectatingClient() && ( getsquadid() & 8192 ) && ISSQUADLEADER && !dvarBool( ui_squad_spectating ) )
+			action
+			{ 
+				play "mouse_click"; 
+				scriptMenuResponse "unlocksquad";
+			}
+		}
+
+		// Join Squad Button
+		itemDef 
+		{ 
+			rect			(SQUAD_BUTTON_START_X + 142) SQUAD_BUTTON_START_Y (CHOICE_SIZE_Y*3) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_JOIN_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( !spectatingClient() && ( getsquadid() == 0 ) && TEAMGAME && ( team( name ) != "TEAM_SPECTATOR" ) && ( dvarInt( squad_selected ) != 0 ) && ( dvarInt( squad_selected_locked ) == 0 ) && !dvarBool( ui_squad_spectating ) );
+			action
+			{
+				play "mouse_click"; 
+				setDvar squad_previous getSquadId; 
+				open squad_name_join_popup
+			}
+		}
+
+		// Leave Squad Button
+		itemDef 
+		{ 
+			rect			(SQUAD_BUTTON_START_X + 142) SQUAD_BUTTON_START_Y (CHOICE_SIZE_Y*3) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_LEAVE_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( !spectatingClient() && getsquadid() && TEAMGAME && team( name ) != "TEAM_SPECTATOR" && !dvarBool( ui_squad_spectating ) ) ;
+			action
+			{
+				play "mouse_click"; 
+				open popup_leave_squad;
+			}
+		}
+
+		// Invite to Squad Button
+		itemDef 
+		{ 
+			rect			(SQUAD_BUTTON_START_X + 243) SQUAD_BUTTON_START_Y (CHOICE_SIZE_Y*3) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_INVITE_TO_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( !spectatingClient() && ISSQUADLEADER && ( dvarInt( squad_selected ) == 0 ) && ( dvarInt( ui_squad_member_action ) == INVITE_MEMBER ) && !dvarBool( ui_squad_spectating ) ) ;
+			action
+			{
+				play "mouse_click"; 
+				setDvar ui_can_invite_to_squad "1";
+				execNow "setSquadMemberAction";
+			}
+		}
+
+		// Invite Friends to Squad Button
+		itemDef 
+		{ 
+			rect			(SQUAD_BUTTON_START_X + 341) SQUAD_BUTTON_START_Y ((CHOICE_SIZE_Y*6)+2) CHOICE_SIZE_Y RIGHTITEM_ALIGN VERTICAL_ALIGN_BOTTOM 
+			type			ITEM_TYPE_BUTTON 
+			text			"@PLATFORM_INVITE_FRIENDS_TO_SQUAD"
+			textfont		UI_FONT_DEFAULT 
+			textscale		TEXTSIZE_SMALL 
+			textAlign		CHOICE_TEXTALIGN 
+			forecolor		1 1 1 1 
+			visible			when( !spectatingClient() && ISSQUADLEADER && !dvarBool( ui_squad_spectating ) );
+			action
+			{
+				play "mouse_click"; 
+				exec "inviteFriendsToSquad";
+			}
+		}
+#endif // #ifdef PC
+
+#ifdef PS3
+		CHOICE_BUTTON_VIS( 6, "@MPUI_INVITE_FRIENDS", close self; open ingame_ps3_friends, when( dvarbool( onlinegame ) && !dvarbool( ui_partyFull ) ) )
+#endif // #ifdef PS3
+
+// ----------- squad membership description ----------
+#ifndef PC
+		itemDef	{
+			name			desc_arrow
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 10 10 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			ORIGIN_DESCRIPTION
+			background		"ui_arrow_right"
+			forecolor		1 1 1 0.25
+			visible			when( getSquadId() != 0 )
+			decoration
+		}
+		itemDef	{
+			name			description_squad_leader
+			type			ITEM_TYPE_TEXT
+			rect			12 -3 240 32 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			ORIGIN_DESCRIPTION
+			exp				text( locString( "@MPUI_SQUAD_LEADER", "@"+dvarString( ui_currentSquad ) ) )
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textaligny		16
+			forecolor		CHOICE_TEXTCOLOR
+			visible			when( ( getSquadId() != 0 ) && ISSQUADLEADER )
+			autowrapped
+			decoration
+		}
+		itemDef	{
+			name			description_squad_member
+			type			ITEM_TYPE_TEXT
+			rect			12 -3 240 32 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			ORIGIN_DESCRIPTION
+			exp				text( locString( "@MPUI_SQUAD_MEMBER", "@"+dvarString( ui_currentSquad ) ) )
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textaligny		16
+			forecolor		CHOICE_TEXTCOLOR
+			visible			when( ( getSquadId() != 0 ) && ISNOTSQUADLEADER )
+			autowrapped
+			decoration
+		}
+#else
+		itemDef	{
+			name			desc_arrow
+			style			WINDOW_STYLE_SHADER
+			rect			(SQUAD_BUTTON_START_X + 94) -22 10 10 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP
+			origin			ORIGIN_DESCRIPTION
+			background		"ui_arrow_right"
+			forecolor		1 1 1 0.25
+			visible			when( getSquadId() != 0 )
+			decoration
+		}
+		itemDef	{
+			name			description_squad_leader
+			type			ITEM_TYPE_TEXT
+			rect			(SQUAD_BUTTON_START_X + 104) -26 240 32 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP
+			origin			ORIGIN_DESCRIPTION
+			exp				text( locString( "@MPUI_SQUAD_LEADER", "@"+dvarString( ui_currentSquad ) ) )
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textaligny		16
+			forecolor		CHOICE_TEXTCOLOR
+			visible			when( ( getSquadId() != 0 ) && ISSQUADLEADER )
+			autowrapped
+			decoration
+		}
+		itemDef	{
+			name			description_squad_member
+			type			ITEM_TYPE_TEXT
+			rect			(SQUAD_BUTTON_START_X + 104) -26 240 32 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP
+			origin			ORIGIN_DESCRIPTION
+			exp				text( locString( "@MPUI_SQUAD_MEMBER", "@"+dvarString( ui_currentSquad ) ) )
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textaligny		16
+			forecolor		CHOICE_TEXTCOLOR
+			visible			when( ( getSquadId() != 0 ) && ISNOTSQUADLEADER )
+			autowrapped
+			decoration
+		}
+#endif // #ifndef PC
+
+// ---------------------- Squad list -------------------------
+
+#define PLAYERLIST_WIDTH 		270
+#ifdef CONSOLE
+	#define ORIGIN_PLAYERLIST 		(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 36
+#else
+	#define ORIGIN_PLAYERLIST 		(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET) - 10 ) 47
+#endif
+
+#define OPEN_JOIN_SQUAD 1
+#define	PLAYERLIST_SCOREVIS 1
+#define PLAYERLIST_SELECTED_ACTIONS \
+	action { \	
+		setDvar ui_can_invite_to_squad "0"; \
+		execNow "setSquadMemberAction"; \
+	} \
+	doubleClick	{ \
+		setDvar ui_can_invite_to_squad "1"; \
+		execNow "setSquadMemberAction"; \
+		execOnDvarIntValue ui_squad_member_action KICK_MEMBER "openmenu squad_member_kick_popup"; \
+	} \
+	PAD_LEFT
+#define SQUADLIST_SELECTED_ACTIONS \
+	action { \
+		exec "selectSquad"; \
+	} \
+	doubleClick { \
+		execNow "selectSquad"; \
+		execNow "setSquadNameAction"; \
+		execOnDvarIntValue ui_squad_name_action OPEN_JOIN_SQUAD "openmenu squad_name_join_popup"; \
+	}
+	
+#define LOCAL_FLASH			(sin(milliseconds()*0.0065)+1)
+#define LOCAL_FLASH_LO		LOCAL_FLASH*0.07
+#define LOCAL_FLASH_HI		LOCAL_FLASH*0.35
+#define LOCAL_GLOW_COLOR	0.9 0.95 1 1	
+			
+#define ORIGIN_COLUMN_RANK_X 0
+#define ORIGIN_COLUMN_NAME_X -19
+#define ORIGIN_COLUMN_SCORE_X 236
+#define COLUMN_RANK_WIDTH 36
+#define COLUMN_NAME_WIDTH 293
+#define COLUMN_SCORE_WIDTH 34
+
+#define LIST_BOX_Y_START			115
+#define LIST_BOX_WIDTH				274
+#define LIST_BOX_SQUADNAME_WIDTH	140
+#define LIST_BOX_HEIGHT				257
+#define LIST_BOX_SIZE 				LIST_BOX_WIDTH LIST_BOX_HEIGHT
+#define LIST_BOX_SQUADNAME_SIZE		LIST_BOX_SQUADNAME_WIDTH LIST_BOX_HEIGHT
+
+#define COLUMN_HEADER_COLOR 0.6 0.6 0.6 1
+
+#ifdef PARTY_THEME
+	#define PLATING_COLOR		0.3 0.225 0.2 1
+	#define HL_COLOR			1 0.85 0.825 0.2
+	#define PARTY_LABEL_COLOR	1 0.925 0.7 0.07
+	#define PARTY_LABEL			"@MENU_SQUAD"
+	#define PARTY_LABEL_SCALE	1.75
+#else
+	#define PLATING_COLOR		0.175 0.2 0.25 1
+	#define HL_COLOR			0.85 0.85 0.925 0.2
+	#define PARTY_LABEL_COLOR	0.9 0.925 1 0.07
+	#define PARTY_LABEL			"@MENU_LOBBY"
+	#define PARTY_LABEL_SCALE	1.75
+#endif
+
+#define PLAYERLIST_INGAME_BACKGROUND_SQUADFEEDER( feederName, feederArg, yOffsetArg, heightArg, backColorArg, actionsArg, visArg ) \	
+	itemDef	{ \
+		name			feederName \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			ORIGIN_COLUMN_NAME_X yOffsetArg COLUMN_NAME_WIDTH heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	COLUMN_NAME_WIDTH \
+		elementheight	18 \
+		textfont		UI_FONT_DEFAULT \
+		textscale		TEXTSIZE_SMALL \
+		backcolor		backColorArg \
+		forecolor		CHOICE_TEXTCOLOR \
+		focusColor		CHOICE_TEXTCOLOR \
+		disablecolor	COLOR_UNFOCUSED \
+		selectBorder	0.8 0.95 1 0 \
+		visible			when( visArg ) \
+		decoration \
+		columns			1		40		(PLAYERLIST_WIDTH-COLUMN_NAME_WIDTH) 40			0 \
+		noscrollbars \
+	}
+
+#define PLAYERLIST_INGAME_SQUADFEEDER( feederName, feederArg, yOffsetArg, heightArg, backColorArg, actionsArg, visArg ) \	
+	itemDef	{ \
+		name			feederName \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			ORIGIN_COLUMN_NAME_X yOffsetArg COLUMN_NAME_WIDTH heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	COLUMN_NAME_WIDTH \
+		elementheight	18 \
+		textfont		UI_FONT_DEFAULT \
+		textscale		TEXTSIZE_SMALL \
+		backcolor		backColorArg \
+		forecolor		CHOICE_TEXTCOLOR \
+		focusColor		CHOICE_TEXTCOLOR \
+		disablecolor	COLOR_UNFOCUSED \
+		outlinecolor	HL_COLOR \
+		selectBorder	0.8 0.95 1 0 \
+		highlightTexture	"menu_button_backing_highlight" \
+		visible			when( visArg ) \
+		/*				numcols		xpos						xwidth						textlen		alignment */ \
+		columns			5			2							18							2			ITEM_ALIGN_LEFT \	/* Rank			*/
+									17							18							3			ITEM_ALIGN_LEFT \	/* Rank Icon	*/	
+									35							(COLUMN_NAME_WIDTH-71)		18			ITEM_ALIGN_LEFT \	/* Squad Name	*/
+									(COLUMN_NAME_WIDTH-42)		24							4			ITEM_ALIGN_LEFT \	/* Invite Icon	*/
+									(COLUMN_NAME_WIDTH-36)		18							4			ITEM_ALIGN_LEFT \	/* Leader Icon	*/
+		onFocus	{ \
+			play "mouse_over"; \
+			exec "set ui_hint_text @MPUI_DESC_PLAYER_OPTIONS"; \
+			hide selection_left; \
+			show selection_right; \
+		} \
+		actionsArg \
+	}
+
+#define PLAYERLIST_INGAME_SQUADNAMEFEEDER( feederName, feederArg, yOffsetArg, heightArg, backColorArg, actionsArg, visArg ) \	
+	itemDef	{ \
+		name			feederName \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) yOffsetArg LIST_BOX_SQUADNAME_WIDTH heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	COLUMN_NAME_WIDTH \
+		elementheight	18 \
+		textfont		UI_FONT_DEFAULT \
+		textscale		TEXTSIZE_SMALL \
+		backcolor		backColorArg \
+		forecolor		CHOICE_TEXTCOLOR \
+		focusColor		CHOICE_TEXTCOLOR \
+		disablecolor	COLOR_UNFOCUSED \
+		outlinecolor	HL_COLOR \
+		highlightTexture	"menu_button_backing_highlight" \
+		visible			when( visArg ) \
+		/*				numcols		xpos							xwidth							textlen		alignment */ \
+		columns			3			2								(LIST_BOX_SQUADNAME_WIDTH-36)	40			ITEM_ALIGN_LEFT \	/* Squad Name  */
+									(LIST_BOX_SQUADNAME_WIDTH-38)	24								4			ITEM_ALIGN_LEFT \	/* Invite Icon */
+									(LIST_BOX_SQUADNAME_WIDTH-17)	18								4			ITEM_ALIGN_LEFT \	/* Locked Icon */
+		noscrollbars \
+		onFocus	{ \
+			play "mouse_over"; \
+		} \
+		actionsArg \
+	}
+
+#define PLAYERLIST_INGAME_TALKFEEDER( feederArg, yOffsetArg, heightArg, visArg ) \	
+	itemDef	{ \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			(ORIGIN_COLUMN_NAME_X - 16) yOffsetArg 16 heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	18 \
+		elementheight	18 \
+		forecolor		1 1 1 1 \
+		focusColor		1 1 1 1 \
+		disableColor	1 1 1 1 \
+		visible			when( visArg ) \
+		noscrollbars \
+		decoration \
+	}
+
+#define PLAYERLIST_INGAME_RANKFEEDER( feederArg, yOffsetArg, heightArg, visArg ) \
+	itemDef	{ \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			(ORIGIN_COLUMN_RANK_X+14) yOffsetArg 36 heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	18 \
+		elementheight	18 \
+		textfont		UI_FONT_DEFAULT \
+		textscale		TEXTSIZE_SMALL \
+		textstyle 		ITEM_TEXTSTYLE_SHADOWED \
+		textaligny		0 \
+		textalignx		0 \
+		forecolor		1 1 1 1 \
+		focusColor		1 1 1 1 \
+		disableColor	1 1 1 1 \
+		noscrollbars \
+		columns	2		15		18		3		ITEM_ALIGN_LEFT \
+						0		18		2		ITEM_ALIGN_LEFT \				
+		visible			when( visArg ) \
+		decoration \
+	}
+
+#define PLAYERLIST_INGAME_SQUADLOCKED( feederArg, yOffsetArg, heightArg, visArg ) \
+	itemDef	{ \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH - 18 ) (yOffsetArg+2) 90 heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	90 \
+		elementheight	18 \
+		textfont		UI_FONT_DEFAULT \
+		textscale		TEXTSIZE_SMALL \
+		textstyle 		ITEM_TEXTSTYLE_SHADOWED \
+		textaligny		-2 \
+		forecolor		1 1 1 1 \
+		focusColor		1 1 1 1 \
+		disableColor	1 1 1 1 \
+		noscrollbars \
+		columns	2		0		18		3		ITEM_ALIGN_LEFT \
+						19		72		10		ITEM_ALIGN_LEFT \				
+		visible			when( visArg ) \
+		decoration \
+	}
+
+#define PLAYERLIST_INGAME_SQUADINVITED( feederArg, yOffsetArg, heightArg, visArg ) \
+	itemDef	{ \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH - 36 ) yOffsetArg 18 heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	18 \
+		elementheight	18 \
+		forecolor		1 1 1 1 \
+		focusColor		1 1 1 1 \
+		disableColor	1 1 1 1 \
+		noscrollbars \			
+		visible			when( visArg ) \
+		decoration \
+	}
+
+#define PLAYERLIST_INGAME_LEADER( feederArg, yOffsetArg, heightArg, visArg ) \	
+	itemDef	{ \
+		feeder			feederArg \
+		type			ITEM_TYPE_LISTBOX \
+		rect			(COLUMN_NAME_WIDTH-25) yOffsetArg 18 heightArg RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+		origin			ORIGIN_PLAYERLIST \
+		elementwidth	18 \
+		elementheight	18 \
+		forecolor		1 1 1 1 \
+		focusColor		1 1 1 1 \
+		disableColor	1 1 1 1 \
+		visible			when( visArg ) \
+		noscrollbars \
+		decoration \
+	}
+
+// ------------------ Squad list title bar -------------------
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", 0 0 0 1, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_USMC 0.4, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) == "pacific") && player( teamname ) == "TEAM_ALLIES" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_USSR 0.5, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) != "pacific") && player( teamname ) == "TEAM_ALLIES" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_JPN 0.4, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) == "pacific") && player( teamname ) == "TEAM_AXIS" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_GER 0.3, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) != "pacific") && player( teamname ) == "TEAM_AXIS" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "line_horizontal", 0.9 0.9 0.95 0.5, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "gradient_top", 1 1 1 0.2, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	PREPROC_TEXT_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH + 2 ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_WIDTH 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "@MPUI_SQUADS", TEXTSIZE_SMALL, 0, 16, ITEM_ALIGN_LEFT, COLUMN_HEADER_COLOR, when (team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+
+// ------------------ Squad list background ------------------
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X - LIST_BOX_SQUADNAME_WIDTH ) LIST_BOX_Y_START LIST_BOX_SQUADNAME_SIZE RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "gradient_center", 0.3 0.3 0.325 0.6, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+
+// ------------------ Squad member list title bar -------------------
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", 0 0 0 1, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_USMC 0.4, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) == "pacific") && player( teamname ) == "TEAM_ALLIES" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_USSR 0.5, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) != "pacific") && player( teamname ) == "TEAM_ALLIES" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_JPN 0.4, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) == "pacific") && player( teamname ) == "TEAM_AXIS" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "white", COLOR_GER 0.3, 0, 0, 0 0 0 0, when( ((tableLookup( "mp/mapsTable.csv", 0, dvarString( "mapname" ), 1 ) != "pacific") && player( teamname ) == "TEAM_AXIS" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) ) )
+	
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "line_horizontal", 0.9 0.9 0.95 0.5, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "gradient_top", 1 1 1 0.2, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+
+	PREPROC_TEXT_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 4 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, locString( "@"+dvarString( squad_selected_name ) ), TEXTSIZE_SMALL, 0, 16, ITEM_ALIGN_LEFT, COLUMN_HEADER_COLOR, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" && dvarString( squad_selected_name) == "MPUI_CALLSIGN_LONEWOLVES" ) )
+	PREPROC_TEXT_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 4 ) LIST_BOX_Y_START ( COLUMN_NAME_WIDTH - 19 ) 18 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, locString( "@"+dvarString( squad_selected_name ) )+" "+locString( "@MPUI_SQUAD" ), TEXTSIZE_SMALL, 0, 16, ITEM_ALIGN_LEFT, COLUMN_HEADER_COLOR, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" && dvarString( squad_selected_name) != "MPUI_CALLSIGN_LONEWOLVES" ) )
+
+// ------------------ Squad member list background ------------------
+	PREPROC_SHADER_DRAW_ALIGNED_VIS( ( ORIGIN_COLUMN_NAME_X + 2 ) LIST_BOX_Y_START LIST_BOX_SIZE RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, ORIGIN_PLAYERLIST, "gradient_center", 0.3 0.3 0.325 0.6, 0, 0, 0 0 0 0, when( team( name ) != "TEAM_FREE" && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+
+// --------------------- Squad feeders -----------------------
+//	PLAYERLIST_INGAME_BACKGROUND_SQUADFEEDER( "squadBackgroundMemberList", FEEDER_INGAME_SQUAD_MEMBERS_FULL, ( LIST_BOX_Y_START + 18 ), 256, 0.5 0.5 0.5 0, PLAYERLIST_SELECTED_ACTIONS, ( (team( name ) != "TEAM_FREE") && ( dvarBool( squad_member_selected ) == 0 ) && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	PLAYERLIST_INGAME_SQUADFEEDER( "squadMemberList", FEEDER_INGAME_SQUAD_MEMBERS_FULL, ( LIST_BOX_Y_START + 18 ), ( LIST_BOX_HEIGHT - 18 ), 0.5 0.5 0.5 0, PLAYERLIST_SELECTED_ACTIONS, ( (team( name ) != "TEAM_FREE") && ( dvarBool( squad_member_selected ) == 1 ) && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+	
+	PLAYERLIST_INGAME_SQUADNAMEFEEDER( "squadNameList", FEEDER_INGAME_SQUAD_NAMES_FULL, ( LIST_BOX_Y_START + 18 ), ( LIST_BOX_HEIGHT - 18 ), 0 0 0 0, SQUADLIST_SELECTED_ACTIONS, ( (team( name ) != "TEAM_FREE") && ( dvarBool( squad_member_selected ) == 1 ) && NOT_CUSTOM_MATCH && team( name ) != "TEAM_SPECTATOR" ) )
+
+// ---------------------- Squad list -------------------------
+// ------------------------ END ------------------------------	
+	
+	#include "ui/safearea.menu"
+}
+
+#undef CHOICE_GROUP
+#define CHOICE_GROUP			"popmenu"
+
+#define JOINSQUAD_POPUP_X		80
+#define JOINSQUAD_POPUP_Y		150
+
+#define COLUMN_SQUADNAME_WIDTH	150
+//===========================================================
+//=================== join squad popup =======================
+//===========================================================
+#ifdef PC
+	#define SELECT_ICON
+#else
+	#ifndef PS3
+		#define SELECT_ICON	selectIcon "ui_button_xenon_3d_a_32x32"
+	#else
+		#define SELECT_ICON selectIcon "ui_button_ps3_x_32x32"
+	#endif // #ifndef PS3
+#endif // #ifdef PC
+
+	#define JOINSQUADLIST_SELECTED_ACTIONS \
+			doubleclick \
+			{ \
+				play "mouse_click"; \
+				joinNewSquad; \
+				scriptMenuResponse "joinsquad"; \
+				setDvar squad_previous getSquadId; \
+				exec "clearAllInvites"; \
+				close popup_joinsquad; \
+			}
+	
+	#define PLAYERLIST_INGAME_JOINSQUADFEEDER( feederName, feederArg, yOffsetArg, heightArg, backColorArg, actionsArg, visArg ) \	
+		itemDef	{ \
+			name			feederName \
+			feeder			feederArg \
+			type			ITEM_TYPE_LISTBOX \
+			rect			JOINSQUAD_POPUP_X yOffsetArg COLUMN_SQUADNAME_WIDTH heightArg ITEM_ALIGN_LEFT VERTICAL_ALIGN_TOP \
+			origin			0 0 \
+			elementwidth	22 \
+			elementheight	22 \
+			textfont		CHOICE_TEXTFONT \
+			textscale		TEXTSIZE_SMALL \
+			backcolor		backColorArg \
+			forecolor		CHOICE_TEXTCOLOR \
+			focusColor		CHOICE_TEXTCOLOR \
+			disablecolor	COLOR_UNFOCUSED \
+			outlinecolor	HL_COLOR \
+			selectBorder	0.8 0.95 1 0 \
+			highlightTexture	"menu_button_backing_highlight" \
+			SELECT_ICON	\
+			visible			when( visArg ) \
+			columns			1		22		COLUMN_SQUADNAME_WIDTH		40			ITEM_ALIGN_LEFT \
+			noscrollbars \
+			onFocus	{ \
+				play "mouse_over"; \
+			} \
+			actionsArg \
+	}
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP_HEIGHT( popup_joinsquad, 3, ;, 1, 78 )
+		itemDef 
+		{ 
+			type			ITEM_TYPE_BUTTON 
+			rect			100 (JOINSQUAD_POPUP_Y-6) 200 CHOICE_POPUP_TITLE_HEIGHT HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP 
+			text			"@MPUI_JOIN_SQUAD" 
+			textfont		CHOICE_TEXTFONT 
+			textscale		CHOICE_POPUP_TITLE_TEXTSIZE 
+			textAlign		ITEM_ALIGN_MIDDLE_LEFT 
+			textstyle		CHOICE_TEXTSTYLE 
+			forecolor		CHOICE_TEXTCOLOR 
+			visible			1 
+			decoration 
+		}
+		// ------------------ Join squad list ------------------
+		PLAYERLIST_INGAME_JOINSQUADFEEDER( "joinSquadMemberList", FEEDER_INGAME_SQUAD_NAMES, (JOINSQUAD_POPUP_Y+12), 256, 0.5 0.5 0.5 0, JOINSQUADLIST_SELECTED_ACTIONS, 1 )
+		
+		itemDef 
+		{
+			type			ITEM_TYPE_LISTBOX
+			feeder			FEEDER_INGAME_SQUAD_INVITE
+			rect			(JOINSQUAD_POPUP_X+COLUMN_SQUADNAME_WIDTH-30)(JOINSQUAD_POPUP_Y+14) 44 256 ITEM_ALIGN_LEFT VERTICAL_ALIGN_TOP
+			origin			0 0
+			elementwidth	44
+			elementheight	22
+			noscrollbars
+			forecolor		1 1 1 1 
+			focusColor		1 1 1 1 
+			disableColor	1 1 1 1 
+			visible			1
+			decoration
+		}
+	}
+
+	#include "ui_mp/popupstyle.inc"
+				
+	#define CAN_INVITE_TO_SQUAD ( ISSQUADLEADER && ( getplayersquadid() == 0 ) && ( !squadinvitesent() ) )
+		
+
+	menuDef
+	{
+#ifdef XENON
+		#define NUM_SQUAD_MENU_OPTIONS 3
+		#define SQUAD_INVITE_OPTION_NUMBER 2		
+		#define SQUAD_KICK_OPTION_NUMBER 3
+#else
+		#define NUM_SQUAD_MENU_OPTIONS 2
+		#define SQUAD_INVITE_OPTION_NUMBER 1
+		#define SQUAD_KICK_OPTION_NUMBER 2
+#endif
+
+		CENTER_POPUP_SETUP( squad_member_popup, NUM_SQUAD_MENU_OPTIONS, ;, 1 )
+		CHOICE_POPMENU_TITLE( "@MPUI_PLAYER_SQUAD_OPTIONS" )
+		
+
+#ifdef XENON
+		CHOICE_BUTTON_VIS_ADV( 1, "@XBOXLIVE_VIEW_PROFILE", close squad_member_popup; showGamerCard, when( menuisopen( "menu_xboxlive_lobby" ) && dvarBool( party_playervisible ) );, menuisopen( "menu_xboxlive_lobby" ) && dvarBool( party_playervisible ) )
+		CHOICE_BUTTON_VIS_ADV( 1, "@XBOXLIVE_VIEW_PROFILE", close squad_member_popup; showGamerCard, when( !menuisopen( "menu_xboxlive_lobby" ) );, !menuisopen( "menu_xboxlive_lobby" ) )
+		CHOICE_BUTTON_VIS_NOHI( 1, "", ;, when( menuisopen( "menu_xboxlive_lobby" ) && !dvarBool( party_playervisible ) ); )
+		CHOICE_DBUTTON_VIS( 1, "@XBOXLIVE_VIEW_PROFILE", when( menuisopen( "menu_xboxlive_lobby" ) && !dvarBool( party_playervisible ) ); )
+#endif
+		
+		CHOICE_BUTTON_VIS_ADV( SQUAD_INVITE_OPTION_NUMBER, "@MPUI_INVITE_TO_SQUAD", close squad_member_popup; inviteToSquad, when( CAN_INVITE_TO_SQUAD );, ( CAN_INVITE_TO_SQUAD ) )
+		CHOICE_BUTTON_VIS( SQUAD_INVITE_OPTION_NUMBER, "", ;, when( ( team( name ) == "TEAM_FREE" ) || ( getsquadid() == 0 ) || ( !issquadleader() ) || ( getplayersquadid() != 0 ) || ( squadinvitesent() ) ); )
+		CHOICE_DBUTTON_VIS( SQUAD_INVITE_OPTION_NUMBER, "@MPUI_INVITE_TO_SQUAD", when( ( team( name ) == "TEAM_FREE" ) || ( getsquadid() == 0 ) || ( !issquadleader() ) || ( getplayersquadid() != 0 ) || ( squadinvitesent() ) ); )
+
+		CHOICE_BUTTON_VIS_ADV( SQUAD_KICK_OPTION_NUMBER, "@MPUI_REMOVE_FROM_SQUAD", close squad_member_popup; removeFromSquad, when( ISSQUADLEADER && ( getsquadid() == getplayersquadid() ) );, ( ISSQUADLEADER && ( getsquadid() == getplayersquadid() ) ) )
+		CHOICE_BUTTON_VIS( SQUAD_KICK_OPTION_NUMBER, "", ;, when( ( team( name ) == "TEAM_FREE" ) || ( getsquadid() == 0 ) || ( !issquadleader() ) || ( getplayersquadid() != getsquadid() ) ); )
+		CHOICE_DBUTTON_VIS( SQUAD_KICK_OPTION_NUMBER, "@MPUI_REMOVE_FROM_SQUAD", when( ( team( name ) == "TEAM_FREE" ) || ( getsquadid() == 0 ) || ( !issquadleader() ) || ( getplayersquadid() != getsquadid() ) ); )
+	}
+
+#ifdef PC	
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP( squad_member_kick_popup, 2, ;, 1 )
+		CHOICE_POPMENU_TITLE( "@MPUI_REMOVE_FROM_SQUAD" )
+		
+		CHOICE_BUTTON( 1, "@MPUI_YES", play "mouse_click"; close squad_member_kick_popup; removeFromSquad )
+		CHOICE_BUTTON( 2, "@MPUI_NO", play "mouse_click"; close squad_member_kick_popup; )
+	}
+
+	#define JOINSQUADNAME_SELECTED_ACTIONS \
+				play "mouse_click"; \
+				exec "joinSelectedSquad"; \
+				scriptMenuResponse "joinsquad"; \
+				setDvar squad_previous getSquadId; \
+				exec "clearAllInvites"; \
+				close squad_name_join_popup; 
+
+	menuDef
+	{
+		CENTER_POPUP_SETUP( squad_name_join_popup, 2, ;, 1 )
+		CHOICE_POPMENU_TITLE( "@MPUI_JOIN_SQUAD" )
+		CHOICE_POPMENU_SUBTITLE( locString( "@MPUI_JOIN_SQUAD_NAME", "@"+dvarString( squad_selected_name ) ) )
+		
+		CHOICE_BUTTON( 1, "@MPUI_YES", JOINSQUADNAME_SELECTED_ACTIONS )
+		CHOICE_BUTTON( 2, "@MPUI_NO", play "mouse_click"; close squad_name_join_popup; )
+	}
+
+
+#endif //PC

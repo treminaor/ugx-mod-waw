@@ -1,0 +1,96 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define MENU_TITLE_TEXT "CAPTURE AND HOLD OPTIONS"
+#define GAME_OPTIONS_MENU_NAME "settings_quick_iwar"
+#include "ui_mp/common_game_options.inc"
+
+#define TEAMBASED 1
+#define NUMLIVES_DVAR		"scr_iwar_numlives"
+#define PLAYERRESPAWN_DVAR 	"scr_iwar_playerrespawndelay"
+#define WAVERESPAWN_DVAR	"scr_iwar_waverespawndelay"
+#define GAMETYPE_OPTIONS	"@MPUI_IWAR"
+
+// --- gameplay options
+#define CHOICE1_TEXT		"@MPUI_RULES_TIME_LIMIT"
+#define CHOICE1_DVAR		scr_iwar_timelimit
+#define CHOICE1_DVARTEXT	CHOICE1_DVAR"_text"
+#define CHOICE1_SHOW		1
+#define CHOICE1_STR1		"@MPUI_RULES_UNLIMITED"
+#define CHOICE1_STR2		"@MPUI_RULES_5MINUTES" 
+#define CHOICE1_STR3		"@MPUI_RULES_10MINUTES"
+#define CHOICE1_STR4		"@MPUI_RULES_15MINUTES"
+#define CHOICE1_STR5		"@MPUI_RULES_20MINUTES"
+#define CHOICE1_STR6		"@MPUI_RULES_30MINUTES"
+#define CHOICE1_VAL1		0
+#define CHOICE1_VAL2		5
+#define CHOICE1_VAL3		10
+#define CHOICE1_VAL4		15
+#define CHOICE1_VAL5		20
+#define CHOICE1_VAL6		30
+#ifndef PC
+	#define CHOICE1_EXEC		open GAME_OPTIONS_MENU_NAME"_"CHOICE1_TEXT; play "mouse_click";
+#else // #ifndef PC
+	#define CHOICE1_EXEC		play "mouse_click";
+#endif // #ifndef PC
+#define CHOICE1_STRLIST		{ CHOICE1_STR1 CHOICE1_VAL1 CHOICE1_STR2 CHOICE1_VAL2 CHOICE1_STR3 CHOICE1_VAL3 CHOICE1_STR4 CHOICE1_VAL4 CHOICE1_STR5 CHOICE1_VAL5 CHOICE1_STR6 CHOICE1_VAL6 }
+#define CHOICE1_NUMVALS		5
+#define CHOICE1_POPUP		1
+
+#define CHOICE2_TEXT		"@MPUI_RULES_WAR_NEUTRAL_FLAG_LOCK_TIME"
+#define CHOICE2_DVAR		iwar_neutralFlagLockTime
+#define CHOICE2_DVARTEXT	CHOICE2_DVAR"_text"
+#define CHOICE2_SHOW		1
+#define CHOICE2_STR1		"@MPUI_RULES_NONE"
+#define CHOICE2_STR2		"@MPUI_RULES_5SECONDS" 
+#define CHOICE2_STR3		"@MPUI_RULES_10SECONDS"
+#define CHOICE2_STR4		"@MPUI_RULES_15SECONDS"
+#define CHOICE2_STR5		""
+#define CHOICE2_STR6		""
+#define CHOICE2_VAL1		0
+#define CHOICE2_VAL2		5
+#define CHOICE2_VAL3		10
+#define CHOICE2_VAL4		15
+#define CHOICE2_VAL5		0
+#define CHOICE2_VAL6		0
+#ifndef PC
+	#define CHOICE2_EXEC		open GAME_OPTIONS_MENU_NAME"_"CHOICE2_TEXT; play "mouse_click";
+#else // #ifndef PC
+	#define CHOICE2_EXEC		play "mouse_click";
+#endif // #ifndef PC
+#define CHOICE2_STRLIST		{ CHOICE2_STR1 CHOICE2_VAL1 CHOICE2_STR2 CHOICE2_VAL2 CHOICE2_STR3 CHOICE2_VAL3 CHOICE2_STR4 CHOICE2_VAL4 CHOICE2_STR5 CHOICE2_VAL5 CHOICE2_STR6 CHOICE2_VAL6 }
+#define CHOICE2_NUMVALS		4
+#define CHOICE2_POPUP		1
+
+#define CHOICE3_TEXT		"@MPUI_RULES_WAR_FINAL_FIGHT_TIME_LIMIT"
+#define CHOICE3_DVAR		iwar_finalFightTimeLimit
+#define CHOICE3_DVARTEXT	CHOICE3_DVAR"_text"
+#define CHOICE3_SHOW		1
+#define CHOICE3_STR1		"@MPUI_RULES_NONE"
+#define CHOICE3_STR2		"@MPUI_RULES_2_5MINUTES" 
+#define CHOICE3_STR3		"@MPUI_RULES_5MINUTES"
+#define CHOICE3_STR4		"@MPUI_RULES_10MINUTES"
+#define CHOICE3_STR5		""
+#define CHOICE3_STR6		""
+#define CHOICE3_VAL1		0
+#define CHOICE3_VAL2		2.5
+#define CHOICE3_VAL3		5
+#define CHOICE3_VAL4		10
+#define CHOICE3_VAL5		0
+#define CHOICE3_VAL6		0
+#ifndef PC
+	#define CHOICE3_EXEC		open GAME_OPTIONS_MENU_NAME"_"CHOICE3_TEXT; play "mouse_click";
+#else // #ifndef PC
+	#define CHOICE3_EXEC		play "mouse_click";
+#endif // #ifndef PC
+#define CHOICE3_STRLIST		{ CHOICE3_STR1 CHOICE3_VAL1 CHOICE3_STR2 CHOICE3_VAL2 CHOICE3_STR3 CHOICE3_VAL3 CHOICE3_STR4 CHOICE3_VAL4 CHOICE3_STR5 CHOICE3_VAL5 CHOICE3_STR6 CHOICE3_VAL6 }
+#define CHOICE3_NUMVALS		4
+#define CHOICE3_POPUP		1
+
+#include "ui_mp/settings_team.inc"
+#include "ui_mp/settings_player.inc"
+#include "ui_mp/settings_weapon.inc"
+
+{
+	#include "ui_mp/game_options.inc"
+}

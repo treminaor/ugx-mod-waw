@@ -1,0 +1,333 @@
+#include "ui/menudef.h"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+
+{		
+	menuDef
+	{
+		name				"ugxm_save_settings_client"		
+		rect				FULLSCREEN_WIDE
+		focuscolor			1 1 1 1
+		disablecolor		0 0 0 0
+ 		style				WINDOW_STYLE_SHADER
+		background			"ugx_loadscreen_user"
+		
+		onOpen { 
+			setFocus "TOGGLE_ON_YES_1";
+			setFocus "TOGGLE_ON_NO_1";
+			setFocus "TOGGLE_MUTED_YES_1";
+			setFocus "TOGGLE_MUTED_NO_1";
+			setFocus "TOGGLE_OFF_YES_1";
+			setFocus "TOGGLE_OFF_NO_1";
+			setFocus "HOLD_ON_YES_1";
+			setFocus "HOLD_ON_NO_1";
+			setFocus "HOLD_MUTED_YES_1";
+			setFocus "HOLD_MUTED_NO_1";
+			setFocus "HOLD_OFF_YES_1";
+
+			focusFirst; 
+
+			setDvar ugxm_player_1_score "-1";
+			setDvar ugxm_player_2_score "-1";
+			setDvar ugxm_player_3_score "-1";
+
+			exec "setfromdvar cg_fov ugx_client_fov"; 
+			exec "setfromdvar input_viewSensitivity ugx_client_sense"; 
+		}
+		onClose { 
+			exec "setfromdvar cg_fov ugx_client_fov"; 
+			exec "setfromdvar input_viewSensitivity ugx_client_sense";
+		}
+		onESC { }
+
+		#define ON_ON_YES			scriptMenuResponse "ugx_On_On_Yes"; close self;
+		#define CON_ON_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_ON_YES			scriptMenuResponse "ugx_Muted_On_Yes"; close self;
+		#define CMUTED_ON_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_ON_YES			scriptMenuResponse "ugx_Off_On_Yes"; close self;
+		#define COFF_ON_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_REDUCED_YES			scriptMenuResponse "ugx_On_Reduced_Yes"; close self;
+		#define CON_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_REDUCED_YES			scriptMenuResponse "ugx_Muted_Reduced_Yes"; close self;
+		#define CMUTED_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_REDUCED_YES			scriptMenuResponse "ugx_Off_Reduced_Yes"; close self;
+		#define COFF_REDUCED_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_OFF_YES			scriptMenuResponse "ugx_On_Off_Yes"; close self;
+		#define CON_OFF_YES			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define MUTED_OFF_YES			scriptMenuResponse "ugx_Muted_Off_Yes"; close self;
+		#define CMUTED_OFF_YES			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define OFF_OFF_YES			scriptMenuResponse "ugx_Off_Off_Yes"; close self;
+		#define COFF_OFF_YES			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "Yes")
+		#define ON_ON_NO			scriptMenuResponse "ugx_On_On_No"; close self;
+		#define CON_ON_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_ON_NO			scriptMenuResponse "ugx_Muted_On_No"; close self;
+		#define CMUTED_ON_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_ON_NO			scriptMenuResponse "ugx_Off_On_No"; close self;
+		#define COFF_ON_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "On" && dvarString(ugx_client_xbox) == "No")
+		#define ON_REDUCED_NO			scriptMenuResponse "ugx_On_Reduced_No"; close self;
+		#define CON_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_REDUCED_NO			scriptMenuResponse "ugx_Muted_Reduced_No"; close self;
+		#define CMUTED_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_REDUCED_NO			scriptMenuResponse "ugx_Off_Reduced_No"; close self;
+		#define COFF_REDUCED_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Reduced" && dvarString(ugx_client_xbox) == "No")
+		#define ON_OFF_NO			scriptMenuResponse "ugx_On_Off_No"; close self;
+		#define CON_OFF_NO			(dvarString(ugx_client_hitmarker) == "On" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+		#define MUTED_OFF_NO			scriptMenuResponse "ugx_Muted_Off_No"; close self;
+		#define CMUTED_OFF_NO			(dvarString(ugx_client_hitmarker) == "Muted" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+		#define OFF_OFF_NO			scriptMenuResponse "ugx_Off_Off_No"; close self;
+		#define COFF_OFF_NO			(dvarString(ugx_client_hitmarker) == "Off" && dvarString(ugx_client_weaponbob) == "Off" && dvarString(ugx_client_xbox) == "No")
+
+		itemDef { name 		"mouse_hint"
+			type			ITEM_TYPE_BUTTON
+			style			WINDOW_STYLE_FILLED
+			rect			90 25 40 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			forecolor 		1 1 1 0.65
+			text			"- If you are still stuck on this screen after the host has started a gamemode, move your mouse around a bit. -"
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+            textstyle		ITEM_TEXTSTYLE_SHADOWED
+            textfont		UI_FONT_NORMAL
+            textalignx		0
+            textaligny		8
+            textscale		.3
+			visible 		1
+        }
+
+       		itemDef { name "ON_ON_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CON_ON_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { ON_ON_YES; close self; }
+			mouseEnter { ON_ON_YES }
+			mouseExit { ON_ON_YES }
+		}
+		itemDef { name "MUTED_ON_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CMUTED_ON_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { MUTED_ON_YES; close self; }
+			mouseEnter { MUTED_ON_YES }
+			mouseExit { MUTED_ON_YES }
+		}
+		itemDef { name "OFF_ON_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(COFF_ON_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { OFF_ON_YES; close self; }
+			mouseEnter { OFF_ON_YES }
+			mouseExit { OFF_ON_YES }
+		}
+		itemDef { name "ON_REDUCED_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CON_REDUCED_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { ON_REDUCED_YES; close self; }
+			mouseEnter { ON_REDUCED_YES }
+			mouseExit { ON_REDUCED_YES }
+		}
+		itemDef { name "MUTED_REDUCED_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CMUTED_REDUCED_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { MUTED_REDUCED_YES; close self; }
+			mouseEnter { MUTED_REDUCED_YES }
+			mouseExit { MUTED_REDUCED_YES }
+		}
+		itemDef { name "OFF_REDUCED_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(COFF_REDUCED_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { OFF_REDUCED_YES; close self; }
+			mouseEnter { OFF_REDUCED_YES }
+			mouseExit { OFF_REDUCED_YES }
+		}
+		itemDef { name "ON_OFF_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CON_OFF_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { ON_OFF_YES; close self; }
+			mouseEnter { ON_OFF_YES }
+			mouseExit { ON_OFF_YES }
+		}
+		itemDef { name "MUTED_OFF_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CMUTED_OFF_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { MUTED_OFF_YES; close self; }
+			mouseEnter { MUTED_OFF_YES }
+			mouseExit { MUTED_OFF_YES }
+		}
+		itemDef { name "OFF_OFF_YES_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(COFF_OFF_YES && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { OFF_OFF_YES; close self; }
+			mouseEnter { OFF_OFF_YES }
+			mouseExit { OFF_OFF_YES }
+		}
+		itemDef { name "ON_ON_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CON_ON_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { ON_ON_NO; close self; }
+			mouseEnter { ON_ON_NO }
+			mouseExit { ON_ON_NO }
+		}
+		itemDef { name "MUTED_ON_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CMUTED_ON_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { MUTED_ON_NO; close self; }
+			mouseEnter { MUTED_ON_NO }
+			mouseExit { MUTED_ON_NO }
+		}
+		itemDef { name "OFF_ON_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(COFF_ON_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { OFF_ON_NO; close self; }
+			mouseEnter { OFF_ON_NO }
+			mouseExit { OFF_ON_NO }
+		}
+		itemDef { name "ON_REDUCED_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CON_REDUCED_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { ON_REDUCED_NO; close self; }
+			mouseEnter { ON_REDUCED_NO }
+			mouseExit { ON_REDUCED_NO }
+		}
+		itemDef { name "MUTED_REDUCED_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CMUTED_REDUCED_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { MUTED_REDUCED_NO; close self; }
+			mouseEnter { MUTED_REDUCED_NO }
+			mouseExit { MUTED_REDUCED_NO }
+		}
+		itemDef { name "OFF_REDUCED_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(COFF_REDUCED_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { OFF_REDUCED_NO; close self; }
+			mouseEnter { OFF_REDUCED_NO }
+			mouseExit { OFF_REDUCED_NO }
+		}
+		itemDef { name "ON_OFF_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CON_OFF_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { ON_OFF_NO; close self; }
+			mouseEnter { ON_OFF_NO }
+			mouseExit { ON_OFF_NO }
+		}
+		itemDef { name "MUTED_OFF_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(CMUTED_OFF_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { MUTED_OFF_NO; close self; }
+			mouseEnter { MUTED_OFF_NO }
+			mouseExit { MUTED_OFF_NO }
+		}
+		itemDef { name "OFF_OFF_NO_1"
+			rect            100 (240 - 25) 50 50 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_FULLSCREEN 
+	 		style			WINDOW_STYLE_FILLED
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			background		"ugxm_menu_arrow"
+			visible			when(COFF_OFF_NO && dvarInt(ugxm_player_index) == 1);
+			decoration
+                
+			onFocus { OFF_OFF_NO; close self; }
+			mouseEnter { OFF_OFF_NO }
+			mouseExit { OFF_OFF_NO }
+		}
+
+
+	}
+}

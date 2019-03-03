@@ -1,0 +1,72 @@
+// single player menu defs
+
+{	
+	loadMenu { "ui/main.menu" }
+	loadMenu { "ui/levels.menu" }
+	loadMenu { "ui/levels_game.menu" }
+//	loadMenu { "ui/cod5_levels_test.menu" }
+	loadMenu { "ui/levels_dev.menu" }
+	loadMenu { "ui/difficulty.menu" }
+	loadMenu { "ui/error.menu" }
+	loadMenu { "ui_mp/mods.menu" }
+
+	loadMenu { "ui/options_new_pc.menu" }
+	loadMenu { "ui/options_look_pc.menu" }
+	loadMenu { "ui/options_move_pc.menu" }
+	loadMenu { "ui/options_shoot_pc.menu" }
+	loadMenu { "ui/options_misc_pc.menu" }
+	loadMenu { "ui/options_graphics_pc.menu" }
+	loadMenu { "ui/options_game_pc.menu" }
+	loadMenu { "ui/options_sound_pc.menu" }
+	loadMenu { "ui/options_coop_pc.menu" }
+	loadMenu { "ui/options_control_defaults.menu" }
+	loadMenu { "ui/options_graphics_defaults.menu" }
+	loadMenu { "ui_mp/options_multi.menu" }
+	loadMenu { "ui_mp/options_voice.menu" }
+	loadMenu { "ui_mp/cdkey.menu" }
+
+
+	loadMenu { "ui/playerprofile.menu" }
+	loadMenu { "ui/briefing.menu" }
+	loadMenu { "ui/connect.menu" }
+	loadMenu { "ui/quit.menu" }
+	loadMenu { "ui/vid_restart_pc.menu" }
+	loadMenu { "ui/language_restart.menu" }
+	loadMenu { "ui/snd_restart.menu" }
+
+	loadMenu { "ui/save_load.menu" }
+	loadMenu { "ui/lan.menu" }
+	loadMenu { "ui/pc_joinchoosegamemode.menu" }
+	loadMenu { "ui_mp/password.menu" }
+	loadMenu { "ui_mp/serverinfo.menu" }
+	loadMenu { "ui/filter.menu" }
+	
+	
+	
+	loadMenu { "ui/popup_gettinglb.menu" }
+	
+// 	loadMenu { "ui/xboxlive.menu" }
+	loadMenu { "ui/xboxlive_lobby.menu" }
+	loadMenu { "ui/xboxlive_partyended.menu" }
+	loadMenu { "ui/systemlink_lobby.menu" }
+	loadMenu { "ui/systemlink_partyended.menu" }	
+	
+//	loadMenu { "ui/settings_map.menu" }
+	loadMenu { "ui/game_summary.menu" }
+	loadMenu { "ui/challenges.menu" }
+	loadMenu { "ui/collectibles.menu" }
+
+	
+	loadMenu { "ui/pc_gamesetup_coop.menu" }	
+	loadMenu { "ui/settings_quick_cmp.menu" }
+	loadMenu { "ui/settings_quick_zom.menu" }
+	
+	loadMenu { "ui_mp/manage_friends.menu" }
+	
+	loadMenu { "ui_mp/pb_popmenus.menu" }
+	
+	
+	
+	
+	
+}

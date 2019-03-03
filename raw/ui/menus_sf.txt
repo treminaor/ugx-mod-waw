@@ -1,0 +1,5 @@
+// if SCALEFORM_ONLY, load only this menu
+//
+{	
+	loadMenu { "ui/main_sf.menu" }
+}

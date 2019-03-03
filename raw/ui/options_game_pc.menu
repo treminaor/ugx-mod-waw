@@ -1,0 +1,76 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+#define OPTIONS_STYLE			1
+#include "ui/trem_choices_setup_common.menu"
+
+
+{
+	menuDef 
+	{
+		name			options_game
+		fullScreen		0
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		soundloop		""
+		onOpen
+		{
+			setdvar monkeytoy UGX_ENABLE_CONSOLE;
+			close options_look;
+			close options_move;
+			close options_shoot;
+			close options_invehicle;
+			close options_misc;
+			close options_graphics;
+			close options_sound;
+			close options_view;
+			close options_defaults;
+			close options_driverinfo;
+			close options_credits;
+			close options_multi;
+			close options_graphics_defaults;
+			close options_graphics_texture;
+			close options_control_defaults;
+			close options_coop;
+			close self;
+
+			setLocalVarBool ui_hideBack 1;
+
+			uiScript getLanguage;
+		}
+		onClose
+		{
+			setdvar monkeytoy UGX_ENABLE_CONSOLE;
+			setLocalVarBool ui_hideBack 0;
+		}
+		onESC
+			
+		{ 
+			setdvar monkeytoy UGX_ENABLE_CONSOLE;
+			close self;
+		}
+
+#ifdef PC_INGAME
+#define INGAME 1
+#else
+#define INGAME 0
+#endif
+
+		#include "ui_mp/leftside_options.inc"
+			
+		CHOICE_SECTION_TITLE( 21, "@MENU_GAME_OPTIONS_CAP" )
+       
+		//CHOICE_DVARFLOATLIST( 22, "@MENU_ENABLE_CONSOLE", monkeytoy, { "@MENU_YES" 0 "@MENU_NO" 1 }, ; )
+		CHOICE_DVARYESNO_VIS( 23, "@MENU_SUBTITLES", cg_subtitles, ;, when( !dvarBool(ui_multiplayer) ); )
+		CHOICE_DVARYESNO_VIS( 23, "@MENU_DRAW_HUD", hud_enable, ;, when( dvarint( ui_multiplayer ) ) )
+		//CHOICE_DVARYESNO_VIS( 24, "@MENU_ENABLE_CROSSHAIR", cg_drawCrosshair, ;, when( !dvarBool(ui_multiplayer) ); )
+
+   		CHOICE_DVARFLOATLIST_VIS( 25, "@MENU_MATURE", ;, { "@MENU_MATURE_UNRESTRICTED" 0 "@MENU_MATURE_UNRESTRICTED" 1 }, open mature_content_pc_disable_warning, when( dvarString( "cg_mature" ) == "1" && dvarBool(cg_allow_mature) && !INGAME && !dvarBool(ui_multiplayer) ) )
+   		CHOICE_DVARFLOATLIST_VIS( 25, "@MENU_MATURE", cg_mature, { "@MENU_MATURE_REDUCED" 1 "@MENU_MATURE_REDUCED" 0 }, setdvar "cg_mature" 1; setdvar cg_blood "1", when( dvarString( "cg_mature" ) == "0" && dvarBool(cg_allow_mature) && !INGAME && !dvarBool(ui_multiplayer) ) )   		
+		CHOICE_DDVARALTTEXT_VIS( 25, "@MENU_MATURE", "@MENU_MATURE_UNRESTRICTED", when( ( !dvarBool(cg_allow_mature) || INGAME ) && dvarString( "cg_mature" ) == "1" && !dvarBool(ui_multiplayer) ) )
+		CHOICE_DDVARALTTEXT_VIS( 25, "@MENU_MATURE", "@MENU_MATURE_REDUCED", when( ( !dvarBool(cg_allow_mature) || INGAME ) && dvarString( "cg_mature" ) == "0" && !dvarBool(ui_multiplayer) ) )
+
+
+		//CHOICE_DVARFLOATLIST_VIS( 26, "@MENU_LANGUAGE", ui_language, { "@MENU_ENGLISH" 0 "@MENU_FRENCH" 1 "@MENU_GERMAN" 2 "@MENU_ITALIAN" 3 "@MENU_SPANISH" 4 "@MENU_BRITISH" 5 "@MENU_RUSSIAN" 6 "@MENU_POLISH" 7 "@MENU_KOREAN" 8 "@MENU_TAIWANESE" 9 "@MENU_JAPANESE" 10 "@MENU_CHINESE" 11 "@MENU_THAI" 12 }, uiScript verifyLanguage, when( dvarint( developer ) ) )
+		//CHOICE_APPLY_VIS( "@MENU_APPLY_LANGUAGE_CHANGE", open language_restart_popmenu, when ( dvarint( ui_languageChanged ) ) )		
+	}
+}

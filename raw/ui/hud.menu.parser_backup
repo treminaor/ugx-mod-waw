@@ -1,0 +1,2797 @@
+// CONSOLE HUD - SP
+
+#include "ui/menudef.h"
+
+#define HUD_ALPHA 0.65
+#define HUD_FOREGROUND_ALPHA 0.75
+#define DPAD_ICON_ALPHA 0.65
+#define SUBTITLES_ACTIVE (gameMsgWndActive( 2 ))
+#define CHAPLIN_CHEAT_OFF (dvarBool( chaplinCheat ) == 0)
+
+#undef UI_FONT_NORMAL
+#define UI_FONT_NORMAL UI_FONT_BIG
+
+#undef UI_FONT_OBJECTIVE
+#define UI_FONT_OBJECTIVE UI_FONT_BIG
+
+#undef UI_FONT_HANDWRITING
+#define UI_FONT_HANDWRITING UI_FONT_BIG
+
+#undef UI_FONT_SMALL
+#define UI_FONT_SMALL UI_FONT_BIG
+
+#undef UI_FONT_CONSOLE
+#define UI_FONT_CONSOLE UI_FONT_BIG
+
+#define AMMO_CLIP_COUNT  		dvarString(ugxm_player_ammo_clip)
+#define AMMO_CLIP_COUNT_LEFT  	dvarString(ugxm_player_ammo_clip_dw)  //dual wield
+#define AMMO_STOCK_COUNT  		dvarString(ugxm_player_ammo_stock)
+#define PLAYER_0_SCORE	  		dvarString(ugxm_player_0_score)
+#define PLAYER_0_NAME	  		dvarString(scoreboard_name)
+#define PLAYER_0_KILLS	  		dvarString(scoreboard_kills)
+#define PLAYER_0_HEADSHOTS	  	dvarString(scoreboard_hshots)
+#define PLAYER_1_SCORE  		dvarString(ugxm_player_1_score)
+#define PLAYER_2_SCORE  		dvarString(ugxm_player_2_score)
+#define PLAYER_3_SCORE  		dvarString(ugxm_player_3_score)
+
+#define WHITE_GRADIENT			1 1 1 //Player 0
+#define YELLOW_GRADIENT			0.898 0.741 0.262
+#define BLUE_GRADIENT			0.467 0.776 0.894 //Player 1
+#define ORANGE_GRADIENT			0.9 0.56 0.02 //Player 2
+#define GREEN_GRADIENT			0.39 0.9 0.42 //Player 3
+#define RED_GRADIENT			0.9 0.1 0.1
+#define ELECTRIC_GRADIENT		0 0.847 1
+#define FIRE_GRADIENT			1 0.315 0
+#define ACID_GRADIENT			0.517 1 0
+#define ICE_GRADIENT			0.58 1 0.95
+#define EXPLOSIVE_GRADIENT		1 0.988 0
+#define WIND_GRADIENT			0.827 0.827 0.827
+#define SPECIAL_GRADIENT		0.909 0 0.7
+#define	AMMO_COLOR				YELLOW_GRADIENT
+
+
+{
+	assetGlobalDef
+	{
+		fadeClamp		1					// sets the fadeup alpha
+		fadeCycle		1					// how often fade happens in milliseconds
+		fadeAmount		0.1					// amount to adjust alpha per cycle
+	}
+
+// MikeD (2/15/2008): Removed Javelin, since it will not be in COD5, REMOVE COMPLETELY BEFORE SHIP!
+//	menuDef
+//	{
+//		name			"FacemaskOverlay"
+//		rect			0 0 960 480 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+//		fullScreen		0
+//		visible when ( dvarBool( hud_gasMaskOverlay ) == 1 );
+//
+//		itemDef
+//		{
+//			name		FacemaskOverlayBG
+//			style		WINDOW_STYLE_SHADER
+//			forecolor	1 1 1 1
+//			rect		-427 -240 854 480
+//			background	"gasmask_overlay"
+//			visible		1
+//			decoration
+//		}
+//	}
+
+	// Friendly indicators
+	menuDef
+	{
+		name			"Friendly_Arrows"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+ 	   	visible when  ( dvarBool( cl_paused ) == 0 );
+
+		itemDef
+		{
+			name			"friendlyarrowicons"
+			rect			0 0 640 480
+			forecolor		1 1 1 1
+			ownerdraw		CG_FRIENDLYARROWS
+			visible			1
+			decoration
+		}
+	}
+
+	// Friendly indicators
+	menuDef
+	{
+		name			"Friendly_Names"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+ 	   	fullScreen		0
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+ 	   	visible when  ( dvarBool( cl_paused ) == 0 );
+
+		itemDef
+		{
+			name			"friendlynameicons"
+			rect			0 0 640 480
+			forecolor		1 1 1 1
+			ownerdraw		CG_FRIENDLYNAMES
+			visible			1
+			decoration
+		}
+	}
+
+	// Mantle hint
+	menuDef
+	{
+    	name			"MantleHint"
+    	rect			0 126 40 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER // 0 115 40 40
+		fullScreen		0
+		visible when ( !SUBTITLES_ACTIVE && CHAPLIN_CHEAT_OFF );
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 40 40
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_MANTLE_HINT
+			visible			1
+			decoration
+		}
+	}
+
+	// Cursor hints
+	menuDef
+	{
+		name			"Cursorhints"
+    	rect			0 70 40 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		fullScreen		0
+		visible	when 	( CHAPLIN_CHEAT_OFF && ( dvarString( mapname ) != "credits" ) );
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 40 40 // 64x64
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_CURSORHINT
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"trem_hintstring"
+			rect			0 0 0 0
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign 		ITEM_ALIGN_CENTER
+			exp text 		(dvarString("trem_hintstring_left") + KeyBinding("+activate") + dvarString("trem_hintstring_right"))
+			visible			when(dvarInt("trem_hintstring_vis") == 1 && dvarString("trem_hintstring_left") != "" && dvarString("trem_hintstring_left") != " " && dvarString("trem_hintstring_right") != "" && dvarString("trem_hintstring_right") != " ")
+			decoration
+		}
+
+		itemDef
+		{
+			name			"trem_hintstring_nobind"
+			rect			0 0 0 0
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign 		ITEM_ALIGN_CENTER
+			exp text 		dvarString("trem_hintstring_left")
+			visible			when(dvarInt("trem_hintstring_vis") == 1 && dvarString("trem_hintstring_left") != "" && dvarString("trem_hintstring_left") != " " && (dvarString("trem_hintstring_right") == "" || dvarString("trem_hintstring_right") == " "))
+			decoration
+		}
+	}
+
+	// Stance indicator
+	menuDef
+	{
+    	name			"stance"
+#ifdef PC
+		rect			110 -70 48 48 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+#else
+		rect			90 -70 48 48 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+#endif						
+    	fullScreen		0
+		exp visible when ( !SUBTITLES_ACTIVE && CHAPLIN_CHEAT_OFF && !flashbanged() && dvarBool( hud_missionFailed ) == 0 && !ui_active() && dvarint( ui_hud_hardcore ) == 0);
+
+		itemDef
+		{
+			name			"chRect"
+			rect			0 0 80 80 // 64x64
+			ownerdraw		CG_PLAYER_STANCE
+			textfont		UI_FONT_NORMAL
+			textScale		TEXTSIZE_SMALL
+			visible			1
+			forecolor		1 1 1 HUD_ALPHA
+			decoration
+		}
+	}
+	
+	//	SPRINT
+	menuDef 
+	{
+		name "sprintMeter"
+		fullScreen MENU_FALSE
+		visible MENU_TRUE
+		rect 62 -15 40 10 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+
+/*
+		itemDef 
+		{
+			name "sprintRect"
+			visible MENU_TRUE
+			rect 0 0 62 10
+			background "white"
+			forecolor 0.0 0.0 0.0 0.8
+			backcolor 0.0 0.0 0.0 0.8
+			ownerdraw CG_PLAYER_SPRINT_BACK
+			decoration
+		}
+
+		itemDef 
+		{
+			name "sprintRect"
+			visible MENU_TRUE
+			rect 1 1 60 8
+			background		"white"
+			forecolor 0.6 0.6 0.6 0.8
+			ownerdraw CG_PLAYER_SPRINT_METER
+			decoration
+		}
+*/
+	}
+	
+#ifdef PC
+	#define 	SCOREBAR_OFFSET 0 4
+#else
+	#define 	SCOREBAR_OFFSET 0 0
+#endif
+
+{
+	menuDef  // Stub: the scoreboard is controlled by code
+	{
+		name			"missionsuccessbar_arcademode"
+		rect			0 0 640 480
+		visible			when(dvarInt(solo_scoreboard))		
+
+	}
+}
+
+#define SB_POS -50
+
+#define TESTERS0 ( dvarString(com_playerprofile) != "UGX-Mods" && dvarString(com_playerprofile) != "treminaor" && dvarString(com_playerprofile) != "W1NG3D_NZ" && dvarString(com_playerprofile) != "1amw31rd" && dvarString(com_playerprofile) != "KDXDARK" && dvarString(com_playerprofile) != "zmelfenlied" && dvarString(com_playerprofile) != "xterminat0r" && dvarString(com_playerprofile) != "zombiekiller17" && dvarString(com_playerprofile) != "xXTheLostXx" && dvarString(com_playerprofile) != "ThinRolyat" && dvarString(com_playerprofile) != "S1ipperyJim" && dvarString(com_playerprofile) != "codnick98" && dvarString(com_playerprofile) != "the_pekker" && dvarString(com_playerprofile) != "monsterdu40" && dvarString(com_playerprofile) != "gario56" && dvarString(com_playerprofile) != "NikolaiLikes" && dvarString(com_playerprofile) != "XfatboyproX" && dvarString(com_playerprofile) != "SajeOne" && dvarString(com_playerprofile) != "MrSlagovich" && dvarString(com_playerprofile) != "Chunkdogg00" && dvarString(com_playerprofile) != "Dnshypnotik" && dvarString(com_playerprofile) != "Tomikaze777" && dvarString(com_playerprofile) != "Rollonmath42" && dvarString(com_playerprofile) != "TheDelta" && dvarString(com_playerprofile) != "JBird632" && dvarString(com_playerprofile) != "zebba444" && dvarString(com_playerprofile) != "NCGatorBait")
+#define TESTERS1 ( dvarString(com_playerprofile) != "Zombiejelly" && dvarString(com_playerprofile) != "Durks8888" && dvarString(com_playerprofile) != "lt12151978" && dvarString(com_playerprofile) != "junior225" && dvarString(com_playerprofile) != "mblade" && dvarString(com_playerprofile) != "arkale" && dvarString(com_playerprofile) != "ASMgmeslatte" && dvarString(com_playerprofile) != "Mariogiik_17" && dvarString(com_playerprofile) != "madcow247" && dvarString(com_playerprofile) != "CoolBeans369" && dvarString(com_playerprofile) != "NRG_DARRAGH" && dvarString(com_playerprofile) != "qpod123" && dvarString(com_playerprofile) != "pedrehitor" && dvarString(com_playerprofile) != "Killerlord5" && dvarString(com_playerprofile) != "mazedummy" && dvarString(com_playerprofile) != "blued00r" && dvarString(com_playerprofile) != "UberClutch" && dvarString(com_playerprofile) != "DamonMBK" && dvarString(com_playerprofile) != "JUSTALEX-" && dvarString(com_playerprofile) != "Exodus2645" && dvarString(com_playerprofile) != "Victini" && dvarString(com_playerprofile) != "AloysWaw96" && dvarString(com_playerprofile) != "timelordalex" && dvarString(com_playerprofile) != "lonelygmc" && dvarString(com_playerprofile) != "h8dtemptatio" && dvarString(com_playerprofile) != "IHaMMY" && dvarString(com_playerprofile) != "phdflopper56")
+#define TESTERS2 ( dvarString(com_playerprofile) != "xJimmy33" && dvarString(com_playerprofile) != "KManIsAwsome" && dvarString(com_playerprofile) != "Vector36" && dvarString(com_playerprofile) != "kjhfkk12321" && dvarString(com_playerprofile) != "LegitKills" && dvarString(com_playerprofile) != "alexbegt" && dvarString(com_playerprofile) != "RollingTrick" && dvarString(com_playerprofile) != "Hacker1516" && dvarString(com_playerprofile) != "franco95" && dvarString(com_playerprofile) != "DB-Zen" && dvarString(com_playerprofile) != "TheMoonMstr" && dvarString(com_playerprofile) != "xTotality" && dvarString(com_playerprofile) != "djluvorng" && dvarString(com_playerprofile) != "dodoriexe" && dvarString(com_playerprofile) != "Dannyrap87" && dvarString(com_playerprofile) != "echo000" && dvarString(com_playerprofile) != "iBarnett" && dvarString(com_playerprofile) != "Relaxing" && dvarString(com_playerprofile) != "SmokeyWoody" && dvarString(com_playerprofile) != "ItsRay1235" && dvarString(com_playerprofile) != "GrantDaddy" && dvarString(com_playerprofile) != "RUNDMC45" && dvarString(com_playerprofile) != "prTopi" && dvarString(com_playerprofile) != "dust1031" && dvarString(com_playerprofile) != "HitmanVere" && dvarString(com_playerprofile) != "Aler1on" && dvarString(com_playerprofile) != "IMATEACHER")
+#define TESTERS3 ( dvarString(com_playerprofile) != "SmallButBig" && dvarString(com_playerprofile) != "Erneld" && dvarString(com_playerprofile) != "TheSeaCow" && dvarString(com_playerprofile) != "DusterBuster" && dvarString(com_playerprofile) != "samspartan15" && dvarString(com_playerprofile) != "mrthomas3697" && dvarString(com_playerprofile) != "DannySales" && dvarString(com_playerprofile) != "DiNGoBQW" && dvarString(com_playerprofile) != "godzilla2323" && dvarString(com_playerprofile) != "big man" && dvarString(com_playerprofile) != "AOKMIKEYZ" && dvarString(com_playerprofile) != "evilcory" && dvarString(com_playerprofile) != "zbc2001" && dvarString(com_playerprofile) != "tackydestroy" && dvarString(com_playerprofile) != "DallaPlays" && dvarString(com_playerprofile) != "BEASTMAN17" && dvarString(com_playerprofile) != "GuYPoppi" && dvarString(com_playerprofile) != "0M3GAxx99" && dvarString(com_playerprofile) != "obt0692se" && dvarString(com_playerprofile) != "ApExPuncake" && dvarString(com_playerprofile) != "GlenLucas" && dvarString(com_playerprofile) != "S1L3NTR34P3R" && dvarString(com_playerprofile) != "Zombikil3er" && dvarString(com_playerprofile) != "Rohan1807" && dvarString(com_playerprofile) != "dexer619" && dvarString(com_playerprofile) != "Koheen" && dvarString(com_playerprofile) != "UltimatumzZ")
+#define TESTERS4 ( dvarString(com_playerprofile) != "Illidans911" && dvarString(com_playerprofile) != "ThizzehL" && dvarString(com_playerprofile) != "Dr-B-007" && dvarString(com_playerprofile) != "Sal24r" && dvarString(com_playerprofile) != "SoulTaker669" && dvarString(com_playerprofile) != "MULLETUDE1" && dvarString(com_playerprofile) != "greenlungs81" && dvarString(com_playerprofile) != "bondedmass16" && dvarString(com_playerprofile) != "iDannyF" && dvarString(com_playerprofile) != "GunoftruthYT" && dvarString(com_playerprofile) != "BuIlDaLiBlE" && dvarString(com_playerprofile) != "justin_0wnz" && dvarString(com_playerprofile) != "PLANB-PRO" && dvarString(com_playerprofile) != "Jstgoodlife" && dvarString(com_playerprofile) != "Megadog14" && dvarString(com_playerprofile) != "B3NNY_BACON" && dvarString(com_playerprofile) != "BrotherMeaty" && dvarString(com_playerprofile) != "BrotherGUNNS" && dvarString(com_playerprofile) != "Evilpoptart3" && dvarString(com_playerprofile) != "haiden360" && dvarString(com_playerprofile) != "IZI_GAMER" && dvarString(com_playerprofile) != "Deadvard" && dvarString(com_playerprofile) != "TheGmanID" && dvarString(com_playerprofile) != "xDerpity" && dvarString(com_playerprofile) != "MMWHDZombies" && dvarString(com_playerprofile) != "LowLifeDust" && dvarString(com_playerprofile) != "Laggin24x")
+#define TESTERS5 ( dvarString(com_playerprofile) != "riafgurd" && dvarString(com_playerprofile) != "pipehippy" && dvarString(com_playerprofile) != "PiesRule" && dvarString(com_playerprofile) != "AdmrlSwaggit" && dvarString(com_playerprofile) != "XBMC_Mayhem" && dvarString(com_playerprofile) != "Merrick12354" && dvarString(com_playerprofile) != "AbysalApolo" && dvarString(com_playerprofile) != "BladeDF" && dvarString(com_playerprofile) != "TheCPKStudio" && dvarString(com_playerprofile) != "RamboDaGreat" && dvarString(com_playerprofile) != "TZ_Ghosts" && dvarString(com_playerprofile) != "Rush_Bros" && dvarString(com_playerprofile) != "MiguelAngel2" && dvarString(com_playerprofile) != "vango_one" && dvarString(com_playerprofile) != "0815Hunter" && dvarString(com_playerprofile) != "keencoolone" && dvarString(com_playerprofile) != "Prodith" && dvarString(com_playerprofile) != "SpTm123" && dvarString(com_playerprofile) != "Dave97UK" && dvarString(com_playerprofile) != "Cjsadie5" && dvarString(com_playerprofile) != "Triquetra" && dvarString(com_playerprofile) != "Apoc86x" && dvarString(com_playerprofile) != "Psy0ch" && dvarString(com_playerprofile) != "HyperWax" && dvarString(com_playerprofile) != "DragonR13" && dvarString(com_playerprofile) != "sholm8" && dvarString(com_playerprofile) != "ShadeDemonic")
+#define TESTERS6 ( dvarString(com_playerprofile) != "Silent_Darkn" && dvarString(com_playerprofile) != "TrappedGamer" && dvarString(com_playerprofile) != "tim3cri8i8" && dvarString(com_playerprofile) != "StyleCZE" && dvarString(com_playerprofile) != "herb1989" && dvarString(com_playerprofile) != "Ap0col1pse" && dvarString(com_playerprofile) != "lilrifa" && dvarString(com_playerprofile) != "MrRedArmy" && dvarString(com_playerprofile) != "XxdrktokerxX" && dvarString(com_playerprofile) != "aceflyin" && dvarString(com_playerprofile) != "Power_Houser" && dvarString(com_playerprofile) != "AoKPoZeR" && dvarString(com_playerprofile) != "schnitzel--" && dvarString(com_playerprofile) != "Egernmanden" && dvarString(com_playerprofile) != "i_Fluttershy" && dvarString(com_playerprofile) != "Henkownd" && dvarString(com_playerprofile) != "chomper420" && dvarString(com_playerprofile) != "wolver1234" && dvarString(com_playerprofile) != "CoreyGrumley" && dvarString(com_playerprofile) != "Deltatacoman" && dvarString(com_playerprofile) != "pandasniper1" && dvarString(com_playerprofile) != "Norwegian_" && dvarString(com_playerprofile) != "CustomZs" && dvarString(com_playerprofile) != "piediepuff21" && dvarString(com_playerprofile) != "yoyonine" && dvarString(com_playerprofile) != "OmegaCreepa" && dvarString(com_playerprofile) != "itsFain")
+#define TESTERS7 ( dvarString(com_playerprofile) != "Cowmans" && dvarString(com_playerprofile) != "ITS-CS117" && dvarString(com_playerprofile) != "smasher248" && dvarString(com_playerprofile) != "Obamas_finest" && dvarString(com_playerprofile) != "Swaneynator" && dvarString(com_playerprofile) != "xLePotatox" && dvarString(com_playerprofile) != "soldjaguy" && dvarString(com_playerprofile) != "MrDalekJD" && dvarString(com_playerprofile) != "alepolo101" && dvarString(com_playerprofile) != "manugulus" && dvarString(com_playerprofile) != "minecrafter2" && dvarString(com_playerprofile) != "Duskmustache" && dvarString(com_playerprofile) != "Basilisk2000" && dvarString(com_playerprofile) != "ravensniper7" && dvarString(com_playerprofile) != "ProGamerzFTW" && dvarString(com_playerprofile) != "Kevaar" && dvarString(com_playerprofile) != "GloryDink" && dvarString(com_playerprofile) != "Tyster" && dvarString(com_playerprofile) != "DuctTape666" && dvarString(com_playerprofile) != "xDBZOverlord" && dvarString(com_playerprofile) != "alienedits" && dvarString(com_playerprofile) != "triggahappy8" && dvarString(com_playerprofile) != "MultiSimplex" && dvarString(com_playerprofile) != "LYNXxTV" && dvarString(com_playerprofile) != "eliudjb" && dvarString(com_playerprofile) != "InFamous1001" && dvarString(com_playerprofile) != "Connor181")
+#define TESTERS8 ( dvarString(com_playerprofile) != "BlackCityFil" && dvarString(com_playerprofile) != "USS_DjMarV12" && dvarString(com_playerprofile) != "InvDenial" && dvarString(com_playerprofile) != "PokeR988" && dvarString(com_playerprofile) != "P0tZUK" && dvarString(com_playerprofile) != "Kazcwezs" && dvarString(com_playerprofile) != "dazzibhoy" && dvarString(com_playerprofile) != "PSNtoonjuice" && dvarString(com_playerprofile) != "Lukkie1998" && dvarString(com_playerprofile) != "ZOMBIESOP" && dvarString(com_playerprofile) != "Maheux44" && dvarString(com_playerprofile) != "SCHNTZLVONKRUM" && dvarString(com_playerprofile) != "XXnobody" && dvarString(com_playerprofile) != "RichGaming" && dvarString(com_playerprofile) != "PoMpAtO" && dvarString(com_playerprofile) != " Alen52213" && dvarString(com_playerprofile) != "HD_Kenny" && dvarString(com_playerprofile) != "imbtngu" && dvarString(com_playerprofile) != "oby3cat17" && dvarString(com_playerprofile) != "Darryl" && dvarString(com_playerprofile) != "Jacksonpm23" && dvarString(com_playerprofile) != "SEG_Chad" && dvarString(com_playerprofile) != "UberTurtles" && dvarString(com_playerprofile) != "ZM-KILLAH" && dvarString(com_playerprofile) != "Gregsta33" && dvarString(com_playerprofile) != "SpideyPlays" && dvarString(com_playerprofile) != "DuaLVII")
+#define TESTERS9 ( dvarString(com_playerprofile) != "esterz4head" && dvarString(com_playerprofile) != "Galm17" && dvarString(com_playerprofile) != "Mordechai11" && dvarString(com_playerprofile) != "IAMDSL" && dvarString(com_playerprofile) != "StrikerZombi" && dvarString(com_playerprofile) != "PasteyGamer" && dvarString(com_playerprofile) != "andrewmods96" && dvarString(com_playerprofile) != "dwood70" && dvarString(com_playerprofile) != "Awesome101" && dvarString(com_playerprofile) != "MidgetBlast" && dvarString(com_playerprofile) != "sherox" && dvarString(com_playerprofile) != "Michi-" && dvarString(com_playerprofile) != "Diet_Bacon" && dvarString(com_playerprofile) != "bryanc2ka" && dvarString(com_playerprofile) != "lh42rodrigue" && dvarString(com_playerprofile) != "maxcrafter1" && dvarString(com_playerprofile) != "Slippyissuey" && dvarString(com_playerprofile) != "Arrx35" && dvarString(com_playerprofile) != "xWunderfuLx" && dvarString(com_playerprofile) != "Nihilist1" && dvarString(com_playerprofile) != "Shawster" && dvarString(com_playerprofile) != "FlamingFox5" && dvarString(com_playerprofile) != "WalterNoName" && dvarString(com_playerprofile) != "funkymonk45" && dvarString(com_playerprofile) != "crazyman7071" && dvarString(com_playerprofile) != "EctoAF" && dvarString(com_playerprofile) != "piercemarine")
+#define TESTERS10 ( dvarString(com_playerprofile) != "Nightmare_Pi" && dvarString(com_playerprofile) != "markes90" && dvarString(com_playerprofile) != "xTheOverlord" && dvarString(com_playerprofile) != "iSayPwn" && dvarString(com_playerprofile) != "appleclouds" && dvarString(com_playerprofile) != "Black_991" && dvarString(com_playerprofile) != "SadELight" && dvarString(com_playerprofile) != "mopy1996" && dvarString(com_playerprofile) != "Nor_Skruf" && dvarString(com_playerprofile) != "Emptyspiral" && dvarString(com_playerprofile) != "zombi1e_god" && dvarString(com_playerprofile) != "Hugal" && dvarString(com_playerprofile) != "HeXReapers" && dvarString(com_playerprofile) != "AusNaminator" && dvarString(com_playerprofile) != "Mind-X-Panda" && dvarString(com_playerprofile) != "GoRE_Of_W4R" && dvarString(com_playerprofile) != "_RIOR_" && dvarString(com_playerprofile) != "Robuctillion" && dvarString(com_playerprofile) != "Harrybo000" && dvarString(com_playerprofile) != "-NebUz" && dvarString(com_playerprofile) != "vortran246" && dvarString(com_playerprofile) != "Zshadman" && dvarString(com_playerprofile) != "Nardzv2" && dvarString(com_playerprofile) != "4TheUnDead" && dvarString(com_playerprofile) != "armdnhamrd" && dvarString(com_playerprofile) != "Hosenko" && dvarString(com_playerprofile) != "kpkilla15")
+#define TESTERS11 ( dvarString(com_playerprofile) != "leefspwn88" && dvarString(com_playerprofile) != "FaZeTaZe" && dvarString(com_playerprofile) != "KxrlPlaysv2" && dvarString(com_playerprofile) != "BabyXfactorX" && dvarString(com_playerprofile) != "Jokerwild23" && dvarString(com_playerprofile) != "ArsenalGaming" && dvarString(com_playerprofile) != "UrielSeptim4" && dvarString(com_playerprofile) != "Charlie_BR" && dvarString(com_playerprofile) != "evilpoptart37" && dvarString(com_playerprofile) != "-Cones-" && dvarString(com_playerprofile) != "TZPCOD" && dvarString(com_playerprofile) != "boysta2011" && dvarString(com_playerprofile) != "bportjoey" && dvarString(com_playerprofile) != "sumner" && dvarString(com_playerprofile) != "Dempsey55" && dvarString(com_playerprofile) != "FiveSevenHD" && dvarString(com_playerprofile) != "SupMatto" && dvarString(com_playerprofile) != "DobbyGaming" && dvarString(com_playerprofile) != "EnViOuS26" && dvarString(com_playerprofile) != "rusjr1908" && dvarString(com_playerprofile) != "Natrah" && dvarString(com_playerprofile) != "UGX-PRO" && dvarString(com_playerprofile) != "ghostdogkilla" && dvarString(com_playerprofile) != "yashiro25" && dvarString(com_playerprofile) != "ZOMBIES_DIE" && dvarString(com_playerprofile) != "xjonesy421" && dvarString(com_playerprofile) != "Chief_Luke")
+#define TESTERS12 ( dvarString(com_playerprofile) != "wiesiZombies" && dvarString(com_playerprofile) != "PROxFTW" && dvarString(com_playerprofile) != "a7xforever11" && dvarString(com_playerprofile) != "Official_TSG" && dvarString(com_playerprofile) != "DJSani" && dvarString(com_playerprofile) != "TheScotchGuy" && dvarString(com_playerprofile) != "ped_WaW" && dvarString(com_playerprofile) != "D3R3CK_BR0" && dvarString(com_playerprofile) != "jim1908" && dvarString(com_playerprofile) != "Demonix-AsTy" && dvarString(com_playerprofile) != "COD_ZMBS" && dvarString(com_playerprofile) != "djjoney" && dvarString(com_playerprofile) != "shaned5150" && dvarString(com_playerprofile) != "Sprah21" && dvarString(com_playerprofile) != "OMINIX" && dvarString(com_playerprofile) != "juicedaddy69" && dvarString(com_playerprofile) != "Raatn" && dvarString(com_playerprofile) != "theclock017" && dvarString(com_playerprofile) != "jdaze32" && dvarString(com_playerprofile) != "p00psicles" && dvarString(com_playerprofile) != "CallMeKen" && dvarString(com_playerprofile) != "AthruZGaming" && dvarString(com_playerprofile) != "lizardrock17" && dvarString(com_playerprofile) != "eVoKillz" && dvarString(com_playerprofile) != "Fishy7798" && dvarString(com_playerprofile) != "pedroolympio" && dvarString(com_playerprofile) != "Raithoz")
+#define TESTERS13 ( dvarString(com_playerprofile) != "ToxicXBig223" && dvarString(com_playerprofile) != "JakeOTD" && dvarString(com_playerprofile) != "AlphaWolf11" && dvarString(com_playerprofile) != "Mushroom_TIp" && dvarString(com_playerprofile) != "vomit700" && dvarString(com_playerprofile) != "Skipperdog49" && dvarString(com_playerprofile) != "Morgan-3Way" && dvarString(com_playerprofile) != "trippydipper" && dvarString(com_playerprofile) != "PCN00B" && dvarString(com_playerprofile) != "Mr_Dbag" && dvarString(com_playerprofile) != "rudegageanat" && dvarString(com_playerprofile) != "greeniezk5" && dvarString(com_playerprofile) != "DJDarkBeat" && dvarString(com_playerprofile) != "HeadWoW" && dvarString(com_playerprofile) != "Slaybot" && dvarString(com_playerprofile) != "deathPHD" && dvarString(com_playerprofile) != "MastaaKazz" && dvarString(com_playerprofile) != "CoreHD" && dvarString(com_playerprofile) != "Mr_Vimto" && dvarString(com_playerprofile) != "Saberz21" && dvarString(com_playerprofile) != "Doumbek" && dvarString(com_playerprofile) != "bigdman1979" && dvarString(com_playerprofile) != "Th4tBr0n3" && dvarString(com_playerprofile) != "gigity_74" && dvarString(com_playerprofile) != "GRIEF_OR_DIE" && dvarString(com_playerprofile) != "McBrien" && dvarString(com_playerprofile) != "AlexTHAMAN1")
+#define TESTERS14 ( dvarString(com_playerprofile) != "SnowyGlory" && dvarString(com_playerprofile) != "for0034" && dvarString(com_playerprofile) != "Hprozector31" && dvarString(com_playerprofile) != "TacticalxPla" && dvarString(com_playerprofile) != "ll_Ph3NiX_ll" && dvarString(com_playerprofile) != "UberPlatypi" && dvarString(com_playerprofile) != "dtermanator" && dvarString(com_playerprofile) != "Leo17480" && dvarString(com_playerprofile) != "pokerman595" && dvarString(com_playerprofile) != "Hardpoint" && dvarString(com_playerprofile) != "DeathSavage" && dvarString(com_playerprofile) != "WillSnipez" && dvarString(com_playerprofile) != "ultimateher2" && dvarString(com_playerprofile) != "donnellyian" && dvarString(com_playerprofile) != "That1Psycho" && dvarString(com_playerprofile) != "ponghest" && dvarString(com_playerprofile) != "ggmeheehee" && dvarString(com_playerprofile) != "Flukydeer" && dvarString(com_playerprofile) != "aces691" && dvarString(com_playerprofile) != "itztylerb123" && dvarString(com_playerprofile) != "halodude237" && dvarString(com_playerprofile) != "ktownvagzy" && dvarString(com_playerprofile) != "DailyZombies" && dvarString(com_playerprofile) != "Nolytick_" && dvarString(com_playerprofile) != "V00D00BR0" && dvarString(com_playerprofile) != "byColoredHD" && dvarString(com_playerprofile) != "Nighthawk44505")
+#define TESTERS15 ( dvarString(com_playerprofile) != "HippieShyt" && dvarString(com_playerprofile) != "ZM_Killa" && dvarString(com_playerprofile) != "Isaac5292" && dvarString(com_playerprofile) != "R0807-D0G" && dvarString(com_playerprofile) != "Gear2469" && dvarString(com_playerprofile) != "akeelrehman" && dvarString(com_playerprofile) != "jn0400" && dvarString(com_playerprofile) != "DodgeMe" && dvarString(com_playerprofile) != "sxultaker" && dvarString(com_playerprofile) != "di3g0VP" && dvarString(com_playerprofile) != "S1LV3RSN1P3R" && dvarString(com_playerprofile) != "C_Zilla2322" && dvarString(com_playerprofile) != "SamDaOrange" && dvarString(com_playerprofile) != "Tdon123" && dvarString(com_playerprofile) != "avihai8543" && dvarString(com_playerprofile) != "Slim5hady06" && dvarString(com_playerprofile) != "-JOLLYDUKE-" && dvarString(com_playerprofile) != "OriginalDS" && dvarString(com_playerprofile) != "hiimachicken" && dvarString(com_playerprofile) != "Tomo-0118" && dvarString(com_playerprofile) != "abirdy" && dvarString(com_playerprofile) != "HeyItsDon" && dvarString(com_playerprofile) != "Mayhem217" && dvarString(com_playerprofile) != "TheSGD" && dvarString(com_playerprofile) != "Gryff1ndor" && dvarString(com_playerprofile) != "McTadger" && dvarString(com_playerprofile) != "reappaz79")
+#define TESTERS16 ( dvarString(com_playerprofile) != "boohoo369" && dvarString(com_playerprofile) != "NGcaudle" && dvarString(com_playerprofile) != "xswish" && dvarString(com_playerprofile) != "Dominator455" && dvarString(com_playerprofile) != "jimmygoody" && dvarString(com_playerprofile) != "TheLie314" && dvarString(com_playerprofile) != "gryhon" && dvarString(com_playerprofile) != "Nadjee" && dvarString(com_playerprofile) != "bob119800" && dvarString(com_playerprofile) != "Smok3y56" && dvarString(com_playerprofile) != "damdood" && dvarString(com_playerprofile) != "mossberg420" && dvarString(com_playerprofile) != "CyberZombie" && dvarString(com_playerprofile) != "PokeR988" && dvarString(com_playerprofile) != "mystic_reign" && dvarString(com_playerprofile) != "th3asiandrag" && dvarString(com_playerprofile) != "TEX_715" && dvarString(com_playerprofile) != "Shaunyman" && dvarString(com_playerprofile) != "NiqqaBird" && dvarString(com_playerprofile) != "OGMUDBONENIG" && dvarString(com_playerprofile) != "bebetou" && dvarString(com_playerprofile) != "sal" && dvarString(com_playerprofile) != "TeenageCrown" && dvarString(com_playerprofile) != "SirJammy" && dvarString(com_playerprofile) != "IntimateToad" && dvarString(com_playerprofile) != "The__Avenger" && dvarString(com_playerprofile) != "ken5hir0")
+#define TESTERS17 ( dvarString(com_playerprofile) != "xTst113x" && dvarString(com_playerprofile) != "master102200" && dvarString(com_playerprofile) != "mikethebest" && dvarString(com_playerprofile) != "jo3anat3r" && dvarString(com_playerprofile) != "sam470" && dvarString(com_playerprofile) != "Hectical" && dvarString(com_playerprofile) != "MurdurMan" && dvarString(com_playerprofile) != "yourFACE86d" && dvarString(com_playerprofile) != "OpTic-Link" && dvarString(com_playerprofile) != "Imperial_Bmp" && dvarString(com_playerprofile) != "Markgasus" && dvarString(com_playerprofile) != "SlayaOfAll" && dvarString(com_playerprofile) != "Morg0th" && dvarString(com_playerprofile) != "fruchtulos" && dvarString(com_playerprofile) != "CrazyDood10" && dvarString(com_playerprofile) != "fredrik3321" && dvarString(com_playerprofile) != "Vx_JAMESY_xV" && dvarString(com_playerprofile) != "Wafflecat12" && dvarString(com_playerprofile) != "Xx_IzzaD_xX" && dvarString(com_playerprofile) != "Phrankster" && dvarString(com_playerprofile) != "yhSimple" && dvarString(com_playerprofile) != "roadie444" && dvarString(com_playerprofile) != "jdmjr88" && dvarString(com_playerprofile) != "GdayItsJay" && dvarString(com_playerprofile) != "Jak7172" && dvarString(com_playerprofile) != "KarMaKalus" && dvarString(com_playerprofile) != "lewislewis70")
+#define TESTERS18 ( dvarString(com_playerprofile) != "NukeWarfare1" && dvarString(com_playerprofile) != "xCyberblast" && dvarString(com_playerprofile) != "GRYZZO" && dvarString(com_playerprofile) != "Bubbleman" && dvarString(com_playerprofile) != "FamouZxBoss" && dvarString(com_playerprofile) != "hagan777" && dvarString(com_playerprofile) != "JakeNo2" && dvarString(com_playerprofile) != "UnknownPlayer" && dvarString(com_playerprofile) != "masadaYO" && dvarString(com_playerprofile) != "TriggaFingaa" && dvarString(com_playerprofile) != "McKintos" && dvarString(com_playerprofile) != "Sliqkilla" && dvarString(com_playerprofile) != "AlienizedH" && dvarString(com_playerprofile) != "Dallas1280" && dvarString(com_playerprofile) != "DrHankyPanky" && dvarString(com_playerprofile) != "ross324" && dvarString(com_playerprofile) != "loganDeathan" && dvarString(com_playerprofile) != "x8xChaosx8x" && dvarString(com_playerprofile) != "Mohenjo" && dvarString(com_playerprofile) != "Hammurabby" && dvarString(com_playerprofile) != "unicornlord" && dvarString(com_playerprofile) != "MrZeReze" && dvarString(com_playerprofile) != "ejosborn" && dvarString(com_playerprofile) != "nukefarmer" && dvarString(com_playerprofile) != "Heisi008" && dvarString(com_playerprofile) != "BlackNinj4" && dvarString(com_playerprofile) != "subaru265")
+#define TESTERS19 ( dvarString(com_playerprofile) != "Nosrak318" && dvarString(com_playerprofile) != "josh1600" && dvarString(com_playerprofile) != "ODOxKILLER" && dvarString(com_playerprofile) != "YodaJdiMstr" && dvarString(com_playerprofile) != "deposw9" && dvarString(com_playerprofile) != "Lizizadolphi" && dvarString(com_playerprofile) != "Jaefaed" && dvarString(com_playerprofile) != "CovertGunman" && dvarString(com_playerprofile) != "blastutobits" && dvarString(com_playerprofile) != "BlackV1king" && dvarString(com_playerprofile) != "xZC0dM4strXz" && dvarString(com_playerprofile) != "busterdylan0" && dvarString(com_playerprofile) != "ContractG" && dvarString(com_playerprofile) != "Afmkk99" && dvarString(com_playerprofile) != "thevileslayer3" && dvarString(com_playerprofile) != "RareBasilisk" && dvarString(com_playerprofile) != "ZyrexWonder" && dvarString(com_playerprofile) != "OmegaShinryu" && dvarString(com_playerprofile) != "Actinium" && dvarString(com_playerprofile) != "Tha_Wicked" && dvarString(com_playerprofile) != "garybenoak" && dvarString(com_playerprofile) != "MetalManning" && dvarString(com_playerprofile) != "whistling" && dvarString(com_playerprofile) != "WKgaming82" && dvarString(com_playerprofile) != "AlfWalf" && dvarString(com_playerprofile) != "sic-gal" && dvarString(com_playerprofile) != "xBIGxFOOTx20x")
+#define TESTERS20 ( dvarString(com_playerprofile) != "Nsk8r1" && dvarString(com_playerprofile) != "Lilzombiej" && dvarString(com_playerprofile) != "Greek34God" && dvarString(com_playerprofile) != "Donkey22" && dvarString(com_playerprofile) != "Hellishere" && dvarString(com_playerprofile) != "darsoswag" && dvarString(com_playerprofile) != "casper3d" && dvarString(com_playerprofile) != "Velioz" && dvarString(com_playerprofile) != "BIGxFOOTx20" && dvarString(com_playerprofile) != "lordTermnus6" && dvarString(com_playerprofile) != "RampageZer0" && dvarString(com_playerprofile) != "Mr_Steez_" && dvarString(com_playerprofile) != "Drakalos" && dvarString(com_playerprofile) != "Jorjillo2010" && dvarString(com_playerprofile) != "Le_Shredder" && dvarString(com_playerprofile) != "ShrekTheOgre" && dvarString(com_playerprofile) != "MeGa_M3XICAN" && dvarString(com_playerprofile) != "xKAIZYx" && dvarString(com_playerprofile) != "davijak3" && dvarString(com_playerprofile) != "Aksatsuki" && dvarString(com_playerprofile) != "delgadoY" && dvarString(com_playerprofile) != "Kaos5HD" && dvarString(com_playerprofile) != "sgaines7" && dvarString(com_playerprofile) != "Insomniac411" && dvarString(com_playerprofile) != "The_doggs07" && dvarString(com_playerprofile) != "PoEHiro" && dvarString(com_playerprofile) != "yourFACE86d")
+#define TESTERS21 ( dvarString(com_playerprofile) != "zzSnowfall" && dvarString(com_playerprofile) != "Freezeman420" && dvarString(com_playerprofile) != "linemeks" && dvarString(com_playerprofile) != "raven_blue_" && dvarString(com_playerprofile) != "panzon69" && dvarString(com_playerprofile) != "EyeSlash45" && dvarString(com_playerprofile) != "FaZeTaZe" && dvarString(com_playerprofile) != "Lzbravo" && dvarString(com_playerprofile) != "Tarutoboy" && dvarString(com_playerprofile) != "GUNMAN683" && dvarString(com_playerprofile) != "theafterrr" && dvarString(com_playerprofile) != "anapoli" && dvarString(com_playerprofile) != "T600_79" && dvarString(com_playerprofile) != "ZackyyZack" && dvarString(com_playerprofile) != "BlueDream420" && dvarString(com_playerprofile) != "JAYDEN1e3" && dvarString(com_playerprofile) != "Black_Moses" && dvarString(com_playerprofile) != "IAmEcliptic" && dvarString(com_playerprofile) != "ReconShadow" && dvarString(com_playerprofile) != "ByMt10" && dvarString(com_playerprofile) != "DrGonzo7806" && dvarString(com_playerprofile) != "remy" && dvarString(com_playerprofile) != "Tupsuu" && dvarString(com_playerprofile) != "TehSmileys" && dvarString(com_playerprofile) != "Toritoletal" && dvarString(com_playerprofile) != "MsConsperion" && dvarString(com_playerprofile) != "darknessflas")
+#define TESTERS22 ( dvarString(com_playerprofile) != "bigjim74" && dvarString(com_playerprofile) != "JLess" && dvarString(com_playerprofile) != "Froduz" && dvarString(com_playerprofile) != "-Billboard-" && dvarString(com_playerprofile) != "freezeblade1" && dvarString(com_playerprofile) != "Toothless_" && dvarString(com_playerprofile) != "NickLAD" && dvarString(com_playerprofile) != "TomhoHD" && dvarString(com_playerprofile) != "ObliviousK9" && dvarString(com_playerprofile) != "drazzer38" && dvarString(com_playerprofile) != "Hacks_Are_Us" && dvarString(com_playerprofile) != "MR_TOWNEND" && dvarString(com_playerprofile) != "UncutTucky" && dvarString(com_playerprofile) != "LSDisAGod" && dvarString(com_playerprofile) != "Hangover3000" && dvarString(com_playerprofile) != "Yah_Buddy12" && dvarString(com_playerprofile) != "jacksparrago" && dvarString(com_playerprofile) != "HeartCllctr" && dvarString(com_playerprofile) != "dexer916" && dvarString(com_playerprofile) != "Drbmft" && dvarString(com_playerprofile) != "Alphamaster" && dvarString(com_playerprofile) != "iFourEyes" && dvarString(com_playerprofile) != "IPlayNothing" && dvarString(com_playerprofile) != "MisterCMS" && dvarString(com_playerprofile) != "balbaburp" && dvarString(com_playerprofile) != "SirShikari" && dvarString(com_playerprofile) != "mrdooper")
+#define TESTERS23 ( dvarString(com_playerprofile) != "Merco006" && dvarString(com_playerprofile) != "thats_shibby" && dvarString(com_playerprofile) != "pv_plays" && dvarString(com_playerprofile) != "YoureAMitch" && dvarString(com_playerprofile) != "ToxicTrolol" && dvarString(com_playerprofile) != "blargus" && dvarString(com_playerprofile) != "Bekirem" && dvarString(com_playerprofile) != "JBirdR" && dvarString(com_playerprofile) != "oOoE74oOo" && dvarString(com_playerprofile) != "STKMedic" && dvarString(com_playerprofile) != "MiniCallum27" && dvarString(com_playerprofile) != "Zambie--slay" && dvarString(com_playerprofile) != "mysticperk" && dvarString(com_playerprofile) != "bcos101" && dvarString(com_playerprofile) != "LoudMouthVI" && dvarString(com_playerprofile) != "PogyTG" && dvarString(com_playerprofile) != "DoctorStridr" && dvarString(com_playerprofile) != "RoGDashie" && dvarString(com_playerprofile) != "aj_engine" && dvarString(com_playerprofile) != "Sponge_Cake" && dvarString(com_playerprofile) != "sete1993" && dvarString(com_playerprofile) != "warlo5" && dvarString(com_playerprofile) != "ethanroawn" && dvarString(com_playerprofile) != "x_mango_x" && dvarString(com_playerprofile) != "walty11" && dvarString(com_playerprofile) != "Irawins123" && dvarString(com_playerprofile) != "xSilentScope")
+#define TESTERS24 ( dvarString(com_playerprofile) != "Herobrine132" && dvarString(com_playerprofile) != "Dronenator" && dvarString(com_playerprofile) != "Lemon-Nade" && dvarString(com_playerprofile) != "abirdy" && dvarString(com_playerprofile) != "happyhacks" && dvarString(com_playerprofile) != "sarekdemejo" && dvarString(com_playerprofile) != "Regencey" && dvarString(com_playerprofile) != "Ghostly_Hax" && dvarString(com_playerprofile) != "QuestBlade" && dvarString(com_playerprofile) != "BlueRipTide" && dvarString(com_playerprofile) != "marvinspower" && dvarString(com_playerprofile) != "oddhero58" && dvarString(com_playerprofile) != "deneukzombie" && dvarString(com_playerprofile) != "Gate506" && dvarString(com_playerprofile) != "SIFallout" && dvarString(com_playerprofile) != "TrappedGamer" && dvarString(com_playerprofile) != "StarsmateBkk" && dvarString(com_playerprofile) != "Lowe_Is_King" && dvarString(com_playerprofile) != "icloptoomuch" && dvarString(com_playerprofile) != "djflipboom" && dvarString(com_playerprofile) != "vUnited" && dvarString(com_playerprofile) != "Crabman83" && dvarString(com_playerprofile) != "MrSERDO" && dvarString(com_playerprofile) != "noobymen" && dvarString(com_playerprofile) != "TheObsider" && dvarString(com_playerprofile) != "MorganFs" && dvarString(com_playerprofile) != "TrillOGkush")
+#define TESTERS25 ( dvarString(com_playerprofile) != "xRoisinDubh" && dvarString(com_playerprofile) != "thadius" && dvarString(com_playerprofile) != "WeeDSide" && dvarString(com_playerprofile) != "forcepalm02" && dvarString(com_playerprofile) != "Shaiin" && dvarString(com_playerprofile) != "Kasuma2012" && dvarString(com_playerprofile) != "xFaBTeXx" && dvarString(com_playerprofile) != "BigNutSack" && dvarString(com_playerprofile) != "dsamdg" && dvarString(com_playerprofile) != "Juictin" && dvarString(com_playerprofile) != "Twelvyy" && dvarString(com_playerprofile) != "LemonOfTime" && dvarString(com_playerprofile) != "cardoomannii" && dvarString(com_playerprofile) != "persistant15" && dvarString(com_playerprofile) != "Vz_Recap" && dvarString(com_playerprofile) != "thenukebeast" && dvarString(com_playerprofile) != "jkuykendall9" && dvarString(com_playerprofile) != "RuSH3Rz_x_C4" && dvarString(com_playerprofile) != "rivadog" && dvarString(com_playerprofile) != "ThaCheeseMan" && dvarString(com_playerprofile) != "Dark7Tower" && dvarString(com_playerprofile) != "DatGameDev" && dvarString(com_playerprofile) != "Hildegard_" && dvarString(com_playerprofile) != "IHeardYouMom" && dvarString(com_playerprofile) != "GalacticDnut" && dvarString(com_playerprofile) != "Vanilluxejiz" && dvarString(com_playerprofile) != "kickinCOD")
+#define TESTERS26 ( dvarString(com_playerprofile) != "RebornYew" && dvarString(com_playerprofile) != "Thanos1234" && dvarString(com_playerprofile) != "gingerblak69" && dvarString(com_playerprofile) != "OMGKatyPerry" && dvarString(com_playerprofile) != "SPIRIT" && dvarString(com_playerprofile) != "bigboy1123" && dvarString(com_playerprofile) != "Heriberto52" && dvarString(com_playerprofile) != "ZoneMarine" && dvarString(com_playerprofile) != "KAWANA225" && dvarString(com_playerprofile) != "mayyuu" && dvarString(com_playerprofile) != "mr_bacon_lor" && dvarString(com_playerprofile) != "DATMONEY" && dvarString(com_playerprofile) != "UndeadGrim" && dvarString(com_playerprofile) != "Dominator265" && dvarString(com_playerprofile) != "Alpha138" && dvarString(com_playerprofile) != "Black_Cat-_-" && dvarString(com_playerprofile) != "protrent" && dvarString(com_playerprofile) != "Hosakata" && dvarString(com_playerprofile) != "Adjucated" && dvarString(com_playerprofile) != "xPZYCHOx" && dvarString(com_playerprofile) != "epickills123" && dvarString(com_playerprofile) != "CinemaXFunkz" && dvarString(com_playerprofile) != "Lightmage85" && dvarString(com_playerprofile) != "Xtrepid" && dvarString(com_playerprofile) != "PonceTroll" && dvarString(com_playerprofile) != "bosstopian" && dvarString(com_playerprofile) != "Revalitater")
+#define TESTERS27 ( dvarString(com_playerprofile) != "SR_Lut3t1um" && dvarString(com_playerprofile) != "BurningTitan" && dvarString(com_playerprofile) != "ZambieMaster" && dvarString(com_playerprofile) != "TomAito" && dvarString(com_playerprofile) != "FakDuck" && dvarString(com_playerprofile) != "Playmike5" && dvarString(com_playerprofile) != "barad21" && dvarString(com_playerprofile) != "MagicMan921" && dvarString(com_playerprofile) != "PapaStax" && dvarString(com_playerprofile) != "timottod88" && dvarString(com_playerprofile) != "QuickScoper32" && dvarString(com_playerprofile) != "dotexe55" && dvarString(com_playerprofile) != "DerrickI115" && dvarString(com_playerprofile) != "AmpVenom" && dvarString(com_playerprofile) != "SniperZero12" && dvarString(com_playerprofile) != "XSmoothieX" && dvarString(com_playerprofile) != "Cata1yst" && dvarString(com_playerprofile) != "OniAkairi" && dvarString(com_playerprofile) != "InsomniacLV" && dvarString(com_playerprofile) != "Alexizbackz" && dvarString(com_playerprofile) != "iNawxy" && dvarString(com_playerprofile) != "orbman1" && dvarString(com_playerprofile) != "xbeyondx" && dvarString(com_playerprofile) != "xxx_MF_xxx" && dvarString(com_playerprofile) != "OutDex" && dvarString(com_playerprofile) != "koloman" && dvarString(com_playerprofile) != "Daman34ify")
+#define TESTERS28 ( dvarString(com_playerprofile) != "themoeqtr" && dvarString(com_playerprofile) != "3Ckiii" && dvarString(com_playerprofile) != "Melonlord27" && dvarString(com_playerprofile) != "byjxri" && dvarString(com_playerprofile) != "arbrog" && dvarString(com_playerprofile) != "matnut" && dvarString(com_playerprofile) != "LemonOfTime" && dvarString(com_playerprofile) != "ThePrfctSeal" && dvarString(com_playerprofile) != "Tactical90" && dvarString(com_playerprofile) != "cswsashley" && dvarString(com_playerprofile) != "SirSmiles" && dvarString(com_playerprofile) != "H3nR_yK" && dvarString(com_playerprofile) != "billybear04" && dvarString(com_playerprofile) != "The_Rake1234" && dvarString(com_playerprofile) != "ITwasantME" && dvarString(com_playerprofile) != "mrthadius" && dvarString(com_playerprofile) != "Jackholt1999" && dvarString(com_playerprofile) != "Gocheb" && dvarString(com_playerprofile) != "SentinelFTW" && dvarString(com_playerprofile) != "sportzhawk" && dvarString(com_playerprofile) != "lonelymailbox" && dvarString(com_playerprofile) != "nyckrostar" && dvarString(com_playerprofile) != "DoFakiin" && dvarString(com_playerprofile) != "SnowFairy42" && dvarString(com_playerprofile) != "ToonLink2002" && dvarString(com_playerprofile) != "BlueTente123" && dvarString(com_playerprofile) != "FazbearFever")
+#define TESTERS29 ( dvarString(com_playerprofile) != "BlueberryYum" && dvarString(com_playerprofile) != "Kimjon" && dvarString(com_playerprofile) != "F0R3V3RM0DZZ" && dvarString(com_playerprofile) != "K5Destroyer3" && dvarString(com_playerprofile) != "Tereith" && dvarString(com_playerprofile) != "Hero149" && dvarString(com_playerprofile) != "doggie87" && dvarString(com_playerprofile) != "FartNuggett" && dvarString(com_playerprofile) != "Elsendos" && dvarString(com_playerprofile) != "DasReapen" && dvarString(com_playerprofile) != "Cogscout" && dvarString(com_playerprofile) != "MaMa_Stax" && dvarString(com_playerprofile) != "thecyguy" && dvarString(com_playerprofile) != "TK_mayhem_TK" && dvarString(com_playerprofile) != "aToffeeCrisp" && dvarString(com_playerprofile) != "Qrrbrbirrrl")
+
+#define APPROVED_USERS ( dvarString(com_playerprofile) != "treminaor" && dvarString(com_playerprofile) != "SajeOne" && dvarString(com_playerprofile) != "MrSlagovich" && dvarString(com_playerprofile) != "TheDelta" && dvarString(com_playerprofile) != "Tomikaze777" )
+
+{	
+	menuDef
+	{
+		name			"arcademodebonus"
+		rect				FULLSCREEN_WIDE
+		focuscolor			1 1 1 1
+		disablecolor		0 0 0 0
+		visible 			1
+
+		//_BETA_UNAUTHORIZED_ITEMDEF_CODE_
+
+		itemDef {
+			name 			"beta_warning"
+			type			ITEM_TYPE_BUTTON
+			style			WINDOW_STYLE_FILLED
+			rect			90 120 40 40 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			forecolor 		1 1 1 0.2
+			text			"- Donor Beta Version - Not a Finished Product -"
+			textalign		ITEM_ALIGN_MIDDLE_CENTER
+            textstyle		ITEM_TEXTSTYLE_SHADOWED
+            textfont		UI_FONT_NORMAL
+            textalignx		0
+            textaligny		8
+            textscale		.3
+			visible 		when(APPROVED_USERS)
+        }
+	}
+}
+
+#define WEAPINFO_X -55 //-190
+#define WEAPINFO_Y 135
+
+#define SCORE_HUD_Y				-180 //position of entire score group, pushes off bottom right of screen
+#define SCORE_HUD_Y_0			60 //stack them in reverse order so that player 1 always has correct HUD placement regardless of player count
+#define SCORE_HUD_Y_1			30
+#define SCORE_HUD_Y_2			0
+#define SCORE_HUD_Y_3			-30
+#define SCORE_HUD_Y_MINIOFFSET	6
+#define SCORE_HUD_TEXTSCALE		0.6
+#define SCORE_HUD_COOP_TEXTSCALE		0.5
+#define SCORE_HUD_MINI_TEXTSCALE		0.25
+
+#define SCORE_BG_COLOR			0.509 0.07 0.07 0.8
+#define SCORE_BG_OFFSET_Y		-28
+#define SCORE_BG_OFFSET_X		25
+#define SCORE_HUD_OFFSET_X		-20
+#define SCORE_HUD_Y_L			1
+
+//Colors at top of file
+
+#define PLAYER_INDEX			dvarString(ugxm_player_index)
+#define CLIENT_WEAPON_COLOR		dvarString(ugxm_player_weaponcolor)
+
+#define	KILLFEED_TEXTSCALE		.27
+
+#define	COMBOFEED_X				-150
+#define	COMBOFEED_Y				(SCORE_HUD_Y_0 - 50)
+#define	COMBOFEED_TEXTSCALE		.35
+#define	COMBOFEED_TEXTSCALE_L	(COMBOFEED_TEXTSCALE * 1.25)
+
+#define CHAOSSCORE_X			-150
+#define CHAOSSCORE_Y			(SCORE_HUD_Y_0 - 300)
+#define CHAOSRAWSCORE_X			-325
+#define CHAOSRAWSCORE_Y			(SCORE_HUD_Y_0 - 15)
+
+#define PLAYER_0_MINISCORE		dvarString(ugxm_player_0_miniscore)
+#define PLAYER_1_MINISCORE		dvarString(ugxm_player_1_miniscore)
+#define PLAYER_2_MINISCORE		dvarString(ugxm_player_2_miniscore)
+#define PLAYER_3_MINISCORE		dvarString(ugxm_player_3_miniscore)
+
+#define SCORE_METAL_OFFSET_X	-15
+#define SCORE_METAL_OFFSET_Y	6
+#define PLAYER_0_MEDAL  		dvarString(ugxm_player_0_medal)
+#define PLAYER_1_MEDAL  		dvarString(ugxm_player_1_medal)
+#define PLAYER_2_MEDAL  		dvarString(ugxm_player_2_medal)
+#define PLAYER_3_MEDAL  		dvarString(ugxm_player_3_medal)
+
+menuDef
+{
+	name			"competitivemodescores"
+	rect			-98 SCORE_HUD_Y 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+	fullScreen		0
+	visible when 	( dvarInt(ugxm_host_menu) == 0 && dvarint( ui_hud_hardcore ) == 0 && dvarBool( miniscoreboardhide ) == 0 && dvarBool( hud_missionFailed ) == 0 && dvarint( arcademode ) == 1 || dvarint( zombiemode ) == 1 );
+
+	//So fucking tired of irrelevant script errors disrupting my gameplay
+	itemDef	{ name	"ugx_error_display_HUD_text"
+		type			ITEM_TYPE_TEXT
+		rect			-580 (SCORE_HUD_Y_0 - 325) 500 300 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		textscale		0.3
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_NORMAL
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugx_error_vis_alpha))
+		exp text		dvarString("com_errorMessage")
+		textalign 		ITEM_ALIGN_CENTER
+		visible			when(dvarInt(ugx_error_vis) == 1 && dvarInt(developer) != 0)
+		decoration
+		autowrapped
+	}
+
+	itemDef	{ name	"client_selfrevive_shader"
+		rect			-342 (SCORE_HUD_Y_0 + 15) 24 24
+		forecolor		1 1 1 1
+		style			WINDOW_STYLE_SHADER
+		background		"specialty_quickrevive_zombies"
+		decoration
+		visible			when(dvarInt(ugxm_chaosrevive_visible) == 1)
+	}
+	itemDef{ name "client_selfrevive_counter" 
+		type			ITEM_TYPE_TEXT
+		rect			-322  (SCORE_HUD_Y_0 + 45) 100 0
+		textscale		0.27
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_OBJECTIVE
+		forecolor		1 1 1 1
+		exp text		dvarInt(ugxm_chaosrevive)
+		textalign 		ITEM_ALIGN_LEFT
+		visible 		when(dvarInt(ugxm_chaosrevive_visible) == 1)
+		decoration
+	}
+	itemDef{ name "client_chaosscore" 
+		type			ITEM_TYPE_TEXT
+		rect			CHAOSSCORE_X CHAOSSCORE_Y 100 0
+		textscale		0.8
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_OBJECTIVE
+		forecolor		1 1 0 1
+		exp text		dvarString(ugxm_chaosscore)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(dvarInt(ugxm_chaosscore_client_vis) == 1);
+		decoration
+	}
+	itemDef{ name "client_chaosscore_raw" //center screen next to multipler
+		type			ITEM_TYPE_TEXT
+		//rect			-342 (SCORE_HUD_Y_0 + 15)  100 0 //HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		rect 			100 45 40 10 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_BOTTOM
+		textscale		0.6
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_OBJECTIVE
+		forecolor		1 1 0 1
+		exp text		dvarString(ugxm_chaosraw)
+		textalign 		ITEM_ALIGN_LEFT
+		visible 		when(dvarInt(ugxm_chaosraw_client_vis) == 1);
+		decoration
+	}
+
+	itemDef { name	"combofeed_4"
+		type			ITEM_TYPE_TEXT
+		rect			COMBOFEED_X COMBOFEED_Y 100 0
+		textscale		COMBOFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0.10
+		exp text		dvarString(ugxm_combofeed_4)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_combofeed_visible));
+		decoration
+	}
+	itemDef { name	"combofeed_3"
+		type			ITEM_TYPE_TEXT
+		rect			COMBOFEED_X (COMBOFEED_Y - 15) 100 0
+		textscale		COMBOFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0.25
+		exp text		dvarString(ugxm_combofeed_3)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_combofeed_visible));
+		decoration
+	}
+	itemDef { name	"combofeed_2"
+		type			ITEM_TYPE_TEXT
+		rect			COMBOFEED_X (COMBOFEED_Y - 30) 100 0
+		textscale		COMBOFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0.55
+		exp text		dvarString(ugxm_combofeed_2)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_combofeed_visible));
+		decoration
+	}
+	itemDef { name	"combofeed_1"
+		type			ITEM_TYPE_TEXT
+		rect			COMBOFEED_X (COMBOFEED_Y - 45) 100 0
+		textscale		COMBOFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0.75
+		exp text		dvarString(ugxm_combofeed_1)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_combofeed_visible));
+		decoration
+	}
+	itemDef { name	"combofeed_0"
+		type			ITEM_TYPE_TEXT
+		rect			COMBOFEED_X (COMBOFEED_Y - 60) 100 0
+		textscale		COMBOFEED_TEXTSCALE_L
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT .90
+		exp text		dvarString(ugxm_combofeed_0)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_combofeed_visible));
+		decoration
+	}
+
+	itemDef { name	"killfeed_attacker_0"
+		type			ITEM_TYPE_TEXT
+		rect			-738 SCORE_HUD_Y_0 100 0
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_0))
+		exp text		dvarString(ugxm_killfeed_attacker_0)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_0_square"
+		rect			-636 (SCORE_HUD_Y_0 - 14) 15 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_0))
+		style			WINDOW_STYLE_SHADER
+		background		"killiconmelee"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarString(ugxm_killfeed_mod_0) == "killiconmelee");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_0_wide"
+		rect			-636 (SCORE_HUD_Y_0 - 14) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_0))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarString(ugxm_killfeed_mod_0) == "hud_icon_laststand");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_0_wide2"
+		rect			-636 (SCORE_HUD_Y_0 - 14) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_0))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_revive"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarString(ugxm_killfeed_mod_0) == "hud_icon_laststand_revive");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_0_wide3"
+		rect			-636 (SCORE_HUD_Y_0 - 14) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_0))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_killed"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarString(ugxm_killfeed_mod_0) == "hud_icon_laststand_killed");
+	}
+
+	itemDef
+	{
+		name			"killfeed_victim_0"
+		type			ITEM_TYPE_TEXT
+		rect			-618 SCORE_HUD_Y_0 100 0
+		exp rect 		X(-618 - dvarInt(ugxm_killfeed_iconwidth_0))
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_0))
+		exp text		dvarString(ugxm_killfeed_victim_0)
+		textalign 		ITEM_ALIGN_LEFT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef
+	{
+		name			"killfeed_attacker_1"
+		type			ITEM_TYPE_TEXT
+		rect			-738 (SCORE_HUD_Y_0 - 15) 100 0
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_1))
+		exp text		dvarString(ugxm_killfeed_attacker_1)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_square"
+		rect			-636 (SCORE_HUD_Y_0 - 29) 15 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_1))
+		style			WINDOW_STYLE_SHADER
+		background		"killiconmelee"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_1) == 0 && dvarString(ugxm_killfeed_mod_1) == "killiconmelee");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_1_wide"
+		rect			-636 (SCORE_HUD_Y_0 - 29) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_1))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_1) < 0 && dvarString(ugxm_killfeed_mod_1) == "hud_icon_laststand");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_1_wide2"
+		rect			-636 (SCORE_HUD_Y_0 - 29) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_1))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_revive"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_1) < 0 && dvarString(ugxm_killfeed_mod_1) == "hud_icon_laststand_revive");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_1_wide3"
+		rect			-636 (SCORE_HUD_Y_0 - 29) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_1))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_killed"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_1) < 0 && dvarString(ugxm_killfeed_mod_1) == "hud_icon_laststand_killed");
+	}
+
+	itemDef
+	{
+		name			"killfeed_victim_1"
+		type			ITEM_TYPE_TEXT
+		rect			-618 (SCORE_HUD_Y_0 - 15) 100 0
+		exp rect 		X(-618 + dvarInt(ugxm_killfeed_iconwidth_1))
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_1))
+		exp text		dvarString(ugxm_killfeed_victim_1)
+		textalign 		ITEM_ALIGN_LEFT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef
+	{
+		name			"killfeed_attacker_2"
+		type			ITEM_TYPE_TEXT
+		rect			-738 (SCORE_HUD_Y_0 - 30) 100 0
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_2))
+		exp text		dvarString(ugxm_killfeed_attacker_2)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_2_square"
+		rect			-636 (SCORE_HUD_Y_0 - 43) 15 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_2))
+		style			WINDOW_STYLE_SHADER
+		background		"killiconmelee"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_2) == 0 && dvarString(ugxm_killfeed_mod_2) == "killiconmelee");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_2_wide"
+		rect			-636 (SCORE_HUD_Y_0 - 43) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_2))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_2) < 0 && dvarString(ugxm_killfeed_mod_2) == "hud_icon_laststand");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_2_wide2"
+		rect			-636 (SCORE_HUD_Y_0 - 43) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_2))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_revive"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_2) < 0 && dvarString(ugxm_killfeed_mod_2) == "hud_icon_laststand_revive");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_2_wide3"
+		rect			-636 (SCORE_HUD_Y_0 - 43) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_2))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_killed"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_2) < 0 && dvarString(ugxm_killfeed_mod_2) == "hud_icon_laststand_killed");
+	}
+
+	itemDef
+	{
+		name			"killfeed_victim_2"
+		type			ITEM_TYPE_TEXT
+		rect			-618 (SCORE_HUD_Y_0 - 30) 100 0
+		exp rect 		X(-618 + dvarInt(ugxm_killfeed_iconwidth_2))
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_2))
+		exp text		dvarString(ugxm_killfeed_victim_2)
+		textalign 		ITEM_ALIGN_LEFT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef
+	{
+		name			"killfeed_attacker_3"
+		type			ITEM_TYPE_TEXT
+		rect			-738 (SCORE_HUD_Y_0 - 45) 100 0
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_3))
+		exp text		dvarString(ugxm_killfeed_attacker_3)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_3_square"
+		rect			-636 (SCORE_HUD_Y_0 - 58) 15 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_3))
+		style			WINDOW_STYLE_SHADER
+		background		"killiconmelee"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_3) == 0 && dvarString(ugxm_killfeed_mod_3) == "killiconmelee");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_3_wide"
+		rect			-636 (SCORE_HUD_Y_0 - 58) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_3))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_3) < 0 && dvarString(ugxm_killfeed_mod_3) == "hud_icon_laststand");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_3_wide2"
+		rect			-636 (SCORE_HUD_Y_0 - 58) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_3))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_revive"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_3) < 0 && dvarString(ugxm_killfeed_mod_3) == "hud_icon_laststand_revive");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_3_wide3"
+		rect			-636 (SCORE_HUD_Y_0 - 58) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_3))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_killed"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_3) < 0 && dvarString(ugxm_killfeed_mod32) == "hud_icon_laststand_killed");
+	}
+
+	itemDef
+	{
+		name			"killfeed_victim_3"
+		type			ITEM_TYPE_TEXT
+		rect			-618 (SCORE_HUD_Y_0 - 45) 100 0
+		exp rect 		X(-618 + dvarInt(ugxm_killfeed_iconwidth_3))
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_3))
+		exp text		dvarString(ugxm_killfeed_victim_3)
+		textalign 		ITEM_ALIGN_LEFT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef
+	{
+		name			"killfeed_attacker_4"
+		type			ITEM_TYPE_TEXT
+		rect			-738 (SCORE_HUD_Y_0 - 60) 100 0
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_4))
+		exp text		dvarString(ugxm_killfeed_attacker_4)
+		textalign 		ITEM_ALIGN_RIGHT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_4_square"
+		rect			-636 (SCORE_HUD_Y_0 - 73) 15 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_4))
+		style			WINDOW_STYLE_SHADER
+		background		"killiconmelee"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_4) == 0 && dvarString(ugxm_killfeed_mod_4) == "killiconmelee");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_4_wide"
+		rect			-636 (SCORE_HUD_Y_0 - 73) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_4))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_4) < 0 && dvarString(ugxm_killfeed_mod_4) == "hud_icon_laststand");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_4_wide2"
+		rect			-636 (SCORE_HUD_Y_0 - 73) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_4))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_revive"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_4) < 0 && dvarString(ugxm_killfeed_mod_4) == "hud_icon_laststand_revive");
+	}
+
+	itemDef	
+	{
+		name			"killfeed_icon_4_wide3"
+		rect			-636 (SCORE_HUD_Y_0 - 73) 30 15
+		forecolor		1 1 1 1
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_4))
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_laststand_killed"
+		decoration
+		visible			when(dvarInt(ugxm_killfeed_visible) && dvarInt(ugxm_killfeed_iconwidth_4) < 0 && dvarString(ugxm_killfeed_mod_4) == "hud_icon_laststand_killed");
+	}
+
+	itemDef
+	{
+		name			"killfeed_victim_4"
+		type			ITEM_TYPE_TEXT
+		rect			-618 (SCORE_HUD_Y_0 - 60) 100 0
+		exp rect 		X(-618 + dvarInt(ugxm_killfeed_iconwidth_4))
+		textscale		KILLFEED_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 0
+		exp forecolor   A(dvarFloat(ugxm_killfeed_alpha_4))
+		exp text		dvarString(ugxm_killfeed_victim_4)
+		textalign 		ITEM_ALIGN_LEFT
+		visible			when(dvarInt(ugxm_killfeed_visible));
+		decoration
+	}
+
+	itemDef
+	{
+		name			"playerscores"
+		rect			0 0 100 0
+		ownerdraw		CG_COMPETITIVE_MODE_SCORES
+		visible			0 //treminaor: disabled the CG score hud in favor of ours.
+	}
+
+	/*
+	itemDef
+	{
+		name			"player0_name" 
+		type			ITEM_TYPE_TEXT
+		rect			0 SCORE_HUD_Y_0 100 0
+		textscale		SCORE_HUD_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+		exp text		PLAYER_0_SCORE
+		visible 		1
+		decoration
+	}
+	*/
+	
+	#define	SCORE_INDEX		"0"
+	
+	itemDef	{ name	"player0_bg"
+		rect			(SCORE_BG_OFFSET_X - 35) (SCORE_HUD_Y_0 + SCORE_BG_OFFSET_Y) 110 30
+		forecolor		SCORE_BG_COLOR
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_blood"
+		decoration
+		visible			1
+	}
+	itemDef { name	"player0_score" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X SCORE_HUD_Y_0 100 0
+		textscale		SCORE_HUD_COOP_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		PLAYER_0_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(SCORE_INDEX != PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player0_score_mini" //used when teammates have two separate scores (ex. Chaos Mode) 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_0 + SCORE_HUD_Y_MINIOFFSET) 100 0
+		textscale		SCORE_HUD_MINI_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		WHITE_GRADIENT 1
+		exp text		PLAYER_0_MINISCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_0_MINISCORE != "no")
+		decoration
+	}
+	itemDef { name "player0_score_large" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_0 + SCORE_HUD_Y_L) 100 0
+		textscale		SCORE_HUD_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		WHITE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		PLAYER_0_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(SCORE_INDEX == PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player0_medal" 
+		style			WINDOW_STYLE_SHADER 
+		rect			(SCORE_BG_OFFSET_X + SCORE_METAL_OFFSET_X - 35) (SCORE_HUD_Y_0 + SCORE_METAL_OFFSET_Y + SCORE_BG_OFFSET_Y) 20 20
+		exp				material(PLAYER_0_MEDAL); 
+		forecolor		1 1 1 1
+		visible			when(PLAYER_0_MEDAL != "blank")
+		decoration 
+	}
+	
+	#undef SCORE_INDEX
+	#define	SCORE_INDEX		"1"
+	
+	itemDef	{ name	"player1_bg"
+		rect			(SCORE_BG_OFFSET_X - 35) (SCORE_HUD_Y_1 + SCORE_BG_OFFSET_Y) 110 30
+		forecolor		SCORE_BG_COLOR
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_blood"
+		decoration
+		visible			when(PLAYER_1_SCORE != "-1")
+	}
+	itemDef { name "player1_score" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X SCORE_HUD_Y_1 100 0
+		textscale		SCORE_HUD_COOP_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		BLUE_GRADIENT 1
+		exp text		PLAYER_1_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_1_SCORE != "-1" && SCORE_INDEX != PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player1_score_mini" //used when teammates have two separate scores (ex. Chaos Mode) 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_1 + SCORE_HUD_Y_MINIOFFSET) 100 0
+		textscale		SCORE_HUD_MINI_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		BLUE_GRADIENT 1
+		exp text		PLAYER_1_MINISCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_1_MINISCORE != "no")
+		decoration
+	}
+	itemDef { name	"player1_score_large" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_1 + SCORE_HUD_Y_L) 100 0
+		textscale		SCORE_HUD_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		BLUE_GRADIENT 1
+		exp text		PLAYER_1_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_1_SCORE != "-1" && SCORE_INDEX == PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player1_medal" 
+		style			WINDOW_STYLE_SHADER 
+		rect			(SCORE_BG_OFFSET_X + SCORE_METAL_OFFSET_X - 35) (SCORE_HUD_Y_1 + SCORE_METAL_OFFSET_Y + SCORE_BG_OFFSET_Y) 20 20
+		exp				material(PLAYER_1_MEDAL); 
+		forecolor		1 1 1 1
+		visible			when(PLAYER_1_MEDAL != "blank")
+		decoration 
+	}
+	
+	#undef SCORE_INDEX
+	#define	SCORE_INDEX		"2"
+	
+	itemDef { name "player2_bg"
+		rect			(SCORE_BG_OFFSET_X - 35) (SCORE_HUD_Y_2 + SCORE_BG_OFFSET_Y) 110 30
+		forecolor		SCORE_BG_COLOR
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_blood"
+		decoration
+		visible			when(PLAYER_2_SCORE != "-1")
+	}
+	itemDef { name "player2_score" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X SCORE_HUD_Y_2 100 0
+		textscale		SCORE_HUD_COOP_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		ORANGE_GRADIENT 1
+		exp text		PLAYER_2_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_2_SCORE != "-1" && SCORE_INDEX != PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player2_score_mini" //used when teammates have two separate scores (ex. Chaos Mode) 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_2 + SCORE_HUD_Y_MINIOFFSET) 100 0
+		textscale		SCORE_HUD_MINI_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		ORANGE_GRADIENT 1
+		exp text		PLAYER_2_MINISCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_2_MINISCORE != "no")
+		decoration
+	}
+	itemDef { name "player2_score_large" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_2 + SCORE_HUD_Y_L) 100 0
+		textscale		SCORE_HUD_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		ORANGE_GRADIENT 1
+		exp text		PLAYER_2_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_2_SCORE != "-1" && SCORE_INDEX == PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player2_medal" 
+		style			WINDOW_STYLE_SHADER 
+		rect			(SCORE_BG_OFFSET_X + SCORE_METAL_OFFSET_X - 35) (SCORE_HUD_Y_2 + SCORE_METAL_OFFSET_Y + SCORE_BG_OFFSET_Y) 20 20
+		exp				material(PLAYER_2_MEDAL); 
+		forecolor		1 1 1 1
+		visible			when(PLAYER_2_MEDAL != "blank")
+		decoration 
+	}
+	
+	#undef SCORE_INDEX
+	#define	SCORE_INDEX		"3"
+	
+	itemDef	{ name "player3_bg"
+		rect			(SCORE_BG_OFFSET_X - 35) (SCORE_HUD_Y_3 + SCORE_BG_OFFSET_Y) 110 30
+		forecolor		SCORE_BG_COLOR
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_blood"
+		decoration
+		visible			when(PLAYER_3_SCORE != "-1")
+	}
+	itemDef { name "player3_score" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X SCORE_HUD_Y_3 100 30
+		textscale		SCORE_HUD_COOP_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		GREEN_GRADIENT 1
+		exp text		PLAYER_3_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_3_SCORE != "-1" && SCORE_INDEX != PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player3_score_mini" //used when teammates have two separate scores (ex. Chaos Mode) 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_3 + SCORE_HUD_Y_MINIOFFSET) 100 0
+		textscale		SCORE_HUD_MINI_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		GREEN_GRADIENT 1
+		exp text		PLAYER_3_MINISCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_3_MINISCORE != "no")
+		decoration
+	}
+	itemDef { name	"player3_score_large" 
+		type			ITEM_TYPE_TEXT
+		rect			SCORE_HUD_OFFSET_X (SCORE_HUD_Y_3 + SCORE_HUD_Y_L) 100 30
+		textscale		SCORE_HUD_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_BOLD
+		forecolor		GREEN_GRADIENT 1
+		exp text		PLAYER_3_SCORE
+		textalign 		ITEM_ALIGN_RIGHT
+		visible 		when(PLAYER_3_SCORE != "-1" && SCORE_INDEX == PLAYER_INDEX)
+		decoration
+	}
+	itemDef { name "player3_medal" 
+		style			WINDOW_STYLE_SHADER 
+		rect			(SCORE_BG_OFFSET_X + SCORE_METAL_OFFSET_X - 35) (SCORE_HUD_Y_3 + SCORE_METAL_OFFSET_Y + SCORE_BG_OFFSET_Y) 20 20
+		exp				material(PLAYER_3_MEDAL); 
+		forecolor		1 1 1 1
+		visible			when(PLAYER_3_MEDAL != "blank")
+		decoration 
+	}
+	
+	#define GRENADE_ORIGIN_X 		(WEAPINFO_X + 86)
+	#define GRENADE_OFFSET_X		-20
+	#define GRENADE_OFFSET_Y		-25 // center of screen < 0 < bottom of screen
+	#define GRENADE_SPACING			15
+	#define GRENADE_AMMO			dvarInt(ugxm_player_ammo_grenade)
+
+	#define SECONDGRENADE_AMMO		dvarInt(ugxm_player_ammo_secondgrenade)
+	#define HATCHET_NONE			(dvarInt(ugxm_player_hatchet_hud) == 1)
+	#define HATCHET_RED				(dvarInt(ugxm_player_hatchet_hud) == 2)
+	#define HATCHET_BLUE			(dvarInt(ugxm_player_hatchet_hud) == 3)
+	#define SHOW_AMMO				(dvarInt(ugxm_player_show_ammo) == 1)
+	#define SHOW_AMMO_DW			(dvarInt(ugxm_player_show_dw_ammo) == 1)
+	#define STOCK_LOW_AMMO			(dvarInt(ugxm_player_stock_ammo_l) == 1)
+	#define CLIP_LOW_AMMO			(dvarInt(ugxm_player_clip_ammo_l) == 1)
+	#define CLIP_DW_LOW_AMMO		(dvarInt(ugxm_player_clip_dw_ammo_l) == 1)
+	
+	itemDef	{ name	"hud_bg"
+		rect			(WEAPINFO_X - 60) (WEAPINFO_Y - 155) 265 265
+		forecolor		1 1 1 1
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_dirt"
+		decoration
+		visible			1
+	}
+	itemDef	{ name "hud_bg_explosive"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 70
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_explosive"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "explosive")
+	}
+	itemDef	{ name "ugx_hand"
+		rect			(WEAPINFO_X + 85) (WEAPINFO_Y - 65) 40 77
+		forecolor		1 1 1 1
+		style			WINDOW_STYLE_SHADER
+		background		"ugx_hand_hud"
+		decoration
+		visible			1
+	}
+	itemDef	{ name "hud_bg_electric"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 93
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_electric"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "electric")
+	}
+	itemDef	{ name "hud_bg_fire"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 70
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_fire"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "fire")
+	}
+	itemDef	{ name "hud_bg_acid"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 70
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_acid"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "acid")
+	}
+	// Explosive one defined above the hand icon z-index
+	itemDef	{ name "hud_bg_ice"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 70
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_ice"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "ice")
+	}
+	itemDef	{ name "hud_bg_wind"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 70
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_wind"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "wind")
+	}
+	itemDef	{ name "hud_bg_special"
+		rect			(WEAPINFO_X - 40) (WEAPINFO_Y - 75) 150 70
+		forecolor		1 1 1 0.6
+		style			WINDOW_STYLE_SHADER
+		background		"hud_bg_special"
+		decoration
+		visible			when(CLIENT_WEAPON_COLOR == "special")
+	}
+	itemDef { name "hatchet_empty"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 4)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_hatchet_none"
+		visible			when(HATCHET_NONE)
+		decoration
+	}
+	itemDef { name "hatchet_red"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 4)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_hatchet_red"
+		visible			when(HATCHET_RED)
+		decoration
+	}
+	itemDef { name "hatchet_blue"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 4)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		style			WINDOW_STYLE_SHADER
+		background		"hud_icon_hatchet_blue"
+		visible			when(HATCHET_BLUE)
+		decoration
+	}
+	itemDef { name "offhandFragIcon"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X ) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_FRAG
+		background		"hud_us_grenade" // default texture
+		visible			when(GRENADE_AMMO > 0)
+		decoration
+	}
+	itemDef { name "offhandFragIcon2"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - GRENADE_SPACING) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_FRAG
+		background		"hud_us_grenade" // default texture
+		visible			when(GRENADE_AMMO > 1)
+		decoration
+	}
+	itemDef { name "offhandFragIcon3"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 2)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_FRAG
+		background		"hud_us_grenade" // default texture
+		visible			when(GRENADE_AMMO > 2)
+		decoration
+	}
+	itemDef { name "offhandFragIcon4"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 3)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_FRAG
+		background		"hud_us_grenade" // default texture
+		visible			when(GRENADE_AMMO > 3)
+		decoration
+	}
+	itemDef { name "offhandSmokeIcon"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 4)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_SMOKEFLASH
+		background		"hud_us_smokegrenade" // default texture
+		visible			when(SECONDGRENADE_AMMO > 0)
+		decoration
+	}
+	itemDef { name "offhandSmokeIcon"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 5)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_SMOKEFLASH
+		background		"hud_us_smokegrenade" // default texture
+		visible			when(SECONDGRENADE_AMMO > 1)
+		decoration
+	}
+	itemDef { name "offhandSmokeIcon"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 6)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_SMOKEFLASH
+		background		"hud_us_smokegrenade" // default texture
+		visible			when(SECONDGRENADE_AMMO > 2)
+		decoration
+	}
+	itemDef { name "offhandSmokeIcon"
+		rect			(GRENADE_OFFSET_X + GRENADE_ORIGIN_X - (GRENADE_SPACING * 7)) (GRENADE_OFFSET_Y + WEAPINFO_Y +22) 18 18
+		forecolor		1 1 1 1
+		ownerdraw		CG_OFFHAND_WEAPON_ICON_SMOKEFLASH
+		background		"hud_us_smokegrenade" // default texture
+		visible			when(SECONDGRENADE_AMMO > 3)
+		decoration
+	}
+	
+	/*
+	itemDef
+	{
+		name			"offhandsmokeammo"
+		rect			(GRENADE_OFFSET_X + WEAPINFO_X +76) (GRENADE_OFFSET_Y + WEAPINFO_Y +52) 25 25
+		textscale		TEXTSIZE_SMALL
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_OBJECTIVE
+		forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+		ownerdraw		CG_OFFHAND_WEAPON_AMMO_SMOKEFLASH
+		visible			1
+		decoration
+	}
+
+	itemDef
+	{
+		name			"offhandfragammo"
+		rect			(GRENADE_OFFSET_X + WEAPINFO_X +106) (GRENADE_OFFSET_Y + WEAPINFO_Y +52) 25 25
+		textscale		TEXTSIZE_SMALL
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_OBJECTIVE
+		forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+		ownerdraw		CG_OFFHAND_WEAPON_AMMO_FRAG
+		visible			1
+		decoration
+	}
+	*/
+
+	
+	#define STOCK_WEAPON_X 			(WEAPINFO_X + 57)
+	#define CLIP_WEAPON_X 			(WEAPINFO_X + 5)
+	#define STOCK_AMMO_TEXTSCALE	0.6
+	#define CLIP_AMMO_TEXTSCALE		.85
+	/*itemDef //convert this to dvar
+	{
+		name			"ammostock"
+		rect			(WEAPINFO_X + 50) (WEAPINFO_Y + 0) 25 25
+		textscale		0.85
+		textstyle		ITEM_TEXTSTYLE_SHADOWED
+		textfont		UI_FONT_NORMAL
+		forecolor		1 1 1 HUD_FOREGROUND_ALPHA
+		ownerdraw		CG_PLAYER_WEAPON_AMMO_STOCK
+		visible			1
+		decoration
+	}*/
+	
+	itemDef { name			"ammostock"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		AMMO_COLOR HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "0")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_low"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		RED_GRADIENT 0
+		exp forecolor   A( 0.5+(max( 0+sin(milliseconds()/200), 0-sin(milliseconds()/200) )/2) )
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && STOCK_LOW_AMMO)
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_electric"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		ELECTRIC_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "electric")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_fire"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		FIRE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "fire")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_acid"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		ACID_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "acid")
+		decoration
+	}
+
+	itemDef
+	{
+		name			"ammostock_explosive"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		EXPLOSIVE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "explosive")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_ice"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		ICE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "ice")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_wind"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		WIND_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "wind")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammostock_special"
+		type			ITEM_TYPE_TEXT
+		rect			(STOCK_WEAPON_X + 0) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		SPECIAL_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_STOCK_COUNT
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO && !STOCK_LOW_AMMO && CLIENT_WEAPON_COLOR == "special")
+		decoration
+	}
+
+	itemDef { name			"ammoclip"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		AMMO_COLOR HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "0")
+		decoration
+	}
+
+	itemDef { name			"ammoclip__left_divider"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X - 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		AMMO_COLOR HUD_FOREGROUND_ALPHA
+		text			"|"
+		visible 		when(SHOW_AMMO_DW)
+		decoration
+	}
+
+	itemDef { name			"ammoclip_left" //dual wield
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X - 20) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		AMMO_COLOR HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT_LEFT
+		visible 		when(SHOW_AMMO_DW && !CLIP_DW_LOW_AMMO && CLIENT_WEAPON_COLOR == "0")
+		decoration
+	}
+
+	itemDef { name			"ammoclip_left_low" //two-digit clip low ammo
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X - 20) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		RED_GRADIENT 0
+		exp forecolor   A( 0.5+(max( 0+sin(milliseconds()/200), 0-sin(milliseconds()/200) )/2) )
+		exp text		AMMO_CLIP_COUNT_LEFT
+		visible 		when(SHOW_AMMO_DW && CLIP_DW_LOW_AMMO)
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammoclip_electric"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		ELECTRIC_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "electric")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammoclip_fire"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		FIRE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "fire")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammoclip_acid"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		ACID_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "acid")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammoclip_explosive"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		EXPLOSIVE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "explosive")
+		decoration
+	}
+
+	itemDef
+	{
+		name			"ammoclip_ice"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		ICE_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "ice")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammoclip_wind"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		WIND_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "wind")
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammoclip_special"
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		SPECIAL_GRADIENT HUD_FOREGROUND_ALPHA
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && !CLIP_LOW_AMMO && CLIENT_WEAPON_COLOR == "special")
+		decoration
+	}
+	
+	itemDef { name			"ammoclip_low" //two-digit clip low ammo
+		type			ITEM_TYPE_TEXT
+		rect			(CLIP_WEAPON_X + 10) (WEAPINFO_Y - 40) 25 25
+		textscale		CLIP_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		textalign		ITEM_ALIGN_TOP_RIGHT
+		forecolor		RED_GRADIENT 0
+		exp forecolor   A( 0.5+(max( 0+sin(milliseconds()/200), 0-sin(milliseconds()/200) )/2) )
+		exp text		AMMO_CLIP_COUNT
+		visible 		when(SHOW_AMMO && CLIP_LOW_AMMO)
+		decoration
+	}
+	
+	itemDef
+	{
+		name			"ammodivider"
+		type			ITEM_TYPE_TEXT
+		rect			(WEAPINFO_X + 45) (WEAPINFO_Y + 0) 25 25
+		textscale		STOCK_AMMO_TEXTSCALE
+		textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+		textfont		UI_FONT_BOLD
+		forecolor		AMMO_COLOR HUD_FOREGROUND_ALPHA
+		text			"/"
+		visible 		when(AMMO_STOCK_COUNT >= 0 && SHOW_AMMO)
+		decoration
+	}
+}	
+
+#undef WEAPINFO_X
+#undef WEAPINFO_Y
+#define WEAPINFO_X -170 //-190
+#define WEAPINFO_Y -65
+#define WEAPONNAME_TEXTSCALE	.32
+
+#define CLIENT_WEAPON_NAME		dvarString(ugxm_player_weaponame)
+
+	menuDef
+	{
+		name			"weaponinfo"
+		rect			20 20 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible when ( !SUBTITLES_ACTIVE && CHAPLIN_CHEAT_OFF && dvarInt(ugxm_host_menu) == 0 && dvarBool( ammoCounterHide ) == 0 && dvarBool( hud_missionFailed ) == 0 && dvarint( ui_hud_hardcore ) == 0 ); //removed !flashbanged() check and ui_active() check
+
+/*		itemDef
+		{
+			name			"ammoCounterBackground"
+			rect			(WEAPINFO_X) WEAPINFO_Y 170 42
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_WEAPON_BACKGROUND
+			background		"hud_ammocounterback"
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"weaponIcon"
+			rect			(WEAPINFO_X +122) (WEAPINFO_Y +5) 24 24
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_WEAPON_PRIMARY_ICON
+			visible			1
+			decoration
+		}
+*/
+/*		itemDef
+		{
+			name			"clipGraphic"
+			rect			(WEAPINFO_X +111) (WEAPINFO_Y +56) 1 1
+			forecolor		1 1 1 HUD_ALPHA
+			ownerdraw		CG_PLAYER_WEAPON_AMMO_CLIP_GRAPHIC
+			visible			1
+			decoration
+		}
+*/
+		
+		
+		itemDef { name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		1 1 1 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "0")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		ELECTRIC_GRADIENT 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "electric")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		1 1 1 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "fire")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		ACID_GRADIENT 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "acid")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		ICE_GRADIENT 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "ice")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		1 0.988 0 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "explosive")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		WIND_GRADIENT 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "wind")
+			decoration
+		}
+		
+		itemDef
+		{
+			name			"weapname_lowdef"
+			rect			(WEAPINFO_X - 210) (WEAPINFO_Y - 50) 290 40
+			textstyle		ITEM_TEXTSTYLE_SHADOWEDMORE
+			textscale		WEAPONNAME_TEXTSCALE
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_TOP_RIGHT
+			forecolor		SPECIAL_GRADIENT 1
+			exp text		CLIENT_WEAPON_NAME
+			visible			when(CLIENT_WEAPON_COLOR == "special")
+			decoration
+		}
+	
+		
+		itemDef { name			"lowammowarning"	
+			rect			-10 15 100 30 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+			textfont		UI_FONT_BOLD
+			textscale		TEXTSIZE_SMALL
+			textalign		(ITEM_ALIGN_CENTER | ITEM_ALIGN_MIDDLE)
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			forecolor		1 1 1 1
+			//background	"white"
+			ownerdraw		CG_PLAYER_WEAPON_LOW_AMMO_WARNING
+			visible	when ( dvarInt( g_gameskill ) == 0 || dvarInt( g_gameskill ) == 1 || dvarstring( mapname ) == LEVEL_TRAINING );
+			decoration
+		}
+	}
+
+	menuDef
+	{
+		name			"heatinfo"
+		rect			0 0 0 0 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible			when ( !SUBTITLES_ACTIVE && CHAPLIN_CHEAT_OFF && dvarBool( ammoCounterHide ) == 0 && dvarBool( hud_missionFailed ) == 0 && !flashbanged() && !ui_active() && dvarint( ui_hud_hardcore ) == 0 );
+		
+		itemDef
+		{
+			name			"heaticon"
+#ifndef PC
+			rect			-47 -40 54 27
+#else // #ifndef PC
+			rect			(WEAPINFO_X +116) (WEAPINFO_Y +15) 80 40
+#endif // #ifndef PC
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_HEAT_VALUE
+			visible			1
+			decoration
+		}
+	}
+
+
+	// Compass
+	menuDef
+	{
+		name			"Compass"
+ 	   	rect			0 0 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+ 	   	fullScreen		0
+ 	   	visible			1
+ 	   	hiddenDuringScope
+		hiddenDuringFlashbang
+		visible when  ( CHAPLIN_CHEAT_OFF && issplitscreen() == 1  && dvarBool( compass ) == 1 && dvarBool( hud_missionFailed ) == 0 && (dvarString( createfx ) != "on") && !ui_active() );
+
+		itemDef
+        {
+            name			"TickerPipUp"
+            rect			-0.5 -30 1 4
+            forecolor		1 1 1 .8
+            background		"white"
+            ownerdraw		CG_PLAYER_COMPASS_BACK
+			visible			1
+			decoration
+        }
+
+		itemDef
+        {
+            name			"TickerPipDown"
+            rect			-0.5 -14 1 4
+            forecolor		1 1 1 .8
+            background		"white"
+            ownerdraw		CG_PLAYER_COMPASS_BACK
+			visible			1
+			decoration
+        }
+
+		itemDef
+        {
+            name			"TickerBorder"
+            rect			-77 -30 154 16
+            forecolor		1 1 1 1
+            background		"minimap_tickertape_background"
+            ownerdraw		CG_PLAYER_COMPASS_BACK
+			visible			1
+			decoration
+        }
+		
+		itemDef
+        {
+            name			"Ticker"
+            rect			-75 -25 150 10
+            forecolor		1 1 1 1
+            background		"minimap_tickertape"
+            ownerdraw		CG_PLAYER_COMPASS_TICKERTAPE
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible			1
+			decoration
+		}
+		
+		/*
+		itemDef
+        {
+            name			"GoalDistanceBorder"
+            rect			-18 -11 36 14
+            forecolor		1 1 1 1
+            background		"minimap_tickertape_background"
+            ownerdraw		CG_PLAYER_COMPASS_BACK
+			visible			1
+			decoration
+        }
+
+		itemDef
+		{
+			name			"GoalDistance"
+            rect			-16 3.5 32 14
+			textscale		0.25
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			textfont		UI_FONT_DEFAULT
+			forecolor		1 1 1 1
+			ownerdraw		CG_PLAYER_COMPASS_GOALDISTANCE
+			visible			1
+			decoration
+		}
+		*/
+	}
+
+	#define	DPAD_BASE_SIZE		28
+	#define	DPAD_BASE_SIZE_HALF	14
+	#define DPAD_ICON_Y			-1//3
+	#define DPAD_LABEL_Y		-50 //-42//44
+	#define DPAD_ICON_SPACING	30
+	#define	BOTTOM_RECT_X 0
+	#define	BOTTOM_RECT_Y 0
+	menuDef
+	{
+		name			"DPad"
+ 	   	rect			-350 DPAD_LABEL_Y DPAD_BASE_SIZE DPAD_BASE_SIZE HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+ 	   	fullScreen		0
+		visible			when( !inkillcam() && !flashbanged() && !scoped() && (dvarString( createfx ) != "on") && dvarint( ui_hud_hardcore ) == 0 ); //UGX_SCRIPT: removed " && !ui_active()" so that item slots are visible while in Traps Menu
+		onOpen { }
+
+		#define DPAD_XBOX_OFFSET_X 			314
+		#define DPAD_XBOX_OFFSET_Y 			-100
+		#define DPAD_XBOX_BASE_SIZE 		66
+		#define DPAD_XBOX_BASE_HALF 		(DPAD_XBOX_BASE_SIZE / 2)
+		#define DPAD_XBOX_ICON_ALPHA 		1
+		//#define DPAD_XBOX_ICON_Y			-28
+		#define DPAD_XBOX_ICON_SIZE 		20
+		#define DPAD_XBOX_ICON_SIZE_HALF 	(DPAD_XBOX_ICON_SIZE / 2)
+		#define DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX 	6
+		#define DPAD_XBOX_ICON_CENTER_OFFSET_FIX 	4
+		#define DPAD_XBOX_ICON_CENTER_OFFSET_FIX_Y 	3
+
+		itemDef //dpad background image
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_DPAD
+			background		"hud_dpad"
+            name			"pad"
+            rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_HALF) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF) DPAD_XBOX_BASE_SIZE DPAD_XBOX_BASE_SIZE
+            forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_1
+			background		"hud_arrow_up"
+            rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF
+            forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+        }
+		itemDef // Up
+        {
+			name			"slot1"
+			rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ICON_CENTER_OFFSET_FIX) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE_HALF - DPAD_XBOX_ICON_CENTER_OFFSET_FIX_Y) DPAD_XBOX_ICON_SIZE DPAD_XBOX_ICON_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_1
+			forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			textscale		0.18
+			textfont		UI_FONT_DEFAULT
+        }
+
+        itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_2
+			background		"hud_arrow_down"
+            rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF
+            forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+        }
+        itemDef // Down
+        {
+            name			"slot2"
+			rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ICON_CENTER_OFFSET_FIX) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_SIZE + DPAD_XBOX_ICON_SIZE_HALF - DPAD_XBOX_ICON_CENTER_OFFSET_FIX_Y) DPAD_XBOX_ICON_SIZE DPAD_XBOX_ICON_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_2
+			forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes") 
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			textscale		0.18
+			textfont		UI_FONT_DEFAULT
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_3
+			background		"hud_arrow_left"
+            //rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + 5) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + 5) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF
+            rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF
+            forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+        }
+		itemDef // Left
+        {
+            name			"slot3"
+			rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ICON_SIZE) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_SIZE - DPAD_XBOX_ICON_SIZE_HALF) DPAD_XBOX_ICON_SIZE DPAD_XBOX_ICON_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_3
+			forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes") 
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			textscale		0.18
+			textfont		UI_FONT_DEFAULT
+        }
+
+		itemDef
+        {
+			ownerdraw		CG_PLAYER_ACTIONSLOT_ARROW_4
+			background		"hud_arrow_right"
+            //rect			(DPAD_XBOX_OFFSET_X + DPAD_XBOX_BASE_SIZE + DPAD_XBOX_ICON_SIZE + 5) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + 5) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF
+            rect			(DPAD_XBOX_OFFSET_X - DPAD_XBOX_BASE_SIZE + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_HALF + DPAD_XBOX_ICON_SIZE + DPAD_XBOX_ARROWS_CENTER_OFFSET_FIX) DPAD_BASE_SIZE_HALF DPAD_BASE_SIZE_HALF
+            forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+        }
+		itemDef // Right
+        {
+            name			"slot4"
+            rect			(DPAD_XBOX_OFFSET_X + DPAD_XBOX_ICON_SIZE_HALF) (DPAD_XBOX_OFFSET_Y + DPAD_XBOX_BASE_SIZE - DPAD_XBOX_ICON_SIZE_HALF) DPAD_XBOX_ICON_SIZE DPAD_XBOX_ICON_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_4
+			forecolor		1 1 1 DPAD_XBOX_ICON_ALPHA
+			visible         when(dvarString(ugx_client_xbox) == "Yes")
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		ITEM_ALIGN_CENTER
+			textscale		0.18
+			textfont		UI_FONT_DEFAULT
+        }
+        
+        //PC MENU
+        #undef DPAD_BASE_SIZE
+		#define	DPAD_BASE_SIZE		26
+		#undef	DPAD_BASE_SIZE_HALF
+		#define	DPAD_BASE_SIZE_HALF	13
+		#undef DPAD_ICON_Y
+		#define DPAD_ICON_Y			-1//3
+		#undef DPAD_LABEL_Y
+		#define DPAD_LABEL_Y		36//44
+		#undef DPAD_ICON_SPACING
+		#define DPAD_ICON_SPACING	60
+		#define DPAD_ICON_SPACING_HALF	DPAD_ICON_SPACING / 2
+
+		#define DPAD_TEXTALIGN		ITEM_ALIGN_RIGHT
+        itemDef // Up (X)
+        {
+			name			"slot1"
+			rect			(2 - DPAD_ICON_SPACING) DPAD_ICON_Y DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_1
+			forecolor		1 1 1 HUD_ALPHA
+			visible         when(dvarString(ugx_client_xbox) != "Yes")
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		DPAD_TEXTALIGN
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+        }
+
+		itemDef 
+		{
+			rect			(2 - DPAD_ICON_SPACING + DPAD_BASE_SIZE_HALF) DPAD_LABEL_Y 1 1
+			exp text		( "[" + KeyBinding( "+actionslot 1" ) + "]" );
+			forecolor		1 1 1 0
+			exp forecolor 	A	( HUD_ALPHA * HudFade( "dpad" ) )
+			textfont		UI_FONT_NORMAL
+			textscale		0.25
+			textalign		ITEM_ALIGN_CENTER
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible 		when( ActionSlotUsable( 1 ) && dvarString(ugx_client_xbox) != "Yes")
+			decoration 
+		}
+
+		itemDef // Down (7)
+        {
+            name			"slot2"
+            rect			(DPAD_ICON_SPACING + DPAD_ICON_SPACING) DPAD_ICON_Y DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_2
+			forecolor		1 1 1 HUD_ALPHA
+			visible        	when(dvarString(ugx_client_xbox) != "Yes") 
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		DPAD_TEXTALIGN
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+        }
+		itemDef 
+		{
+			rect			(DPAD_ICON_SPACING + DPAD_ICON_SPACING + DPAD_BASE_SIZE_HALF) DPAD_LABEL_Y 1 1
+			exp text		( "[" + KeyBinding( "+actionslot 2" ) + "]" );
+			forecolor		1 1 1 0
+			exp forecolor 	A	( HUD_ALPHA * HudFade( "dpad" ) )
+			textfont		UI_FONT_NORMAL
+			textscale		0.25
+			textalign		ITEM_ALIGN_CENTER
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible 		when( ActionSlotUsable( 2 ) && dvarString(ugx_client_xbox) != "Yes")
+			decoration 
+		}
+
+		itemDef // Left (5)
+        {
+            name			"slot3"
+            //rect			(-DPAD_ICON_SPACING - DPAD_BASE_SIZE) DPAD_ICON_Y DPAD_BASE_SIZE DPAD_BASE_SIZE
+            rect			(2) DPAD_ICON_Y DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_3
+			forecolor		1 1 1 HUD_ALPHA
+			visible        	when(dvarString(ugx_client_xbox) != "Yes") 
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		DPAD_TEXTALIGN
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+        }
+		itemDef 
+		{
+			rect			(2 + DPAD_BASE_SIZE_HALF) DPAD_LABEL_Y 1 1
+			exp text		( "[" + KeyBinding( "+actionslot 3" ) + "]" );
+			forecolor		1 1 1 0
+			exp forecolor 	A	( HUD_ALPHA * HudFade( "dpad" ) )
+			textfont		UI_FONT_NORMAL
+			textscale		0.25
+			textalign		ITEM_ALIGN_CENTER
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible 		when( ActionSlotUsable( 3 ) && dvarString(ugx_client_xbox) != "Yes" )
+			decoration 
+		}
+
+		itemDef // Right (6)
+        {
+            name			"slot4"
+            rect			DPAD_ICON_SPACING DPAD_ICON_Y DPAD_BASE_SIZE DPAD_BASE_SIZE
+			ownerdraw		CG_PLAYER_ACTIONSLOT_4
+			forecolor		1 1 1 HUD_ALPHA
+			visible         when(dvarString(ugx_client_xbox) != "Yes")
+			decoration
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textalign		DPAD_TEXTALIGN
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+        }
+		itemDef 
+		{
+			rect			(DPAD_ICON_SPACING + DPAD_BASE_SIZE_HALF) DPAD_LABEL_Y 1 1
+			exp text		( "[" + KeyBinding( "+actionslot 4" ) + "]" );
+			forecolor		1 1 1 0
+			exp forecolor 	A	( HUD_ALPHA * HudFade( "dpad" ) )
+			textfont		UI_FONT_NORMAL
+			textscale		0.25
+			textalign		ITEM_ALIGN_CENTER
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			visible 		when( ActionSlotUsable( 4 ) && dvarString(ugx_client_xbox) != "Yes")
+			decoration 
+		}
+    }
+
+	//	Local Talking Status
+	menuDef
+	{
+    	name			"amitalking"
+		rect			-30 80 24 24 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+    	fullScreen		0
+    	visible			when( ( dvarbool( systemlink ) || dvarbool( onlinegame ) ) && !ui_active() && dvarint( ui_hud_hardcore ) == 0 );
+
+		itemDef
+		{
+			name			"talkingRect"
+			rect			0 0 26 26
+			forecolor		1 1 1 1
+			textscale		0.4
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		UI_AMITALKING
+			visible			1
+			decoration
+		}
+	}
+
+	// Remote Talking Status
+	menuDef
+	{
+    	name			"talkers"
+		rect			-30 0 24 24 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+    	fullScreen		0
+    	visible			when( ( dvarbool( systemlink ) || dvarbool( onlinegame ) ) && !ui_active() && dvarint( ui_hud_hardcore ) == 0 );
+
+		itemDef
+		{
+			name			"talker1Rect"
+			rect			0 0 24 24
+			forecolor		1 1 1 1
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_TALKER1
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"talker2Rect"
+			rect			0 24 24 24
+			forecolor		1 1 1 1
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_TALKER2
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			"talker3Rect"
+			rect			0 48 24 24
+			forecolor		1 1 1 1
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_TALKER3
+			visible			1
+			decoration
+		}
+		/*
+		itemDef
+		{
+			name			"talker4Rect"
+			rect			0 72 24 24
+			forecolor		1 1 1 1
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_TALKER4
+			visible			1
+			decoration
+		}
+		*/
+	}
+
+	//	Tank status
+	menuDef 
+	{
+		name			"tankstatus_cooperative"
+#ifdef PC
+		rect			120 -66 60 60 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM 
+#else
+		rect			100 -66 60 60 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM 
+#endif
+		fullScreen		0
+		visible			when( !ui_active() && dvarBool( vehInfoHide ) == 0 )
+		itemDef 
+		{
+			name			"tankbody"
+			rect			0 0 60 60 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbody"
+			ownerdraw		CG_TANK_BODY_DIR
+			visible			1
+			decoration
+		}
+		
+		itemDef 
+		{
+			name			"tankbarrel"
+			rect			30 30 60 60 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbarrel"
+			ownerdraw		CG_TANK_BARREL_DIR
+			visible			1
+			decoration
+		}
+	}
+
+	/*
+	menuDef 
+	{
+		name			"tankstatus_normal"
+#ifdef PC
+		rect			-120 -66 80 80 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM 
+#else
+		rect			-100 -66 80 80 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM 
+#endif
+		fullScreen		0
+		visible			when( !ui_active() && !dvarbool( arcademode ) )
+		itemDef 
+		{
+			name			"tankbody"
+			rect			0 0 60 60 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbody"
+			ownerdraw		CG_TANK_BODY_DIR
+			visible			1
+			decoration
+		}
+		
+		itemDef 
+		{
+			name			"tankbarrel"
+			rect			30 30 60 60 // 64x64
+			forecolor		1 1 1 1
+			background		"hud_tankbarrel"
+			ownerdraw		CG_TANK_BARREL_DIR
+			visible			1
+			decoration
+		}
+	}
+	*/
+
+	menuDef 
+	{
+		name			"deadscreen"
+		fullScreen		0				
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		soundloop		""
+		visible			1
+		
+		// Death quote
+		itemDef 
+		{
+			name			quote
+			dvar			"ui_deadquote"
+			textscale		TEXTSIZE_DEFAULT
+			type			ITEM_TYPE_TEXT
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			rect			80 200 480 20
+			textalign		ITEM_ALIGN_CENTER
+			textaligny		0 // point to center around
+			textalignx		0 // point to center around
+			ownerdraw		CG_DEADQUOTE
+			forecolor		1 1 1 1
+			visible			1
+			decoration 
+		}
+		
+		itemDef
+		{
+			name			hud_grenadeicon
+			rect			315 300 60 60
+			origin			0 0
+			style			WINDOW_STYLE_SHADER
+			background		"hud_grenadeicon"
+			dvartest		"ui_grenade_death"
+			showdvar		{ "1" }
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			name			hud_grenadepointer
+			rect			320 270 50 25
+			origin			0 0
+			style			WINDOW_STYLE_SHADER
+			background		"hud_grenadepointer"
+			dvartest		"ui_grenade_death"
+			showdvar		{ "1" }
+			visible			1
+			decoration
+		}
+	}
+
+	// Hold breath hint
+	menuDef 
+	{
+		name			"HoldBreathHint"
+		rect			0 -130 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		fullScreen		0
+		visible when ( !adsjavelin() && CHAPLIN_CHEAT_OFF );
+
+		itemDef 
+		{
+			name			"chRect"
+			rect			0 0 0 0
+			textfont		UI_FONT_NORMAL
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_HOLD_BREATH_HINT
+			visible			1
+			decoration
+		}
+	}
+	
+	// Saving Icon
+	// menuDef 
+	// {
+	// 	name			"SavingIcon"
+    // 	rect			-100 10 40 40 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+	// 	fullScreen		0
+	// 	visible			1
+	// 	
+	// 	itemDef 
+	// 	{
+	// 		name			"chRect"
+	// 		background		"saving"
+	// 		forecolor		1 1 1 1
+	// 		rect			0 0 40 40 // 64x64
+	// 		ownerdraw		CG_SAVING
+	// 		visible			1
+	// 		decoration
+	// 	}
+	// }
+
+	// Invalid cmd hint
+	menuDef 
+	{
+		name			"InvalidCmdHint"
+		rect			0 -130 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		fullScreen		0
+		visible when ( CHAPLIN_CHEAT_OFF );
+
+		itemDef 
+		{
+			name			"chRect"
+			rect			0 0 0 0
+			textscale		TEXTSIZE_SMALL
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			ownerdraw		CG_INVALID_CMD_HINT
+			textfont		UI_FONT_NORMAL
+			visible			1
+			decoration
+		}
+	}
+	
+	// Successful cmd hint
+	menuDef 
+	{
+		name			"SuccessfulCmdHint"
+		rect			0 160 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+		fullScreen		0
+		visible			1
+
+		itemDef 
+		{
+			name			"chRect"
+			rect			0 0 0 0
+			textscale		0.5
+			textstyle		ITEM_TEXTSTYLE_NORMAL
+			ownerdraw		CG_SUCCESSFUL_CMD_HINT
+			visible			1
+			decoration
+		}
+
+	}
+	
+	
+	// Vehicle hud
+	// menuDef
+	// {
+	// 	name			"VehicleHud"
+ 	//    	rect			0 0 640 480 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+ 	//    	fullScreen		0
+ 	//    	visible			1
+	// 	
+	// 	itemDef
+	// 	{
+	// 		name			"VehicleHudTargets"
+	// 		rect			-320 -240 640 480
+	// 		forecolor		1 1 1 1
+	// 		background		"javelin_hud_target"
+	// 		ownerdraw		CG_HUD_TARGETS_VEHICLE
+	// 		visible			1
+	// 		decoration
+	// 	}
+	// 	itemDef
+	// 	{
+	// 		name			"VehicleWeaponReticle"
+	// 		rect			-320 -240 640 480
+	// 		forecolor		1 1 1 1
+	// 		ownerdraw		CG_VEHICLE_RETICLE
+	// 		visible			1
+	// 		decoration
+	// 	}
+	// }
+
+// MikeD (2/15/2008): Removed Javelin, since it will not be in COD5, REMOVE COMPLETELY BEFORE SHIP!
+//	// Javelin hud
+//	menuDef
+//	{
+//		name			"WeaponJavelinHud"
+//		rect			0 0 960 480 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+//		fullScreen		0
+//		visible when ( adsjavelin() );
+//
+//		itemDef
+//		{
+//			name			"WeaponJavelinTargets"
+//			rect			-320 -240 640 480
+//			forecolor		1 1 1 1
+//			background		"white"
+//			ownerdraw		CG_HUD_TARGETS_JAVELIN
+//			visible			1
+//			decoration
+//		}
+//
+//        itemDef
+//        {
+//			name		javelinlockbox
+//			style		WINDOW_STYLE_SHADER
+//			rect		-80 -40 160 80
+//			background	"hud_javelin_lock_box"
+//			visible when ( weaplockblink( 11 ) );
+//			decoration
+//        }
+//
+//        itemDef
+//        {
+//			name		javelinfilmgrain
+//			style		WINDOW_STYLE_SHADER
+//			rect		-230 -125 460 260
+//			background	"javelin_overlay_grain"
+//			visible		1
+//			decoration
+//        }
+//		
+//		itemDef
+//		{
+//			name		WeaponJavelinBG
+//			style		WINDOW_STYLE_SHADER
+//			rect		-427 -240 854 480
+//			background	"hud_javelin_bg"
+//			visible 	1
+//			decoration
+//		}
+//        itemDef
+//        {
+//			name		javelinlockon
+//			style		WINDOW_STYLE_SHADER
+//			rect		154 -198 64 64
+//			background	"hud_javelin_lock_on"
+//			visible when ( weaplockblink( 4.5 ) );
+//			decoration
+//        }
+//        itemDef
+//        {
+//			name		javelincluon
+//			style		WINDOW_STYLE_SHADER
+//			rect		-300 -28 64 64
+//			background	"hud_javelin_clu_on"
+//			visible when ( weaplockblink( 0 ) && !weapattacktop() && !weapattackdirect() );
+//			decoration
+//        }
+//        itemDef
+//        {
+//			name		javelintopoff
+//			style		WINDOW_STYLE_SHADER
+//			rect		228 -124 64 64
+//			background	"hud_javelin_top_on"
+//			visible when ( weapattacktop() );
+//			decoration
+//        }
+//        itemDef
+//        {
+//			name		javelindiroff
+//			style		WINDOW_STYLE_SHADER
+//			rect		228 -28 64 64
+//			background	"hud_javelin_dir_on"
+//			visible when ( weapattackdirect() );
+//			decoration
+//        }
+//
+//        itemDef
+//        {
+//			name		javelinday
+//			style		WINDOW_STYLE_SHADER
+//			rect		-226 -198 64 64
+//			background	"hud_javelin_day_on"
+//			visible	when ( !player( "nightvision" ) );
+//			decoration
+//        }
+//        itemDef
+//        {
+//            name		javelinnight
+//            style		WINDOW_STYLE_SHADER
+//			rect		-300 -125 64 64
+//            background	"hud_javelin_night_on"
+//			visible	when ( player( "nightvision" ) );
+//            decoration
+//        }
+//
+//        itemDef
+//        {
+//			name		javelinrocket_on
+//			style		WINDOW_STYLE_SHADER
+//			rect		30 144 64 64
+//			background	"hud_javelin_rocket_on"
+//			visible when ( player( "clipammo" ) );
+//			decoration
+//        }
+//        itemDef
+//        {
+//			name		javelinnorocket_on
+//			style		WINDOW_STYLE_SHADER
+//			rect		154 144 64 64
+//			background	"hud_javelin_norocket_on"
+//			visible when ( !player( "clipammo" ) );
+//			decoration
+//        }
+//		itemDef 
+//		{
+//			name			"chRect"
+//			rect			0 -90 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_CENTER
+//			textscale		TEXTSIZE_DEFAULT
+//			textstyle		ITEM_TEXTSTYLE_SHADOWED
+//			ownerdraw		CG_INVALID_CMD_HINT
+//			textfont		UI_FONT_OBJECTIVE
+//			visible			1
+//			decoration
+//		}
+//	}
+
+	menuDef
+	{
+		name			"gamemessages"
+		rect			6 10 0 0 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible when ( CHAPLIN_CHEAT_OFF );
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	0
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_TOP
+			textfont			UI_FONT_DEFAULT
+			textstyle			ITEM_TEXTSTYLE_SHADOWEDMORE
+			textalign			ITEM_ALIGN_TOP_LEFT
+			textscale			0.36
+			forecolor			1 1 1 1
+			visible				when(dvarInt(youlookgreatintights) == 1)
+		}
+	}
+
+	menuDef
+	{
+		name			"boldgamemessages"
+		rect			0 180 0 0 HORIZONTAL_ALIGN_CENTER_SAFEAREA VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible when ( CHAPLIN_CHEAT_OFF );
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	1
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_BOTTOM
+			textfont			UI_FONT_DEFAULT
+			textstyle			ITEM_TEXTSTYLE_SHADOWED
+			textalign			ITEM_ALIGN_TOP_CENTER
+			textscale			0.417
+			visible				1
+		}
+	}
+
+	menuDef
+	{
+		name			"subtitles"
+		rect			0 375 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible when ( CHAPLIN_CHEAT_OFF && dvarBool( credits_active ) == 0 );
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	2
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_BOTTOM
+			textfont			UI_FONT_DEFAULT
+			textstyle			ITEM_TEXTSTYLE_SHADOWED
+			textalign			ITEM_ALIGN_TOP_CENTER
+			forecolor			1 1 1 1
+			textscale			0.38
+			visible				1
+		}
+	}
+
+	menuDef
+	{
+		name			"subtitles_chaplin"
+		rect			0 375 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+		fullScreen		0
+		visible when ( !CHAPLIN_CHEAT_OFF );
+		
+		itemDef
+		{
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	2
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_BOTTOM
+			textfont			UI_FONT_DEFAULT
+			textstyle			ITEM_TEXTSTYLE_SHADOWED
+			textalign			ITEM_ALIGN_TOP_CENTER
+			forecolor			1 1 1 0
+			textscale			0.38
+			visible				1
+		}
+	}
+	
+	menuDef
+	{
+		name			"coopmessages"
+		rect			8 -175 10 10 HORIZONTAL_ALIGN_LEFT VERTICAL_ALIGN_BOTTOM
+		fullScreen		0
+		visible 		when ( CHAPLIN_CHEAT_OFF );
+	
+		itemDef
+		{			
+			origin				0 0
+			type				ITEM_TYPE_GAME_MESSAGE_WINDOW
+			gamemsgwindowindex	3
+			gamemsgwindowmode	MODE_BOTTOMUP_ALIGN_TOP
+			textfont			UI_FONT_DEFAULT
+			textstyle			ITEM_TEXTSTYLE_SHADOWEDMORE
+			textalign			ITEM_ALIGN_TOP_LEFT
+			textscale			TEXTSIZE_SMALL
+			forecolor			1 1 1 1
+			visible				when( dvarint( arcademode ) == 1 );
+		}
+	}	
+	
+	// Safe area
+	menuDef
+	{
+		name			"safearea"
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		fullScreen		0
+		visible			1
+
+		#include "ui/safearea.menu"
+	}
+}

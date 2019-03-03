@@ -1,0 +1,172 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_X			150
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			34
+
+#define CHOICE_SEP_1			3
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui_mp/overlaybg.inc"
+
+{
+	menuDef
+	{
+		name			menu_leaderboard_accuracy
+		rect			0 0 640 470 
+		focusColor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen
+		{
+            setdvar lb_type "accuracy";
+            setdvar lb_filter "friends";
+            uiScript RefreshLeaderboards;
+            execnow "nosplitscreen";
+			setfocus leaderboard;
+		}
+		onEsc
+		{
+			close menu_leaderboard_accuracy;
+		}
+		
+		// ------------------  statics ------------------------
+		OVERLAY_BACKGROUND_VIS( !menuisopen( "menu_leaderboards" ) )
+
+		CHOICE_OVERLAY_TITLE_VIS( "@MENU_ACCURACY_GLOBAL_CAP", when( dvarString( lb_filter ) == none ) )
+		CHOICE_OVERLAY_TITLE_VIS( "@MENU_ACCURACY_FRIENDS_CAP", when( dvarString( lb_filter ) == friends ) )
+		
+		#define BUTTON_Y_FILTER		1
+		#define BUTTON_X_GOTOTOP	1
+		#define BUTTON_PGUP			1
+		#define BUTTON_PGDOWN		1
+		#define ALT_PANEL			1
+		#define BUTTON_ACCEPT		1
+		#include "ui_mp/navcontrols.inc"
+		#include "ui/safearea.menu"
+		
+		PREPROC_SHADER_DRAW_ALIGNED( -304 (34+25) 612 18 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP, 0 0, "line_horizontal", 0.9 0.9 0.925 0.5, 0, 0, 0 0 0 0 )
+
+		#define COLUMN_TITLE_X		100
+		#define COLUMN_TITLE_Y		(86+25)
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			COLUMN_TITLE_X COLUMN_TITLE_Y
+			text			"@MENU_RANK"
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_RIGHT
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			(COLUMN_TITLE_X+42) COLUMN_TITLE_Y
+			text			"@MENU_LEVEL"
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			(COLUMN_TITLE_X+88) COLUMN_TITLE_Y
+			text			"@XBOXLIVE_PLAYER"
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			(COLUMN_TITLE_X+332) COLUMN_TITLE_Y
+			text			"@MENU_ACCURACY"
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_RIGHT
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			(COLUMN_TITLE_X+410) COLUMN_TITLE_Y
+			text			"@MENU_HITS"
+			textscale		TEXTSIZE_SMALL
+			textfont		UI_FONT_NORMAL
+			textalign		ITEM_ALIGN_RIGHT
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			origin			(COLUMN_TITLE_X+475) COLUMN_TITLE_Y
+			text			"@MENU_MISSES"
+			textfont		UI_FONT_NORMAL
+			textscale		TEXTSIZE_SMALL
+			textalign		ITEM_ALIGN_RIGHT
+			forecolor		1 1 1 1
+			visible			1
+			decoration
+		}
+
+		// LEADERBOARD LIST TEXT
+		itemDef
+		{
+			name						leaderboard
+			rect						(36+30) (88+25) (564-30) (324-25)
+			type						ITEM_TYPE_LISTBOX
+			elementwidth				120
+			elementheight				18
+			textfont					UI_FONT_NORMAL
+			textscale					TEXTSIZE_SMALL
+			textstyle					ITEM_TEXTSTYLE_SHADOWED
+			elementtype					LISTBOX_TEXT			
+			feeder						FEEDER_LEADERBOARD
+			forecolor					CHOICE_TEXTCOLOR
+			focusColor					CHOICE_TEXTCOLOR
+			disableColor				CHOICE_TEXTCOLOR
+			selectBorder				0.8 0.95 1 0
+			outlinecolor				1 0.97 0.72 0.5//HIGHLIGHT_COLOR 
+			highlightTexture			"menu_button_backing_highlight" 
+			backcolor					0 0 0 0.7//.1 .1 .1 .5
+			backgroundItemListbox		"menu_white_line_faded"
+			//selectIcon		ALTERNATE_HINT_SHADER		
+//			numcols			xpos	xwidth	textlen   alignment
+			columns	7		10		30		10			ITEM_ALIGN_LEFT
+							70		20		10			ITEM_ALIGN_RIGHT
+							95		20		10			ITEM_ALIGN_LEFT	
+							122		35		55			ITEM_ALIGN_LEFT
+							302		64		10			ITEM_ALIGN_RIGHT	
+							347		96		10			ITEM_ALIGN_RIGHT
+							410		96		10			ITEM_ALIGN_RIGHT
+			visible			1
+			usePaging
+			doubleClick
+			{
+				play "mouse_click"
+				uiScript ViewGamerCard
+			}
+			execKeyInt BUTTON_X
+			{
+				feederTop
+			}
+		}
+
+		#include "ui/safearea.menu"
+	}
+}

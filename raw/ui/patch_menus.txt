@@ -1,0 +1,12 @@
+// patch single player menu defs
+
+{	
+	loadMenu { "ui/error.menu" }
+	loadMenu { "ui/objective_info.menu" }
+	loadMenu { "ui/playerprofile.menu" }
+	loadMenu { "ui_mp/manage_friends.menu" }
+	loadMenu { "ui/filter.menu" }
+	loadMenu { "ui/pc_gamesetup_coop.menu" }
+	loadMenu { "ui/pc_joinchoosegamemode.menu" }
+	loadMenu { "ui/xboxlive_lobby.menu" }
+}

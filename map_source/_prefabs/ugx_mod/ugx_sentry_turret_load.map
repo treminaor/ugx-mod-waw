@@ -1,0 +1,14 @@
+iwmap 4
+"000_Global" flags  active
+"The Map" flags 
+// entity 0
+{
+"classname" "worldspawn"
+}
+// entity 1
+{
+"origin" "0.0 0.0 0.0"
+"weaponinfo" "30cal_bipod_stand"
+"export" "19"
+"classname" "misc_turret"
+}

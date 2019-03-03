@@ -1,0 +1,81 @@
+iwmap 4
+"000_Global" flags  active
+"The Map" flags 
+// entity 0
+{
+"spawnflags" "1024"
+"waterdirection " "80"
+"classname" "worldspawn"
+"northyaw" "225"
+"skyboxmodel" "skybox_pel1"
+"sundirection" "-40.5026 38.2786 0"
+"suncolor" "1 0.9254 0.8627"
+"sunlight" "1"
+"sundiffusecolor" "0.255 0.34078 0.427451"
+"diffusefraction" "0.175"
+"_color" "0.245 0.231 0.2135"
+"ambient" "0.15"
+"sunradiosity" "1.3"
+"radiosityscale" ".75"
+"contrastgain" ".8"
+// brush 0
+{
+ ( 60.5 2 8 ) ( -11.5 2 8 ) ( -11.5 -38 8 ) clip 64 64 628.5 894.00134 0 0 lightmap_gray 16383.914 16383.975 628.5 893.99805 0 0
+ ( -10.5 -38 129 ) ( -10.5 2 129 ) ( 61.5 2 129 ) clip 64 64 628.49646 894 0 0 lightmap_gray 16384 16384.105 628.49475 894.00281 0 0
+ ( -4.5 -31 120 ) ( 67.5 -31 120 ) ( 67.5 -31 8 ) clip 64 64 628.5 0 0 0 lightmap_gray 16384 16384 628.5 0 0 0
+ ( 41.5 -40 120 ) ( 41.5 0 120 ) ( 41.5 0 8 ) clip 64 64 -894 0 0 0 lightmap_gray 16384.176 16384 -894 0 0 0
+ ( 63.5 0 120 ) ( -8.5 0 120 ) ( -8.5 0 8 ) clip 64 64 628.5 0 0 0 lightmap_gray 16384 16384 628.5 0 0 0
+ ( -0.5 -4 120 ) ( -0.5 -44 120 ) ( -0.5 -44 8 ) clip 64 64 -894 0 0 0 lightmap_gray 16384.342 16384 -894.01599 0 0 0
+}
+}
+// entity 1
+{
+"script_string" "sharing_perk"
+"origin" "21.5 -33.0 56.0"
+"targetname" "perksacola"
+"script_sound" "mx_sharing_jingle"
+"classname" "script_struct"
+}
+// entity 2
+{
+"script_noteworthy" "specialty_doublegrenade"
+"targetname" "zombie_vending"
+"target" "vending_sharing"
+"classname" "trigger_use"
+// brush 0
+{
+ ( 48.5 -2 0 ) ( 0.5 -2 0 ) ( 0.5 -34 0 ) trigger 64 64 624.5 890.00226 0 0 lightmap_gray 16384.021 16384 624.5 882.00122 0 0
+ ( 0.5 -34 104 ) ( 0.5 -2 104 ) ( 48.5 -2 104 ) trigger 64 64 624.50269 890.00146 0 0 lightmap_gray 16384 16384.117 624.50269 882.01007 0 0
+ ( 0.5 -34 128 ) ( 48.5 -34 128 ) ( 48.5 -34 0 ) trigger 64 64 624.5 0 0 0 lightmap_gray 16383.877 16384 624.5 0 0 0
+ ( 42.5 -36 128 ) ( 42.5 -4 128 ) ( 42.5 -4 0 ) trigger 64 64 -890 0 0 0 lightmap_gray 16384.156 16384 -882.00409 0 0 0
+ ( 48.5 -2 128 ) ( 0.5 -2 128 ) ( 0.5 -2 0 ) trigger 64 64 624.5 0 0 0 lightmap_gray 16384 16384 624.5 0 0 0
+ ( -1.5 -4 128 ) ( -1.5 -36 128 ) ( -1.5 -36 0 ) trigger 64 64 -890 0 0 0 lightmap_gray 16384.084 16384 -882.00214 0 0 0
+}
+}
+// entity 3
+{
+"script_string" "sharing_perk"
+"script_sound" "perks_rattle"
+"targetname" "audio_bump_trigger"
+"script_activated" "1"
+"classname" "trigger_multiple"
+// brush 0
+{
+ ( -16 1 0 ) ( -24 1 0 ) ( -24 -7 0 ) trigger 64 64 14.505809 40.987736 0 0 lightmap_gray 16384.422 16385.867 14.497077 41 0 0
+ ( -15 -7 84 ) ( -15 1 84 ) ( -7 1 84 ) trigger 64 64 14.492962 41.074383 0 0 lightmap_gray 16384 16383.623 14.488831 41 0 0
+ ( 33.5 -35 109 ) ( 41.5 -35 109 ) ( 41.5 -35 -19 ) trigger 64 64 14.525164 -666.0061 0 0 lightmap_gray 16384 16384 14.5 -666.0061 0 0
+ ( 42 -40.5 109 ) ( 42 -32.5 109 ) ( 42 -32.5 -19 ) trigger 64 64 -40.949249 -665.98126 0 0 lightmap_gray 16384.234 16384 -41 -665.98126 0 0
+ ( -13.5 0.5 109 ) ( -21.5 0.5 109 ) ( -21.5 0.5 -19 ) trigger 64 64 14.515168 -665.99292 0 0 lightmap_gray 16383.971 16384 14.5 -665.99292 0 0
+ ( -0.5 -5 109 ) ( -0.5 -13 109 ) ( -0.5 -13 -19 ) trigger 64 64 -41.055588 -666.00616 0 0 lightmap_gray 16385.217 16384 -41 -666.00616 0 0
+}
+}
+// entity 4
+{
+"_color" "0.980392 0.403922 0.807843"
+"script_noteworthy" "vending_sharing"
+"script_string" "sharing_perk"
+"classname" "script_model"
+"model" "vending_sharing"
+"origin" "0.0 0.0 0.0"
+"targetname" "vending_sharing"
+}

@@ -1,0 +1,168 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define STYLE2_NOPOSITION	1
+#define SPLITSCREEN_ENABLED 1
+
+#ifndef CHOICE_X_START
+#define CHOICE_X_START			10
+#endif
+
+#ifndef CHOICE_Y_START
+#define CHOICE_Y_START			40
+#endif
+
+#define CHOICE_SIDEITEM_SPACING	-260
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#undef A_BUTTON_SIZE
+#define A_BUTTON_SIZE			0.3
+
+#undef A_BUTTON_OFFSET_Y
+#define A_BUTTON_OFFSET_Y		1
+
+#undef A_BUTTON_OFFSET_X
+#define A_BUTTON_OFFSET_X		(0-2)
+
+#undef A_BUTTON_FONT
+#define A_BUTTON_FONT			UI_FONT_SMALL
+
+#undef CHOICE_TEXTFONT
+#define CHOICE_TEXTFONT			UI_FONT_SMALL
+
+#define SENSITIVITY_1		0.6		//(Low)
+#define SENSITIVITY_2		1		//(Medium)
+#define SENSITIVITY_3		1.4
+#define SENSITIVITY_4		1.8		//(High)
+#define SENSITIVITY_5		2.0
+#define SENSITIVITY_6		2.2
+#define SENSITIVITY_7		2.6		//(Very High)
+#define SENSITIVITY_8		3.0
+#define SENSITIVITY_9		3.5
+#define SENSITIVITY_10		4.0		//(Insane)
+#define SENSITIVITY_1_S		"0.6"	//(Low)
+#define SENSITIVITY_2_S		"1"		//(Medium)
+#define SENSITIVITY_3_S		"1.4"
+#define SENSITIVITY_4_S		"1.8"	//(High)
+#define SENSITIVITY_5_S		"2.0"
+#define SENSITIVITY_6_S		"2.2"
+#define SENSITIVITY_7_S		"2.6"	//(Very High)
+#define SENSITIVITY_8_S		"3.0"
+#define SENSITIVITY_9_S		"3.5"
+#define SENSITIVITY_10_S	"4.0"	//(Insane)
+
+{
+	menuDef
+	{
+		name			ingameoptions_splitscreen
+		rect			0 0 640 480
+		focusColor		COLOR_FOCUSED
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		7.0
+		legacySplitScreenScale
+		onOpen	
+		{
+			setdvar ui_version_show "0";
+			setdvar cg_drawhud "0";
+			exec "Updatedvarsfromprofile";
+			setdvar ui_cheats_hint "";
+			setdvar ui_allow_controlschange "0";
+		}
+		onESC 	
+		{
+			open "class_splitscreen";
+			close self;
+			setdvar cg_drawhud "1";
+			exec "updategamerprofile";
+			exec "updatedvarsfromprofileforclient 0";//reset to host
+			setdvar ui_allow_controlschange "1";
+		}
+		onclose	
+		{
+			setdvar cg_drawhud "1";
+			setdvar ui_allow_controlschange "1";
+		}
+		execkeyint BUTTON_START
+		{
+			close self;
+			exec "updategamerprofile";
+			exec "updatedvarsfromprofileforclient 0";//reset to host
+			setdvar ui_allow_controlschange "1";
+		}
+		
+		// background overlay
+		itemDef	{
+			style			WINDOW_STYLE_FILLED
+			rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+			backcolor		0 0 0 0.75
+			visible			1
+			decoration
+		}
+		// gradient_top
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_top"
+			visible			1
+			decoration
+		}
+		// gradient_bottom
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			0 480 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_bottom"
+			visible			1
+			decoration
+		}
+
+		#define NOT_MULTIPLAYER ( !dvarbool( splitscreen ) && !dvarbool( onlinegame ) && !dvarbool( systemlink ) )
+		
+		#include "ui_mp/navcontrols.inc"
+
+		CHOICE_MENU_TITLE_SS( "@MENU_OPTIONS_UPPER_CASE" )
+
+		CHOICE_BUTTON( 1, "@MENU_LOOK_INVERSION", exec "toggle input_invertpitch"; )
+			CHOICE_LEFTITEM_VIS( 1, "@MENU_DISABLED", CHOICE_TEXTCOLOR, when( dvarString( "input_invertpitch" ) == "0" ) )
+			CHOICE_LEFTITEM_VIS( 1, "@MENU_ENABLED", CHOICE_TEXTCOLOR, when( dvarString( "input_invertpitch" ) == "1" ) )
+
+		CHOICE_BUTTON( 2, "@MENU_CONTROLLER_VIBRATION", exec "toggle gpad_rumble"; )
+			CHOICE_LEFTITEM_VIS( 2, "@MENU_DISABLED", CHOICE_TEXTCOLOR, when( dvarString( "gpad_rumble" ) == "0" ) )
+			CHOICE_LEFTITEM_VIS( 2, "@MENU_ENABLED", CHOICE_TEXTCOLOR, when( dvarString( "gpad_rumble" ) == "1" ) )
+
+		CHOICE_BUTTON( 3, "@MENU_THUMBSTICK_LAYOUT", close self; open ingameoptions_thumbstick_splitscreen; )	
+			CHOICE_LEFTITEM_VIS( 3, "@MENU_DEFAULT", CHOICE_TEXTCOLOR, when( dvarString( "gpad_sticksConfig" ) == "thumbstick_default" ) )
+			CHOICE_LEFTITEM_VIS( 3, "@MENU_SOUTHPAW", CHOICE_TEXTCOLOR, when( dvarString( "gpad_sticksConfig" ) == "thumbstick_southpaw" ) )
+			CHOICE_LEFTITEM_VIS( 3, "@MENU_LEGACY", CHOICE_TEXTCOLOR, when( dvarString( "gpad_sticksConfig" ) == "thumbstick_legacy" ) )
+			CHOICE_LEFTITEM_VIS( 3, "@MENU_LEGACY_SOUTHPAW", CHOICE_TEXTCOLOR, when( dvarString( "gpad_sticksConfig" ) == "thumbstick_legacysouthpaw" ) )
+
+		CHOICE_BUTTON( 4, "@MENU_BUTTON_LAYOUT", close self; open ingameoptions_buttons_splitscreen; )	
+			CHOICE_LEFTITEM_VIS( 4, "@MENU_DEFAULT", CHOICE_TEXTCOLOR, when( dvarString( "gpad_buttonsConfig" ) == "buttons_default" ) )
+			CHOICE_LEFTITEM_VIS( 4, "@MENU_TACTICAL", CHOICE_TEXTCOLOR, when( dvarString( "gpad_buttonsConfig" ) == "buttons_experimental" ) )
+			CHOICE_LEFTITEM_VIS( 4, "@MENU_LEFTY", CHOICE_TEXTCOLOR, when( dvarString( "gpad_buttonsConfig" ) == "buttons_lefty" ) )
+			CHOICE_LEFTITEM_VIS( 4, "@PATCH_NOMAD", CHOICE_TEXTCOLOR, when( dvarString( "gpad_buttonsConfig" ) == "buttons_nomad" ) )
+#endif //  #ifndef PS3
+
+		CHOICE_BUTTON( 5, "@MENU_LOOK_SENSITIVITY", close self; open ingameoptions_sensitivity_splitscreen; )	
+			CHOICE_LEFTITEM_VIS( 5, "@MENU_LOW", CHOICE_TEXTCOLOR, when( dvarFloat( "input_viewSensitivity" ) == SENSITIVITY_1 ) )
+			CHOICE_LEFTITEM_VIS( 5, "@MENU_MEDIUM", CHOICE_TEXTCOLOR, when( dvarFloat( "input_viewSensitivity" ) == SENSITIVITY_2 ) )
+			CHOICE_LEFTITEM_VIS( 5, "@MENU_HIGH", CHOICE_TEXTCOLOR, when( dvarFloat( "input_viewSensitivity" ) == SENSITIVITY_4 ) )
+			CHOICE_LEFTITEM_VIS( 5, "@MENU_CUSTOM", CHOICE_TEXTCOLOR, when( dvarFloat( "input_viewSensitivity" ) != SENSITIVITY_1 && dvarFloat( "input_viewSensitivity" ) != SENSITIVITY_2 && dvarFloat( "input_viewSensitivity" ) != SENSITIVITY_4 ) )
+
+		CHOICE_BUTTON( 6, "@MENU_TEAM_INDICATOR", close self; open ingameoptions_team_indicator_splitscreen; )			
+			CHOICE_LEFTITEM_VIS( 6, "@MENU_FULL_TEAM_INDICATOR", CHOICE_TEXTCOLOR, when( dvarString( "team_indicator" ) == "0" ) )
+			CHOICE_LEFTITEM_VIS( 6, "@MENU_ABBREVIATED_TEAM_INDICATOR", CHOICE_TEXTCOLOR, when( dvarString( "team_indicator" ) == "1" ) )
+			CHOICE_LEFTITEM_VIS( 6, "@MENU_ICON_TEAM_INDICATOR", CHOICE_TEXTCOLOR, when( dvarString( "team_indicator" ) == "2" ) )
+			CHOICE_LEFTITEM_VIS( 6, "@PATCH_TEAM_ALTERNATE_COLOR", CHOICE_TEXTCOLOR, when( dvarString( "team_indicator" ) == "3" ) )
+
+	}
+}
+
+{
+	#define CONTROL_IN_GAME 1
+	#define CONTROL_IN_GAME_SPLITSCREEN	1
+	#include "ui/controls_common_info.inc"
+}

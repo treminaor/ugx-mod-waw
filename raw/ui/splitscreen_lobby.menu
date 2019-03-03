@@ -1,0 +1,277 @@
+#include "ui/menudef.h"
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			45//34
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define CHOICE_GROUP			"xboxlive_privatematch"
+
+#define CHOICE_SEP_1			2
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui_mp/stats_info.inc"
+
+#define PLAYERLIST_WIDTH 		270
+#define ORIGIN_PLAYERLIST 		(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 38
+#define ORIGIN_STATUS			(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 0
+#define ORIGIN_RECOMMENDEDPLAYERS 	(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 38
+
+#define ORIGIN_DESCRIPTION		(CHOICE_X_START + 15) 180
+#define COLOR_DESC_TEXT			1 1 1 0.7
+
+#define MENU_FONT_SIZE			TEXTSIZE_DEFAULT
+#define HIGHLIGHT_SIZE			142 22
+#define MENU_FONT_COLOR			1 1 1 0.5
+#define MENU_FONT_COLOR2		1 1 1 0.5
+#define MENU_LOCKED_COLOR		0.25 0.25 0.25 1
+
+//-------------------------------------
+
+#define ORIGIN_BUTTON_BACK		52 438
+#define ORIGIN_BUTTON_CONTINUE	490 438
+#define ORIGIN_BUTTON_INVITE	390 86
+
+#define PLAYER_BOX_COLOR		0.2 0.2 0.225 1 //0.7 0.75 0.9 0.1
+#define PLAYER_BOX_BORDERCOLOR	1 1 1 0.2
+
+// ------------------ preprocessing function definitions ------------------
+#include "ui_mp/common_macro.inc"
+
+{
+	menuDef
+	{
+		name			menu_splitscreen_lobby
+		fullscreen		1
+		rect			0 0 640 480
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		border			0
+		soundloop 		"music_mainmenu"
+		onOpen
+		{
+			show dpad_left;
+			show selection_left;
+			hide dpad_right;
+			hide selection_right;
+			exec "set cg_gameMessageWidth 380";
+
+			setDvar ui_splitscreen "1";
+			exec "startsplitscreensignin";
+			focusfirst;
+		}
+		onClose
+		{
+			hide selection_right;
+			setDvar ui_splitscreen "0";
+		}
+		onEsc
+		{
+			close menu_splitscreen_lobby;
+			setDvar ui_splitscreen "0";
+			exec "set cg_gameMessageWidth 455";
+			exec "endsplitscreensignin";
+		}
+
+		// ------------------  statics ------------------------
+		#define BACKGROUND_MOVESCALE	0.15
+		#define BACKGROUND_MOVERATE_X	5000
+		#define BACKGROUND_MOVERATE_Y	4000
+		#define	BACKGROUND_WIDTH	(854 * (1+BACKGROUND_MOVESCALE) )
+		#define BACKGROUND_HEIGHT	(480 * (1+BACKGROUND_MOVESCALE) )
+		#define FLASH_OFS 	((sin(milliseconds()/90))*2)
+
+		#include "ui/blurredbg.inc"
+
+		CHOICE_MENU_TITLE( "@MENU_SPLIT_SCREEN_SETUP" )
+		
+		// --------------------- lobby players count -----------------------
+		/*
+		itemDef	{
+			type			ITEM_TYPE_TEXT
+			rect			0 0 PLAYERLIST_WIDTH 0 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP
+			origin			ORIGIN_PLAYERLIST
+			forecolor		CHOICE_TEXTCOLOR
+			dvar			"party_lobbyPlayerCount"
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textaligny		-6
+			textalign		ITEM_ALIGN_RIGHT
+			visible			when ( InLobby() )
+			decoration
+		}
+
+		itemDef
+		{
+			type			ITEM_TYPE_TEXT
+			rect			0 0 256 15 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP
+			origin			ORIGIN_RECOMMENDEDPLAYERS
+			forecolor		CHOICE_TEXTCOLOR
+			textfont		UI_FONT_DEFAULT
+			textscale		TEXTSIZE_SMALL
+			textaligny		-6
+			exp text ( locstring( "@MPUI_RECOMMENDEDPLAYERS", int( min( dvarint( party_maxplayers ), maxrecommendedplayers() ) ) ) );
+			visible 		when ( privatepartyhost() )
+			decoration
+		}
+		*/
+		
+		// ----------------------------map images------------------------------------
+		#include "ui_mp/game_info.inc"
+		#define MAPIMAGE tableLookup( "maps/mapsTable.csv", 0, dvarString( ui_mapname ), 4 )
+		#define MAPNAME tableLookup( "maps/mapstable.csv", 0, dvarString( ui_mapname ), 3 )
+		#define GAMETYPENAME_WITH_SCORING tableLookup( "maps/gametypesTable.csv", 0, dvarString( ui_gametype ), 1 )
+		#define GAMETYPENAME_WITHOUT_SCORING tableLookup( "maps/gametypesTable.csv", 0, dvarString( ui_gametype ), 3 )
+		GAME_INFO( MAPIMAGE, "@" + MAPNAME, "@" + GAMETYPENAME_WITH_SCORING, dvarbool( arcademode ) || dvarbool( zombiemode ) )
+		GAME_INFO( MAPIMAGE, "@" + MAPNAME, "@" + GAMETYPENAME_WITHOUT_SCORING, !dvarbool( arcademode ) && !dvarbool( zombiemode ) )
+
+		//=========================================================
+		//===================== MENU SELECTION ====================
+		//=========================================================
+		#define CLEARUIHINT	exec "set ui_hint_text @NULL_EMPTY"
+
+		#define SETUP_ACTION_STARTMATCH \
+				execOnDvarIntValue splitscreen_playerCount 1 "openmenu startmatch_popup"; \
+				execOnDvarIntValue splitscreen_playerCount 2 "openmenu splitscreen_start";
+
+		#define SETUP_ACTION_GAMESETUP \
+				open "settings";
+
+		CHOICE_BUTTON_FOCUS_VIS( 1, "@MPUI_START_MATCH", SETUP_ACTION_STARTMATCH, exec "set ui_hint_text @MPUI_DESC_START_MATCH", CLEARUIHINT, 1 ) 
+
+		CHOICE_BUTTON_FOCUS_VIS( 2, "@MENU_SETTINGS", SETUP_ACTION_GAMESETUP, exec "set ui_hint_text @MPUI_DESC_GAME_SETUP", CLEARUIHINT, 1 ) 
+
+		// ---------------------- player list -------------------------
+		
+		#define	PLAYERLIST_SCOREVIS dvarbool( arcademode )
+		#define PLAYERLIST_SELECTED_ACTIONS \
+			doubleClick	{ \
+				open player_popup; \
+			} \
+		
+		#define SPLITSCREEN_PLAYERLIST 1
+		#define OFFLINE_PLAYERLIST 1
+		#include "ui/playerlist.inc"
+		
+		
+		#include "ui/navcontrols.inc"
+
+		#include "ui/safearea.menu"
+		#include "ui/popup_background.inc"
+
+
+		//-------------------------------------------------
+		
+		#define PLAYER_SPLITSCREEN_X		-272//-274
+		#define PLAYER_SPLITSCREEN_Y		214
+		
+		#define ORIGIN_PLAYER_SPLITSCREEN	PLAYER_SPLITSCREEN_X PLAYER_SPLITSCREEN_Y //320 80 //330 100
+		#define PLAYER_SPLITSCREEN_SIZE 	271 168//277 160 //260 180
+		
+		#define ORIGIN_PLAYER1BOX		(PLAYER_SPLITSCREEN_X+6) (PLAYER_SPLITSCREEN_Y+8) //324 84
+		#define ORIGIN_PLAYER2BOX		(PLAYER_SPLITSCREEN_X+139) (PLAYER_SPLITSCREEN_Y+8) //461 84
+		#define ORIGIN_PLAYER3BOX		(PLAYER_SPLITSCREEN_X+6) (PLAYER_SPLITSCREEN_Y+86) //324 162
+		#define ORIGIN_PLAYER4BOX		(PLAYER_SPLITSCREEN_X+139) (PLAYER_SPLITSCREEN_Y+86) //461 162
+		
+		#define ORIGIN_PLAYER1NAME		(PLAYER_SPLITSCREEN_X+135) (PLAYER_SPLITSCREEN_Y+30) //391 110 //381 150
+		#define ORIGIN_PLAYER2NAME		(PLAYER_SPLITSCREEN_X+208) (PLAYER_SPLITSCREEN_Y+30) //528 110 //518 150
+		#define ORIGIN_PLAYER3NAME		(PLAYER_SPLITSCREEN_X+135) (PLAYER_SPLITSCREEN_Y+108) //391 188 //381 238
+		#define ORIGIN_PLAYER4NAME		(PLAYER_SPLITSCREEN_X+208) (PLAYER_SPLITSCREEN_Y+108) //528 188 //518 238
+		
+		#define PLAYERBOX_SIZE			126 74
+		#define PLAYERBOX_SIZE_LONG		259 74
+		#define CONTROLLER_ICON_SIZE	64 64
+		
+		//-------------------------------------------------
+		
+		#define SPLITSCREEN_PLAYERS		splitscreennum()
+		#define SPLITSCREEN_1P			splitscreennum() == 1
+		#define SPLITSCREEN_2P			splitscreennum() == 2
+		#define SPLITSCREEN_3P			splitscreennum() == 3
+		#define SPLITSCREEN_4P			splitscreennum() == 4
+		
+		#define PLAYER1_ON				splitscreennum() >= 1
+		#define PLAYER2_ON				splitscreennum() >= 2
+		#define PLAYER3_ON				splitscreennum() == 3
+		#define PLAYER4_ON				splitscreennum() == 4
+		
+		#define PLAYER12_ONLY			!PLAYER3_ON && !PLAYER4_ON && PLAYER1_ON && PLAYER2_ON
+		#define PLAYER1234_ON			SPLITSCREEN_4P
+
+		#define LOCAL_PLAYER_BOX( porigin, vis ) \
+				LOCAL_PLAYER_BOX_RAW( porigin, PLAYERBOX_SIZE, vis ) \
+
+		#define LOCAL_PLAYER_BOX_LONG( porigin, vis ) \
+				LOCAL_PLAYER_BOX_RAW( porigin, PLAYERBOX_SIZE_LONG, vis ) \
+				
+		#define LOCAL_PLAYER_BOX_RAW( porigin, psize, vis ) \
+			PREPROC_SHADER_DRAW_ALIGNED( porigin psize RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, 0 0, "white", 0.175 0.2 0.25 0.25, 1, 1, 1 1 1 0.2 visible when( vis ); )
+	
+		#ifdef PS3
+		#define CONTROLLER_ICON		"ps3_controller_top"
+		#else
+		#define CONTROLLER_ICON		"xenon_controller_top"
+		#endif
+	
+		#define LOCAL_PLAYER_DISPLAY( playername, porigin, vis ) \
+			itemDef\
+			{\
+				exp text ( dvarString( playername ) ); \
+				textfont		UI_FONT_NORMAL \
+				textscale		TEXTSIZE_SMALL \
+				rect			porigin 0 0 RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+				textalign		ITEM_ALIGN_CENTER \
+				visible			when ( vis ); \
+				decoration \
+			} \
+			itemDef \
+			{ \
+				background		CONTROLLER_ICON \
+				style			WINDOW_STYLE_SHADER \
+				rect			porigin CONTROLLER_ICON_SIZE RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP \
+				origin			-32 -14 \
+				decoration \
+				visible			when ( vis ); \
+			}
+
+			// ------------------------------ player screen splits logic -----------------------------
+			PREPROC_SHADER_DRAW_ALIGNED( ORIGIN_PLAYER_SPLITSCREEN PLAYER_SPLITSCREEN_SIZE RIGHTITEM_ALIGN VERTICAL_ALIGN_TOP, 0 0, "white", 0.6 0.65 7 0.1, 1, 1, PLAYER_BOX_BORDERCOLOR )
+			
+			// Player boxes -------------------------------------------
+	
+			// IF 2 PLAYERS
+			LOCAL_PLAYER_BOX_LONG( ORIGIN_PLAYER1BOX, splitscreennum() == 2 )
+			LOCAL_PLAYER_BOX_LONG( ORIGIN_PLAYER3BOX, splitscreennum() == 2 )
+			
+			// IF 3 PLAYERS
+			LOCAL_PLAYER_BOX( ORIGIN_PLAYER1BOX, SPLITSCREEN_PLAYERS > 2 )
+			LOCAL_PLAYER_BOX( ORIGIN_PLAYER2BOX, SPLITSCREEN_PLAYERS > 2 )
+			LOCAL_PLAYER_BOX_LONG( ORIGIN_PLAYER3BOX, SPLITSCREEN_PLAYERS == 3 )		
+	
+			// IF 4 PLAYERS
+			LOCAL_PLAYER_BOX( ORIGIN_PLAYER3BOX, SPLITSCREEN_PLAYERS == 4 )
+			LOCAL_PLAYER_BOX( ORIGIN_PLAYER4BOX, SPLITSCREEN_PLAYERS == 4 )
+	
+			// ------------------------- PLAYER POSITIONS ------------------------
+			// PLAYER 1
+		
+			LOCAL_PLAYER_DISPLAY( playername0 , ORIGIN_PLAYER1NAME, PLAYER1_ON )
+			
+			// PLAYER 2
+		
+			//LOCAL_PLAYER_DISPLAY( "2", ORIGIN_PLAYER1NAME, ( SPLITSCREEN_1P && PLAYER2_ON ) )
+			//LOCAL_PLAYER_DISPLAY( "2", ORIGIN_PLAYER1NAME, ( SPLITSCREEN_PLAYERS > 1 && !PLAYER1_ON && PLAYER2_ON ) )
+			//LOCAL_PLAYER_DISPLAY( "2", ORIGIN_PLAYER2NAME, ( SPLITSCREEN_PLAYERS == 2 )	)
+			LOCAL_PLAYER_DISPLAY( playername1, ORIGIN_PLAYER3NAME, ( SPLITSCREEN_PLAYERS == 2 )	)
+	}
+	
+	#include "ui_mp/popupstyle.inc"	
+	#include "ui/choices_setup_popmenu.menu"
+	
+	menuDef
+	{
+		name			splitscreen_start
+		onOpen			{ exec "endsplitscreensignin 1";uiScript StartServer; close self;}
+	}
+}  

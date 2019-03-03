@@ -1,0 +1,73 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+{
+	menuDef {
+		name 			muteplayer_menu
+		rect			0 0 640 480 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		style			WINDOW_STYLE_EMPTY
+
+		focuscolor		COLOR_FOCUSED
+		onOpen
+		{
+		}
+		onClose
+		{
+		}
+		onESC
+		{
+			close self;
+		}
+
+		//PREPROC_SHADER_DRAW( -120 0 880 480, 0 0, "white", 0 0 0 0.75, 0, 1, 0 0 0 0 )
+		#define	PC_INGAME
+		#include "ui_mp/overlaybg.inc"
+		BACKGROUND_BLACK_LETTERBOX_BLURWORLD( 1.0 )
+		OVERLAY_BACKGROUND
+
+		#undef BACK_OPEN
+		#define BACK_OPEN close self;
+		#include "ui_mp/navcontrols.inc"
+
+		CHOICE_MENU_TITLE( "@MPUI_MUTE_PLAYERS" )
+
+		itemDef 
+		{
+			name				muteplayerlist
+			rect				-185 80 370 300 HORIZONTAL_ALIGN_CENTER CHOICE_VERTICAL_ALIGN
+			type				ITEM_TYPE_LISTBOX
+			style				WINDOW_STYLE_FILLED
+			textstyle 			ITEM_TEXTSTYLE_SHADOWED
+			elementwidth		120
+			elementheight		20
+			textscale 			CHOICE_TEXTSIZE
+			elementtype			LISTBOX_TEXT			
+			feeder				FEEDER_MUTELIST
+			textalignx 			6
+			textaligny 			0
+			forecolor 			1 1 1 0.9
+			focusColor			1 1 1 0.9
+			disableColor 		1 1 1 0.9
+			backcolor 			0 0 0 0
+			border				1
+			bordersize			1
+			bordercolor			1 1 1 0.15
+			outlinecolor 		1 1 1 0.2
+			visible 			MENU_TRUE
+			columns				2 
+								2	30		12 
+								70	230 	18
+			doubleclick
+			{
+				play "mouse_click";
+				uiScript mutePlayer;
+			}
+			mouseEnter 
+			{
+				play "mouse_over";
+			}
+		}
+	}
+}

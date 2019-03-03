@@ -1,0 +1,105 @@
+#ifdef PC
+	#undef CHOICE_X_START
+	#define CHOICE_X_START			78//((CHOICE_POPUP_WIDTH - CHOICE_SIZE_X) / 2)
+	
+	#undef CHOICE_Y_START
+	#define CHOICE_Y_START			230//(CHOICE_POPUP_TITLE_HEIGHT + CHOICE_POPUP_BORDER_Y )
+	
+	#undef CHOICE_SEP_TOTAL_SPACING
+	#define CHOICE_SEP_TOTAL_SPACING( itemIndex )	0
+
+	#undef CHOICE_GROUP
+	#define CHOICE_GROUP			"popmenu"
+	
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			180
+
+	#undef POPUP_NOPOS
+#else
+
+#ifdef SPLITSCREEN_ENABLED
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			150
+	#undef CHOICE_SIZE_Y
+	#define CHOICE_SIZE_Y			22
+	
+	#undef CHOICE_X_START
+	#define CHOICE_X_START			0
+	#undef CHOICE_Y_START
+	#define CHOICE_Y_START			-30
+#else
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			180
+
+	#undef CHOICE_X_START
+	#define CHOICE_X_START			35//50//78
+
+	#undef CHOICE_Y_START
+	#define CHOICE_Y_START			135//230
+#endif // #ifdef SPLITSCREEN_ENABLED
+
+#endif //#ifdef PC
+
+#ifdef POPUP_NOPOS
+	#undef CHOICE_X_START
+	#define CHOICE_X_START			((CHOICE_POPUP_WIDTH - CHOICE_SIZE_X) / 2 - 2)
+	
+	#undef CHOICE_Y_START
+	#define CHOICE_Y_START			(CHOICE_POPUP_TITLE_HEIGHT + CHOICE_POPUP_BORDER_Y - 3)
+	
+	#undef CHOICE_SEP_TOTAL_SPACING
+	#define CHOICE_SEP_TOTAL_SPACING( itemIndex )	0
+
+#endif //#ifdef POPUP_NOPOS
+
+//#ifdef HAS_SUBTITLE
+//	#ifdef PC
+//		#undef CHOICE_Y_START
+//		#define CHOICE_Y_START			169
+//	#else
+//		#undef CHOICE_Y_START
+//		#define CHOICE_Y_START			230//180
+//	#endif //#ifdef PC
+//#endif //#ifdef HAS_SUBTITLE
+
+// -------------------------------------------
+
+#undef CHOICE_GROUP
+#define CHOICE_GROUP			"popmenu"
+
+#undef CHOICE_POPUP_TITLE_HEIGHT
+#define CHOICE_POPUP_TITLE_HEIGHT	(24)
+
+#undef CHOICE_HORIZONTAL_ALIGN
+#define CHOICE_HORIZONTAL_ALIGN	HORIZONTAL_ALIGN_LEFT
+#undef CHOICE_VERTICAL_ALIGN
+#define CHOICE_VERTICAL_ALIGN	VERTICAL_ALIGN_TOP
+
+#undef CHOICE_SIZE_Y
+#define CHOICE_SIZE_Y			22
+
+#undef CHOICE_TEXTSIZE
+#define CHOICE_TEXTSIZE			TEXTSIZE_DEFAULT	
+
+#undef HIGHLIGHT_COLOR
+#define HIGHLIGHT_COLOR			0.9 0.95 1 0.5
+
+#undef CHOICE_POPUP_BORDER_X
+#define CHOICE_POPUP_BORDER_X	4
+#undef CHOICE_POPUP_BORDER_Y	
+#define CHOICE_POPUP_BORDER_Y	4
+#undef CHOICE_POPUP_BACKCOLOR
+#define CHOICE_POPUP_BACKCOLOR	0.2 0.2 0.22 1 //0.85
+#undef CHOICE_POPUP_BORDER_COLOR
+#define CHOICE_POPUP_BORDER_COLOR	0.4 0.4 0.42 1
+
+#undef A_BUTTON_SIZE
+#define A_BUTTON_SIZE 			0.4//0.33
+
+#undef A_BUTTON_OFFSET_X
+#define A_BUTTON_OFFSET_X		-2
+
+#ifdef PC
+	#undef CHOICE_TEXTSIZE
+	#define CHOICE_TEXTSIZE			0.4
+#endif

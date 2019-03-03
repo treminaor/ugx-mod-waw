@@ -1,0 +1,609 @@
+VERSION             "1"
+CONFIG              "C:\cod5\cod\cod5\bin\StringEd.cfg"
+FILENOTES           ""
+
+// 9/26/2013 Mutators
+REFERENCE           PRIZE_MUT_1
+LANG_ENGLISH        "Unlocks: Zombie Birthday Party [MUTATOR]"
+REFERENCE           MUT_1_DESC
+LANG_ENGLISH        "Mutator Effect: Killing a zombie by head damage causes an explosion of confetti while children cheer!"
+
+REFERENCE           PRIZE_MUT_2
+LANG_ENGLISH        "Unlocks: More Gore [MUTATOR]"
+REFERENCE           MUT_2_DESC
+LANG_ENGLISH        "Mutator Effect: Killing a zombie causes an over-the-top explosion of blood and guts, and gore!"
+
+REFERENCE           PRIZE_MUT_3
+LANG_ENGLISH        "Unlocks: Peek-a-boo! [MUTATOR]"
+REFERENCE           MUT_3_DESC
+LANG_ENGLISH        "Mutator Effect: Zombies are invisible! If you cause damage to them, they appear for a second. If they are really, really close to you, they become visible!"
+
+REFERENCE           PRIZE_MUT_4
+LANG_ENGLISH        "Unlocks: Flickering Glimpse [MUTATOR]"
+REFERENCE           MUT_4_DESC
+LANG_ENGLISH        "Mutator Effect: Zombies flicker in and out of visibility! Can be combined with Peek-a-boo for an interesting effect!"
+
+REFERENCE           PRIZE_MUT_5
+LANG_ENGLISH        "Unlocks: Rag Doll [MUTATOR]"
+REFERENCE           MUT_5_DESC
+LANG_ENGLISH        "Mutator Effect: Killing a zombie causes his lifeless corpse to be flung in a random direction at high speeds!"
+
+REFERENCE           PRIZE_MUT_6
+LANG_ENGLISH        "Unlocks: Head's Up [MUTATOR]"
+REFERENCE           MUT_6_DESC
+LANG_ENGLISH        "Mutator Effect: Killing a zombie by head damage will cause his head to be detached and lunched into the air!"
+
+REFERENCE           PRIZE_MUT_7
+LANG_ENGLISH        "Unlocks: Give up the Ghost [MUTATOR]"
+REFERENCE           MUT_7_DESC
+LANG_ENGLISH        "Mutator Effect: Killing a zombie causes his spirit to be lifted from his body."
+
+REFERENCE           PRIZE_MUT_8
+LANG_ENGLISH        "Unlocks: Laugh Track [MUTATOR]"
+REFERENCE           MUT_8_DESC
+LANG_ENGLISH        "Mutator Effect: Your game of zombies will be in front of a live audience..."
+
+REFERENCE           PRIZE_MUT_9
+LANG_ENGLISH        "Unlocks: Brain Damage [MUTATOR]"
+REFERENCE           MUT_9_DESC
+LANG_ENGLISH        "Mutator Effect: Essentially is a headshots-only mode. Damage can only be done by shooting a zombie in the head!"
+
+REFERENCE           PRIZE_MUT_10
+LANG_ENGLISH        "Unlocks: Nicolas Cage [MUTATOR]"
+REFERENCE           MUT_10_DESC
+LANG_ENGLISH        "Mutator Effect: The world's best method-actor is cast for the final role of his career!"
+
+REFERENCE           PRIZE_MUT_11
+LANG_ENGLISH        "Unlocks: Fireworks [MUTATOR]"
+REFERENCE           MUT_11_DESC
+LANG_ENGLISH        "Mutator Effect: At the end of each round a fireworks display is shown in the sky, totaling up to your current round number. Example: Round 25 will result in a 25-firework display."
+
+REFERENCE           PRIZE_MUT_12
+LANG_ENGLISH        "Unlocks: Ragtime [MUTATOR]"
+REFERENCE           MUT_11_DESC
+LANG_ENGLISH        "Mutator Effect: Party like it's 1899!"
+
+
+
+
+REFERENCE           CH_CAT_1
+LANG_ENGLISH        "Arcademode"
+REFERENCE           CH_CAT_1_LONG
+LANG_ENGLISH        "Arcademode Challenges"
+
+REFERENCE           CH_CAT_2
+LANG_ENGLISH        "Gungame"
+REFERENCE           CH_CAT_2_LONG
+LANG_ENGLISH        "Gungame Mode Challenges"
+
+REFERENCE           CH_CAT_3
+LANG_ENGLISH        "Sharpshooter"
+REFERENCE           CH_CAT_3_LONG
+LANG_ENGLISH        "Sharpshooter Mode Challenges"
+
+REFERENCE           CH_CAT_4
+LANG_ENGLISH        "Weapon Kills"
+REFERENCE           CH_CAT_4_LONG
+LANG_ENGLISH        "Weapon Kills Challenges"
+
+REFERENCE           CH_CAT_5
+LANG_ENGLISH        "Special"
+REFERENCE           CH_CAT_5_LONG
+LANG_ENGLISH        "Special Challenges"
+
+
+
+REFERENCE           CUSTOM_CHAR_CAT1
+LANG_ENGLISH        "Hats"
+
+REFERENCE           CUSTOM_CHAR_CAT2
+LANG_ENGLISH        "Head"
+
+REFERENCE           CUSTOM_CHAR_CAT3
+LANG_ENGLISH        "Accessories"
+
+REFERENCE           CUSTOM_CHAR_CAT4
+LANG_ENGLISH        "Entire Body"
+
+
+
+//Full Characters
+REFERENCE           CUSTOM_CHAR0
+LANG_ENGLISH        "Default Character"
+
+REFERENCE			PRIZE_CUSTOM_CHAR1
+LANG_ENGLISH		"Unlocks: Fat Russian Farmer";
+
+REFERENCE           CUSTOM_CHAR1
+LANG_ENGLISH        "Fat Russian Farmer"
+
+REFERENCE			PRIZE_CUSTOM_CHAR2
+LANG_ENGLISH		"Unlocks: SAS Soldier";
+
+REFERENCE           CUSTOM_CHAR2
+LANG_ENGLISH        "SAS Soldier"
+
+REFERENCE			PRIZE_CUSTOM_CHAR3
+LANG_ENGLISH		"Unlocks: Capt. Price (Ghillie)";
+
+REFERENCE           CUSTOM_CHAR3
+LANG_ENGLISH        "Capt. Price (Ghillie)"
+//End Characters
+
+
+REFERENCE           NO_EFFECT
+LANG_ENGLISH        ""
+
+
+
+REFERENCE           PRIZE_HEADWRAP
+LANG_ENGLISH        "Unlocks: Arab Headwrap"
+
+REFERENCE           HEADWRAP
+LANG_ENGLISH        "Arab Headwrap"
+
+REFERENCE           HEADWRAP_EFFECT
+LANG_ENGLISH        "Item Effect: Increases the effective range and damage of your grenade explosions. Also increases the effect of other weapons such as the Crossbow and Grenade Launcher."
+
+
+
+//Hats
+REFERENCE           PRIZE_JAPHAT
+LANG_ENGLISH        "Unlocks: Japanese General's Hat"
+
+REFERENCE           JAPHAT
+LANG_ENGLISH        "Japanese General's Hat"
+
+REFERENCE           JAPHAT_EFFECT
+LANG_ENGLISH        "Item Effect: Increases melee damage."
+
+REFERENCE           PRIZE_JAPHBAND
+LANG_ENGLISH        "Unlocks: Japanese Rising Sun Headband"
+
+REFERENCE           JAPHBAND
+LANG_ENGLISH        "Japanese Rising Sun Headband"
+
+REFERENCE           JAPHBAND_EFFECT
+LANG_ENGLISH        "Item Effect: Increases melee damage."
+
+REFERENCE           PRIZE_JAPHELM
+LANG_ENGLISH        "Unlocks: Generic Japanese Helmet"
+
+REFERENCE           JAPHELM
+LANG_ENGLISH        "Generic Japanese Helmet"
+
+REFERENCE           JAPHELM_EFFECT
+LANG_ENGLISH        "Item Effect: Increases melee damage."
+
+REFERENCE           PRIZE_MEDICHELM
+LANG_ENGLISH        "Unlocks: Medic Helmet"
+
+REFERENCE           MEDICHELM
+LANG_ENGLISH        "Medic Helmet"
+
+REFERENCE           MEDICHELM_EFFECT
+LANG_ENGLISH        "Item Effect: Decreases the time it takes for you to revive others. Multiplies the effect of Quick Revive."
+
+REFERENCE           PRIZE_BUCKETHEAD
+LANG_ENGLISH        "Unlocks: Buckethead"
+
+REFERENCE           BUCKETHEAD
+LANG_ENGLISH        "Bucket Helm"
+
+REFERENCE           PRIZE_FEDORA_BLACK
+LANG_ENGLISH        "Unlocks: Black Fedora"
+
+REFERENCE           FEDORA_BLACK
+LANG_ENGLISH        "Black Fedora"
+
+REFERENCE           PRIZE_FEDORA_GREY
+LANG_ENGLISH        "Unlocks: Grey Fedora"
+
+REFERENCE           FEDORA_GREY
+LANG_ENGLISH        "Grey Fedora"
+
+REFERENCE           PRIZE_FEDORA_WHITE
+LANG_ENGLISH        "Unlocks: White Fedora"
+
+REFERENCE           FEDORA_WHITE
+LANG_ENGLISH        "White Fedora"
+
+REFERENCE           PRIZE_NAZIHAT
+LANG_ENGLISH        "Unlocks: Nazi General's Hat"
+
+REFERENCE           NAZIHAT
+LANG_ENGLISH        "Nazi General's Hat"
+
+REFERENCE           PRIZE_PILOTHELMET
+LANG_ENGLISH        "Unlocks: Fighter Pilot Helmet"
+
+REFERENCE           PILOTHELMET
+LANG_ENGLISH        "Fighter Pilot Helmet"
+
+REFERENCE           PRIZE_SAILORHAT
+LANG_ENGLISH        "Unlocks: Sailor's Hat"
+
+REFERENCE           SAILORHAT
+LANG_ENGLISH        "Sailor's Hat"
+
+REFERENCE           PRIZE_USAHELM
+LANG_ENGLISH        "Unlocks: Generic USA Helmet"
+
+REFERENCE           USAHELM
+LANG_ENGLISH        "Generic USA Helmet"
+
+REFERENCE           PRIZE_USHANKA
+LANG_ENGLISH        "Unlocks: Russian Ushanka"
+
+REFERENCE           USHANKA
+LANG_ENGLISH        "Russian Ushanka"
+
+REFERENCE           PRIZE_PIMPHAT
+LANG_ENGLISH        "Unlocks: Pimp Hat"
+
+REFERENCE           PIMPHAT
+LANG_ENGLISH        "Pimp Hat"
+
+REFERENCE           PRIZE_BERET1
+LANG_ENGLISH        "Unlocks: General's Beret"
+
+REFERENCE           BERET1
+LANG_ENGLISH        "General's Beret"
+
+REFERENCE           PRIZE_COWBOYHAT
+LANG_ENGLISH        "Unlocks: Cowboy/Camo Hat"
+
+REFERENCE           COWBOYHAT
+LANG_ENGLISH        "Cowboy/Camo Hat"
+//End Hats
+
+
+//Accessories
+REFERENCE           PRIZE_GASMASK
+LANG_ENGLISH        "Unlocks: Gas Mask"
+
+REFERENCE           GASMASK
+LANG_ENGLISH        "Gas Mask"
+
+REFERENCE           GASMASK_EFFECT
+LANG_ENGLISH        "Item Effect: Makes you immune to Boss Barf effects."
+
+REFERENCE           PRIZE_HEADBANDAID
+LANG_ENGLISH        "Unlocks: Generic Hat with Bandages"
+
+REFERENCE           HEADBANDAID
+LANG_ENGLISH        "Head Bandages"
+
+REFERENCE           HEADBANDAID_EFFECT
+LANG_ENGLISH        "Item Effect: Allows you to be hit an extra time before dying. Multiplies the effect of Juggernog."
+
+REFERENCE           PRIZE_AVIATORS
+LANG_ENGLISH        "Unlocks: Golden Aviator Sunglasses"
+
+REFERENCE           AVIATORS
+LANG_ENGLISH        "Golden Aviator Sunglasses"
+
+REFERENCE           PRIZE_CIGARETTE
+LANG_ENGLISH        "Unlocks: Cigarette"
+
+REFERENCE           CIGARETTE
+LANG_ENGLISH        "Cigarette"
+
+REFERENCE           GUYFAWKES
+LANG_ENGLISH        "Guy Fawkes Mask"
+
+REFERENCE           PRIZE_GUYFAWKES
+LANG_ENGLISH        "Unlocks: Guy Fawkes (Anonymous/V for Vendetta) Mask"
+
+//End Accessories
+
+
+
+REFERENCE			GG_CH1
+LANG_ENGLISH		"Bi-Winning"
+REFERENCE			GG_CH1_DESC
+LANG_ENGLISH		"Won two online games of Gungame."
+
+REFERENCE			GG_CH2
+LANG_ENGLISH		"Nice One"
+REFERENCE			GG_CH2_DESC
+LANG_ENGLISH		"Lost a Gungame round for the first time (online only)."
+
+REFERENCE			GG_CH3
+LANG_ENGLISH		"Bad Luck Brian"
+REFERENCE			GG_CH3_DESC
+LANG_ENGLISH		"Got degraded at least 6 times in one Gungame."
+
+REFERENCE			GG_CH4
+LANG_ENGLISH		"Vendetta"
+REFERENCE			GG_CH4_DESC
+LANG_ENGLISH		"Degraded the same team mate at least 6 times in one Gungame."
+
+REFERENCE			GG_CH5
+LANG_ENGLISH		"Unstoppable"
+REFERENCE			GG_CH5_DESC
+LANG_ENGLISH		"Went an entire Gungame without dying and won (online only)."
+
+REFERENCE			GG_CH6
+LANG_ENGLISH		"Jackpot"
+REFERENCE			GG_CH6_DESC
+LANG_ENGLISH		"Got three Gun Advancement powerups in a row."
+
+REFERENCE			GG_CH7
+LANG_ENGLISH		"0WN3D"
+REFERENCE			GG_CH7_DESC
+LANG_ENGLISH		"Won a Gungame while at least one teammate was using the M9 pistol."
+
+REFERENCE			GG_CH9
+LANG_ENGLISH		"WTF was that?"
+REFERENCE			GG_CH9_DESC
+LANG_ENGLISH		"Experienced your first bossround in Gungame."
+
+
+REFERENCE			AM_CH1
+LANG_ENGLISH		"Automated Extermination"
+REFERENCE			AM_CH1_DESC
+LANG_ENGLISH		"Murdered 200 zombies using Sentry Turrets in one game."
+
+REFERENCE			AM_CH2
+LANG_ENGLISH		"Gambling Addiction"
+REFERENCE			AM_CH2_DESC
+LANG_ENGLISH		"Spent over 35,000 points in one game on the Random Weapons Box."
+
+REFERENCE			AM_CH3
+LANG_ENGLISH		"Locked, Stocked, & Two Smoking Barrels"
+REFERENCE			AM_CH3_DESC
+LANG_ENGLISH		"Finished the game holding two Pack-a-Punched weapons."
+
+REFERENCE			AM_CH7
+LANG_ENGLISH		"Addiction I"
+REFERENCE			AM_CH7_DESC
+LANG_ENGLISH		"Purchased Juggernog more than 10 times in one Arcademode match."
+
+REFERENCE			AM_CH8
+LANG_ENGLISH		"Addiction II"
+REFERENCE			AM_CH8_DESC
+LANG_ENGLISH		"Purchased Double Tap more than 10 times in one Arcademode match."
+
+REFERENCE			AM_CH9
+LANG_ENGLISH		"Addiction III"
+REFERENCE			AM_CH9_DESC
+LANG_ENGLISH		"Purchased Speedcola more than 10 times in one Arcademode match."
+
+REFERENCE			AM_CH10
+LANG_ENGLISH		"Addiction IV"
+REFERENCE			AM_CH10_DESC
+LANG_ENGLISH		"Purchased Quick Revive more than 10 times in one Arcademode match."
+
+REFERENCE			AM_CH13
+LANG_ENGLISH		"Points Whore"
+REFERENCE			AM_CH13_DESC
+LANG_ENGLISH		"Completed an Arcademode match with the most points out of all other players (online only)."
+
+REFERENCE			AM_CH14
+LANG_ENGLISH		"Lotto Winner"
+REFERENCE			AM_CH14_DESC
+LANG_ENGLISH		"Grabbed the Lottery Powerup which dropped from killing the boss zombie in Arcademode using the Hyena Infra-dead."
+
+
+
+REFERENCE           SPEC1_CH
+LANG_ENGLISH        "Anger Issues"
+REFERENCE           SPEC1_CH_DESC
+LANG_ENGLISH        "Stab 50 headless zombies to death."
+
+REFERENCE           SPEC2_CH
+LANG_ENGLISH        "Bon Voyage"
+REFERENCE           SPEC2_CH_DESC
+LANG_ENGLISH        "Use the Thundergun to blast a total of 500 zombies into the sky."
+
+REFERENCE           SPEC4_CH
+LANG_ENGLISH        "Ice Age"
+REFERENCE           SPEC4_CH_DESC
+LANG_ENGLISH        "Freeze at least 10 zombies with one Freezegun blast."
+
+REFERENCE           SPEC5_CH
+LANG_ENGLISH        "It's a bird! It's a plane!"
+REFERENCE           SPEC5_CH_DESC
+LANG_ENGLISH        "Blow away at least 10 zombies with one Thundergun blast."
+
+REFERENCE           SPEC6_CH
+LANG_ENGLISH        "Make it Rain"
+REFERENCE           SPEC6_CH_DESC
+LANG_ENGLISH        "Use the Pack-a-Punch 50 times."
+
+REFERENCE           SPEC7_CH
+LANG_ENGLISH        "Trust me, I'll be fine."
+REFERENCE           SPEC7_CH_DESC
+LANG_ENGLISH        "Pack-a-Punch an M9 Beretta at or after Round 15 in a non-timed gameplay gamemode."
+
+REFERENCE           SPEC8_CH
+LANG_ENGLISH        "Big Spender"
+REFERENCE           SPEC8_CH_DESC
+LANG_ENGLISH        "Spend over 500,000 points on perks."
+
+REFERENCE           SPEC9_CH
+LANG_ENGLISH        "I like to watch them squirm..."
+REFERENCE           SPEC9_CH_DESC
+LANG_ENGLISH        "Turn a total of 1000 zombies into sad, crawling bastards."
+
+REFERENCE           SPEC11_CH
+LANG_ENGLISH        "I Got This!"
+REFERENCE           SPEC11_CH_DESC
+LANG_ENGLISH        "Reached Round 15 without buying any weapons."
+
+
+
+REFERENCE           AK47_CH
+LANG_ENGLISH        "AK-47 Assault Rifle Kills"
+REFERENCE           AK47_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the AK-47 Assault Rifle."
+
+REFERENCE           G3_CH
+LANG_ENGLISH        "G3 Assault Rifle Kills"
+REFERENCE           G3_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the G3 Assault Rifle."
+
+REFERENCE           G36C_CH
+LANG_ENGLISH        "G36c Assault Rifle Kills"
+REFERENCE           G36C_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the G36c Assault Rifle."
+
+REFERENCE           XM8_CH
+LANG_ENGLISH        "XM8 Assault Rifle Kills"
+REFERENCE           XM8_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the XM8 Assault Rifle."
+
+REFERENCE           AUG_CH
+LANG_ENGLISH        "AUG Assault Rifle Kills"
+REFERENCE           AUG_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the AUG Assault Rifle."
+
+REFERENCE           COMMANDO_CH
+LANG_ENGLISH        "Commando Assault Rifle Kills"
+REFERENCE           COMMANDO_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the Commando Assault Rifle."
+
+
+
+REFERENCE           DRAGONOV_CH
+LANG_ENGLISH        "Dragonov Sniper Rifle Kills"
+REFERENCE           DRAGONOV_CH_DESC
+LANG_ENGLISH        "Murder 750 zombies with the Dragonov Sniper Rifle."
+
+REFERENCE           M40A3_CH
+LANG_ENGLISH        "M40A3 Sniper Rifle Kills"
+REFERENCE           M40A3_CH_DESC
+LANG_ENGLISH        "Murder 750 zombies with the M40A3 Sniper Rifle."
+
+REFERENCE           M82_CH
+LANG_ENGLISH        "M820A1 Sniper Rifle Kills"
+REFERENCE           M82_CH_DESC
+LANG_ENGLISH        "Murder 1000 zombies with the M820A1 Sniper Rifle."
+
+REFERENCE           R700_CH
+LANG_ENGLISH        "R700 Sniper Rifle Kills"
+REFERENCE           R700_CH_DESC
+LANG_ENGLISH        "Murder 750 zombies with the R700 Sniper Rifle."
+
+
+
+REFERENCE           AK74U_CH
+LANG_ENGLISH        "AK-74u SMG Kills"
+REFERENCE           AK74U_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the AK-74u Submachine Gun."
+
+REFERENCE           MP5_CH
+LANG_ENGLISH        "MP5 SMG Kills"
+REFERENCE           MP5_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the MP5 Submachine Gun."
+
+REFERENCE           P90_CH
+LANG_ENGLISH        "P90 SMG Kills"
+REFERENCE           P90_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the P90 Submachine Gun."
+
+REFERENCE           PP19_CH
+LANG_ENGLISH        "PP-19 SMG Kills"
+REFERENCE           PP19_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the PP-19 Submachine Gun."
+
+REFERENCE           SKORPION_CH
+LANG_ENGLISH        "Skorpion SMG Kills"
+REFERENCE           SKORPION_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the Skorpion Submachine Gun."
+
+REFERENCE           UMP45_CH
+LANG_ENGLISH        "UMP-45 SMG Kills"
+REFERENCE           UMP45_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the UMP-45 Submachine Gun."
+
+REFERENCE           UZI_CH
+LANG_ENGLISH        "Uzi SMG Kills"
+REFERENCE           UZI_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the Uzi Submachine Gun."
+
+
+
+REFERENCE           M10A4_CH
+LANG_ENGLISH        "M10A4 Shotgun Kills"
+REFERENCE           M10A4_CH_DESC
+LANG_ENGLISH        "Murder 1250 zombies with the M10A4 Shotgun."
+
+REFERENCE           USAS12_CH
+LANG_ENGLISH        "USAS-12 Shotgun Kills"
+REFERENCE           USAS12_CH_DESC
+LANG_ENGLISH        "Murder 1250 zombies with the USAS-12 Shotgun."
+
+REFERENCE           WINCHESTER_CH
+LANG_ENGLISH        "Winchester 1200 Shotgun Kills"
+REFERENCE           WINCHESTER_CH_DESC
+LANG_ENGLISH        "Murder 1250 zombies with the Winchester 1200 Shotgun."
+
+
+
+REFERENCE           RPD_CH
+LANG_ENGLISH        "RPD LMG Kills"
+REFERENCE           RPD_CH_DESC
+LANG_ENGLISH        "Murder 2000 zombies with the RPD Light Machine Gun."
+
+REFERENCE           M249_CH
+LANG_ENGLISH        "M249-SAW LMG Kills"
+REFERENCE           M249_CH_DESC
+LANG_ENGLISH        "Murder 2000 zombies with the M249-SAW Light Machine Gun."
+
+REFERENCE           M60_CH
+LANG_ENGLISH        "M60 LMG Kills"
+REFERENCE           M60_CH_DESC
+LANG_ENGLISH        "Murder 2000 zombies with the M60 Light Machine Gun."
+
+REFERENCE           STONER_CH
+LANG_ENGLISH        "Stoner63 LMG Kills"
+REFERENCE           STONER_CH_DESC
+LANG_ENGLISH        "Murder 2000 zombies with the Stoner63 Light Machine Gun."
+
+
+
+REFERENCE           M9_UP_CH
+LANG_ENGLISH        "PaP'd M9 Beretta Pistol Kills"
+REFERENCE           M9_UP_CH_DESC
+LANG_ENGLISH        "Murder 750 zombies with the PaP'd M9 Pistol."
+
+REFERENCE            DEAGLE_UP_CH
+LANG_ENGLISH        "PaP'd Desert Eagle Kills"
+REFERENCE           DEAGLE_UP_CH_DESC
+LANG_ENGLISH        "Murder 1250 zombies with the PaP'd Desert Eagle."
+
+REFERENCE           G3_UP_CH
+LANG_ENGLISH        "PaP'd G3 Assault Rifle Kills"
+REFERENCE           G3_UP_CH_DESC
+LANG_ENGLISH        "Murder 1500 zombies with the PaP'd G3 Assault Rifle."
+
+REFERENCE           G3GL_UP_CH
+LANG_ENGLISH        "PaP'd G3 Grenade Launcher Kills"
+REFERENCE           G3GL_UP_CH_DESC
+LANG_ENGLISH        "Murder 500 zombies with the PaP'd G3's Grenade Launcher attachment."
+
+REFERENCE            XBOW_CH
+LANG_ENGLISH        "Explosive Crossbow Kills"
+REFERENCE           XBOW_CH_DESC
+LANG_ENGLISH        "Blow up 1000 zombies with the Explosive Crossbow. Must be a direct hit - no splash damage kills."
+
+REFERENCE           FGUN_CH
+LANG_ENGLISH        "Freezegun Kills"
+REFERENCE           FGUN_CH_DESC
+LANG_ENGLISH        "Shatter 2000 zombies with the Freezegun."
+
+REFERENCE           TGUN_CH
+LANG_ENGLISH        "Thundergun Kills"
+REFERENCE           TGUN_CH_DESC
+LANG_ENGLISH        "Blast 2000 zombies with the Thundergun."
+
+
+
+REFERENCE           RANDOM_BOX_HINT
+LANG_ENGLISH        "Press &&1 to buy a Random Weapon [Cost: 950]"
+
+
+
+ENDMARKER

@@ -1,0 +1,110 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#include "ui/overlaybg.inc"
+{
+	menuDef
+	{
+		name			options_new_pc
+		focuscolor		COLOR_FOCUSED
+#ifdef PC_INGAME
+		style			WINDOW_STYLE_EMPTY
+#else
+		style			WINDOW_STYLE_FILLED
+#endif
+		soundloop 		""
+		border			0
+		onOpen	
+		{			
+			setdvar invite_visible "0";
+			setdvar ui_showOnlineOfflineButton "0";
+			setLocalVarBool ui_hideBack 1;
+			setLocalVarBool ui_inOverlay 1;
+			exec "set cl_bypassMouseInput 0";
+			//execNowOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 0";
+			//execNowOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+		}
+		onEsc	
+		{	
+			setLocalVarBool ui_inOverlay 0;
+			setdvar ui_showOnlineOfflineButton "1";
+			close self;
+		}
+		onClose
+		{
+			setdvar invite_visible "1";
+			setLocalVarBool ui_hideBack 0;
+			execNowOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execNowOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+			focusFirst;
+		}
+		#undef BACK_OPEN
+#ifdef PC_INGAME
+		#define BACK_OPEN	close self; setLocalVarBool ui_inOverlay 0;
+#else
+		BACKGROUND_BLACK_LETTERBOX_BLURWORLD_VIS( 1 , 0 )
+		OVERLAY_BACKGROUND
+		#define BACK_OPEN	close self; setLocalVarBool ui_inOverlay 0;
+#endif
+		
+		#include "ui/navcontrols.inc"
+		#include "ui_mp/leftside_options.inc"
+		#include "ui/safearea.menu"
+	}
+
+menuDef
+	{
+		name			options_controls_new_pc
+		fullscreen		1
+		focuscolor		COLOR_FOCUSED
+#ifdef PC_INGAME
+		style			WINDOW_STYLE_EMPTY
+#else
+		style			WINDOW_STYLE_FILLED
+#endif
+		soundloop 		""
+		border			0
+		onOpen	
+		{			
+			setdvar invite_visible "0";
+			setdvar ui_showOnlineOfflineButton "0";
+			setLocalVarBool ui_hideBack 1;
+			setLocalVarBool ui_inOverlay 1;
+			exec "set cl_bypassMouseInput 0";
+			//execNowOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 0";
+			//execNowOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";
+		}
+		onEsc	
+		{	
+			setLocalVarBool ui_inOverlay 0;
+			setdvar ui_showOnlineOfflineButton "1";
+			close self;
+		}
+		onClose
+		{
+			setdvar invite_visible "1";
+			setLocalVarBool ui_hideBack 0;
+			execNowOnDvarStringValue ugx_client_xbox Yes " set cl_bypassMouseInput 1";
+			execNowOnDvarStringValue ugx_client_xbox No " set cl_bypassMouseInput 0";	
+		}
+		
+		// ------------------  statics ------------------------
+
+		#undef BACK_OPEN
+#ifdef PC_INGAME
+		#define BACK_OPEN	close self; setLocalVarBool ui_inOverlay 0;
+#else
+		BACKGROUND_BLACK_LETTERBOX_BLURWORLD_VIS( 1 , 0 )
+		OVERLAY_BACKGROUND
+		#define BACK_OPEN	close self; setLocalVarBool ui_inOverlay 0;
+#endif
+		#include "ui/navcontrols.inc"
+
+		#include "ui_mp/leftside_controls.inc"
+
+		#include "ui/safearea.menu"
+	}
+}

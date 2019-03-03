@@ -1,0 +1,2 @@
+#define PC_INGAME
+#include				"ui/options_control_defaults.menu"

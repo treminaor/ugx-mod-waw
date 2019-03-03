@@ -1,0 +1,161 @@
+// removed cod5 gun assets commented this line: sound,nazi_zombie_factory,nazi_zombie_factory,all_sp
+// removed dlc3_vox, replaced it with nacht + veruckt vox (in mod.ff)
+ignore,common_ignore
+ignore,common_ignore,,
+
+// Coop Player Heroes
+// mptype,nazi_zombie_heroes // these are included in UGX Mod v1.1 ugx_mod.ff
+xmodel,viewmodel_usa_marine_arms
+xmodel,viewmodel_usa_marine_player
+
+rawfile,clientscripts/_zombie_mode.csc,,
+
+// DLC3 Scripts
+rawfile,maps/dlc3_code.gsc,,
+rawfile,maps/dlc3_teleporter.gsc,,
+rawfile,maps/createfx/dlc3_fx.gsc,,
+rawfile,clientscripts/dlc3_code.csc
+rawfile,clientscripts/dlc3_teleporter.csc
+rawfile,clientscripts/createfx/dlc3_fx.csc
+
+// Sound
+//sound,nazi_zombie_factory,nazi_zombie_factory,all_sp
+sound,common,nazi_zombie_factory,all_sp
+sound,projectiles,nazi_zombie_factory,all_sp
+sound,physics,nazi_zombie_factory,all_sp
+sound,destructibles,nazi_zombie_factory,all_sp
+//sound,dlc3_vox,nazi_zombie_factory,all_sp
+sound,dlc3_vox,,all_sp
+sound,dlc_share,nazi_zombie_factory,all_sp
+sound,weapons,audio_test_tuey,all_sp
+
+// Animtrees + Animations
+rawfile,animtrees/zombie_factory.atr
+xanim,o_zombie_lattice_gate_full
+xanim,o_zombie_lattice_gate_half
+xanim,o_zombie_difference_engine_ani
+xanim,ai_zombie_jump_down_127
+xanim,ai_zombie_jump_down_184
+xanim,ai_zombie_crawl_jump_down_127
+xanim,ai_zombie_crawl_jump_down_184
+xanim,ch_dazed_d_death
+xanim,ch_dazed_c_death
+xanim,ch_dazed_b_death
+xanim,ch_dazed_a_death
+xanim,ch_dazed_d
+xanim,ch_dazed_c
+xanim,ch_dazed_b
+xanim,ch_dazed_a
+
+//////////////////////////////////////////////////////////////////
+                           WEAPON AREA
+/////////////////////////////////////////////////////////////////
+
+// Missing Stuff
+// xmodel,viewmodel_zombie_colt45_pistol
+// xmodel,weapon_zombie_colt45_pistol
+// xmodel,viewmodel_zombie_ptrs41
+// xmodel,weapon_zombie_ptrs41
+// xmodel,viewmodel_zombie_flamethrower
+// xmodel,weapon_zombie_flamethrower
+
+// Weapons
+// weapon,sp/colt				// default weaponn
+// weapon,sp/napalmblob				// default weapon
+// weapon,sp/napalmbloblight		// default weapon
+//		- pistol
+// weapon,sp/zombie_colt	// last stand weapon
+// weapon,sp/zombie_colt_upgraded
+// weapon,sp/zombie_sw_357
+// weapon,sp/zombie_sw_357_upgraded
+//		- bolt-action
+// weapon,sp/zombie_kar98k
+// weapon,sp/zombie_kar98k_upgraded
+// weapon,sp/springfield
+// weapon,sp/zombie_type99_rifle
+// weapon,sp/zombie_type99_rifle_upgraded
+//		- semi-auto
+// weapon,sp/zombie_m1carbine
+// weapon,sp/zombie_m1carbine_upgraded
+// weapon,sp/zombie_gewehr43
+// weapon,sp/zombie_gewehr43_upgraded
+// weapon,sp/zombie_m1garand
+// weapon,sp/zombie_m1garand_upgraded
+//		- auto
+// weapon,sp/zombie_stg44
+// weapon,sp/zombie_stg44_upgraded
+// weapon,sp/zombie_thompson
+// weapon,sp/zombie_thompson_upgraded
+// weapon,sp/zombie_mp40
+// weapon,sp/zombie_mp40_upgraded
+// weapon,sp/zombie_type100_smg
+// weapon,sp/zombie_type100_smg_upgraded
+//		- scoped
+// weapon,sp/ptrs41_zombie
+// weapon,sp/ptrs41_zombie_upgraded
+// weapon,sp/type99_rifle_scoped_zombie
+// weapon,sp/kar98k_scoped_zombie
+//		- grenade
+// weapon,sp/molotov
+// weapon,sp/stielhandgranate
+//		- grenade launcher
+// weapon,sp/m1garand_gl_zombie
+// weapon,sp/m1garand_gl_zombie_upgraded
+// weapon,sp/m7_launcher_zombie
+// weapon,sp/m7_launcher_zombie_upgraded
+//		- shotgun
+// weapon,sp/zombie_doublebarrel
+// weapon,sp/zombie_doublebarrel_upgraded
+// weapon,sp/zombie_shotgun
+// weapon,sp/zombie_shotgun_upgraded
+//		- heavy mg
+// weapon,sp/zombie_bar
+// weapon,sp/zombie_bar_upgraded
+// weapon,sp/zombie_fg42
+// weapon,sp/zombie_fg42_upgraded
+// weapon,sp/zombie_30cal
+// weapon,sp/zombie_30cal_upgraded
+// weapon,sp/zombie_mg42
+// weapon,sp/zombie_mg42_upgraded
+// weapon,sp/zombie_ppsh
+// weapon,sp/zombie_ppsh_upgraded
+//		- special
+// weapon,sp/panzerschrek_zombie
+// weapon,sp/panzerschrek_zombie_upgraded
+// weapon,sp/m2_flamethrower_zombie
+// weapon,sp/m2_flamethrower_zombie_upgraded
+// weapon,sp/ray_gun
+// weapon,sp/ray_gun_upgraded
+// weapon,sp/tesla_gun
+// weapon,sp/tesla_gun_upgraded
+// weapon,sp/zombie_cymbal_monkey
+// weapon,sp/mine_bouncing_betty
+
+// Bowie Knife
+// xmodel,viewmodel_knife_bowie
+
+// Teddy Bear
+xmodel,zombie_teddybear
+
+//////////////////////////////////////////////////////////////////
+                           FX AREA
+/////////////////////////////////////////////////////////////////
+
+// No longer used in UGX Mod v1.1
+// fx,maps/zombie/fx_zombie_factory_marker
+// fx,maps/zombie/fx_zombie_factory_marker_fl
+// fx,maps/zombie/fx_zombie_factory_marker_sm
+
+
+// Perks-a-cola effects
+fx,misc/fx_zombie_cola_on
+fx,misc/fx_zombie_cola_dtap_on
+fx,misc/fx_zombie_cola_jugg_on
+fx,misc/fx_zombie_cola_revive_on			
+
+fx,maps/zombie/fx_zombie_packapunch
+
+// CreateFX Exploders
+
+// DO NOT REMOVE
+// rawfile,buffer_5m_000.bin

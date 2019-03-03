@@ -1,0 +1,65 @@
+#include "ui/menudef.h"
+
+// ----------------- allocate stat for custom class settings -------------------
+
+// custom class stats allocation numbers
+#define CAC_PRIMARY_GRENADE			dvarInt( ui_custom_class_highlighted ) + 200
+#define CAC_PRIMARY					dvarInt( ui_custom_class_highlighted ) + 201
+#define CAC_PRIMARY_ATTACHMENT		dvarInt( ui_custom_class_highlighted ) + 202
+#define CAC_SECONDARY				dvarInt( ui_custom_class_highlighted ) + 203
+#define CAC_SECONDARY_ATTACHMENT	dvarInt( ui_custom_class_highlighted ) + 204
+#define CAC_SPECIALTY_EQUIPMENT		dvarInt( ui_custom_class_highlighted ) + 205
+#define CAC_SPECIALTY_WEAPON		dvarInt( ui_custom_class_highlighted ) + 206
+#define CAC_SPECIALTY_ABILITY		dvarInt( ui_custom_class_highlighted ) + 207
+#define CAC_SPECIAL_GRENADE			dvarInt( ui_custom_class_highlighted ) + 208
+#define CAC_CAMO					dvarInt( ui_custom_class_highlighted ) + 209
+#define CAC_SPECIALTY_VEHICLE		dvarInt( ui_custom_class_highlighted ) + 305
+
+// custom class stats stat numbers
+#define STAT_CAC_PRIMARY_GRENADE			stat( dvarInt( ui_custom_class_highlighted ) + 200 )
+#define STAT_CAC_PRIMARY					stat( dvarInt( ui_custom_class_highlighted ) + 201 )
+#define STAT_CAC_PRIMARY_ATTACHMENT			stat( dvarInt( ui_custom_class_highlighted ) + 202 )
+#define STAT_CAC_SECONDARY					stat( dvarInt( ui_custom_class_highlighted ) + 203 )
+#define STAT_CAC_SECONDARY_ATTACHMENT		stat( dvarInt( ui_custom_class_highlighted ) + 204 )
+#define STAT_CAC_SPECIALTY_EQUIPMENT		stat( dvarInt( ui_custom_class_highlighted ) + 205 )
+#define STAT_CAC_SPECIALTY_WEAPON			stat( dvarInt( ui_custom_class_highlighted ) + 206 )
+#define STAT_CAC_SPECIALTY_ABILITY			stat( dvarInt( ui_custom_class_highlighted ) + 207 )
+#define STAT_CAC_SPECIAL_GRENADE			stat( dvarInt( ui_custom_class_highlighted ) + 208 )
+#define STAT_CAC_CAMO						stat( dvarInt( ui_custom_class_highlighted ) + 209 )
+#define STAT_CAC_SPECIALTY_VEHICLE			stat( dvarInt( ui_custom_class_highlighted ) + 305 )
+
+// default class stats allocation numbers
+#define CAC_DEFAULT_PRIMARY_GRENADE			dvarInt( ui_default_class_highlighted ) + 200
+#define CAC_DEFAULT_PRIMARY					dvarInt( ui_default_class_highlighted ) + 201
+#define CAC_DEFAULT_PRIMARY_ATTACHMENT		dvarInt( ui_default_class_highlighted ) + 202
+#define CAC_DEFAULT_SECONDARY				dvarInt( ui_default_class_highlighted ) + 203
+#define CAC_DEFAULT_SECONDARY_ATTACHMENT	dvarInt( ui_default_class_highlighted ) + 204
+#define CAC_DEFAULT_SPECIALTY_EQUIPMENT		dvarInt( ui_default_class_highlighted ) + 205
+#define CAC_DEFAULT_SPECIALTY_WEAPON		dvarInt( ui_default_class_highlighted ) + 206
+#define CAC_DEFAULT_SPECIALTY_ABILITY		dvarInt( ui_default_class_highlighted ) + 207
+#define CAC_DEFAULT_SPECIAL_GRENADE			dvarInt( ui_default_class_highlighted ) + 208
+#define CAC_DEFAULT_CAMO					dvarInt( ui_default_class_highlighted ) + 209
+#define CAC_DEFAULT_SPECIALTY_VEHICLE		dvarInt( ui_default_class_highlighted ) + 305
+
+#define CAC_CLASS					dvarInt( ui_custom_class_highlighted ) + 300
+
+// custom class name
+#define CAC_MENU_NAME				"menu_cac_custom"
+
+#include "ui_mp/common_macro.inc"
+
+{			
+	#include "ui_mp/cac.inc"
+}
+	
+#undef CHOICE_SIZE_X
+#define CHOICE_SIZE_X			140
+
+// saving popup for CAC ONLY - for a lack of better place
+#define LOCAL_SAVING \
+	"wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait; wait;"
+menuDef
+{
+	CENTER_POPUP_SETUP_ONOPEN( saving_popup, 1, ;, exec LOCAL_SAVING" "LOCAL_SAVING" closemenu saving_popup"; , 1 )
+	CHOICE_POPMENU_TITLE( "@MENU_SAVING" )
+}

@@ -1,0 +1,40 @@
+#include "ui/menudef.h"
+
+#define CHOICE_SIZE_X		250
+#define CHOICE_SIZE_Y		20
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_levels.menu"
+
+{
+	menuDef
+	{
+		LEVELS_CHOICES_SETUP( cod5_levels_production )
+
+		#include "ui/background_main_blurred.menu"
+
+		CHOICE_MENU_TITLE( "COD5 PRODUCTION LEVELS IN PROGRESS" )
+
+		CHOICE_BUTTON( 1, "Peleliu 1", exec "devmap pel1" )
+		CHOICE_BUTTON( 2, "Makin Raid", exec "devmap mak" )
+		CHOICE_BUTTON( 3, "Peleliu 1a", exec "devmap pel1a" )
+		CHOICE_BUTTON( 4, "Peleliu 1b", exec "devmap pel1b" )
+		CHOICE_BUTTON( 5, "Peleliu 2", exec "devmap pel2" )
+		CHOICE_BUTTON( 6, "Holland 1", exec "devmap hol1" )
+		CHOICE_BUTTON( 7, "Holland 2", exec "devmap hol2" )
+		CHOICE_BUTTON( 8, "Holland 3", exec "devmap hol3" )
+		CHOICE_BUTTON( 9, "Seelow 1", exec "devmap see1" )
+		CHOICE_BUTTON( 10, "Seelow 2", exec "devmap see2" )
+		CHOICE_BUTTON( 11, "Okinawa 1", exec "devmap oki1" )
+		CHOICE_BUTTON( 12, "Okinawa 2", exec "devmap oki2" )
+		CHOICE_BUTTON( 13, "Okinawa 3", exec "devmap oki3" )
+		CHOICE_BUTTON( 14, "Berlin 1", exec "devmap ber1" )
+		CHOICE_BUTTON( 15, "Berlin 2", exec "devmap ber2" )
+		CHOICE_BUTTON( 16, "Berlin 3", exec "devmap ber3" )
+		CHOICE_BUTTON( 17, "Berlin 3b", exec "devmap ber3b" )
+		CHOICE_BUTTON( 18, "Training", exec "devmap training" )
+		CHOICE_BUTTON( 19, "PBY Rail", exec "devmap pby_fly" )
+		
+		CHOICE_BUTTON( 20, "Living Battlefield", exec "devmap living_battlefield" )
+		
+	}
+}

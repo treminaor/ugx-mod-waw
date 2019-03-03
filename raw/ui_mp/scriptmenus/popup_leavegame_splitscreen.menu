@@ -1,0 +1,70 @@
+#include "ui/menudef.h"
+
+#define SPLITSCREEN_ENABLED 1
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define CHOICE_GROUP			"xboxlive_lobby"
+
+#define CHOICE_SEP_1			3
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#define ORIGIN_POPUPTITLE_SS	320 220
+
+#define ORIGIN_YES_SS	230 260
+#define ORIGIN_NO_SS	310 260
+
+{
+	#include "ui_mp/popupstyle.inc"
+	#include "ui/choices_setup_popmenu.menu"
+
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X			180
+
+	#undef CHOICE_HORIZONTAL_ALIGN
+	#define CHOICE_HORIZONTAL_ALIGN	HORIZONTAL_ALIGN_CENTER
+	#undef CHOICE_VERTICAL_ALIGN
+	#define CHOICE_VERTICAL_ALIGN	VERTICAL_ALIGN_CENTER
+	
+	#undef CHOICE_POPUP_TITLE_HEIGHT
+	#define CHOICE_POPUP_TITLE_HEIGHT	24
+	
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN_SS( popup_leavegame_splitscreen, 2, ;, setfocus cancel_button, 1 )
+		legacySplitScreenScale
+		
+		#define LOCAL_ACCEPT_LEAVEGAME_SS \
+			play "mouse_click"; \
+			close popup_leavegame_splitscreen;  \
+			exec "disconnect";
+				
+		CHOICE_POPMENU_SUBTITLE_SS( "@MPUI_LEAVE_GAME1" )
+
+		CHOICE_BUTTON_BG( 1, 1 )
+		CHOICE_HIGHLIGHT( 1, 1 )
+		CHOICE_BUTTON( 1, "@MENU_YES", LOCAL_ACCEPT_LEAVEGAME_SS )
+		CHOICE_BUTTON_EX( 2, "@MENU_NO", close self, name cancel_button )
+	}		
+	
+	#undef CHOICE_POPUP_TITLE_HEIGHT
+	#define CHOICE_POPUP_TITLE_HEIGHT	0
+	menuDef
+	{
+		CENTER_POPUP_SETUP_ONOPEN_SS( popup_endgame_splitscreen, 2, ;, setfocus cancel_button, 1 )
+		legacySplitScreenScale
+		
+		#define LOCAL_ACCEPT_ENDGAME_SS \
+			play "mouse_click"; \
+			close popup_endgame_splitscreen;  \
+			scriptMenuResponse "endgame";
+				
+		CHOICE_POPMENU_SUBTITLE_SS( "@MPUI_END_GAME_WARNING" )
+
+		CHOICE_HIGHLIGHT( 1, 1 )
+		CHOICE_BUTTON( 1, "@MENU_YES", LOCAL_ACCEPT_ENDGAME_SS )
+		CHOICE_BUTTON_EX( 2, "@MENU_NO", close self, name cancel_button )
+	}
+}

@@ -1,0 +1,73 @@
+iwmap 4
+"000_Global" flags  active
+"The Map" flags 
+// entity 0
+{
+"spawnflags" "1"
+"modelscale" "0.8"
+"radiosityscale" "2"
+"skyboxmodel" "skybox_mak1"
+"suncolor" "0.639216 0.847059 1"
+"sunlight" "0.5"
+"sundirection" "-150 50 0"
+"diffusefraction" ".05"
+"sundiffusecolor" "0.694118 0.819608 0.819608"
+"ambient" "0.22"
+"_color" "0.427451 0.611765 0.666667"
+"contrastgain" "0.3"
+"bouncefraction" "0.3"
+"sunisprimarylight" "1"
+"reflection_color_correction" "0 0 0"
+"classname" "worldspawn"
+// brush 0
+{
+ ( -13 -51.75 -0.25 ) ( 12 -51.75 -0.25 ) ( 12 60.25 0.25 ) clip 64 64.009651 -624 1088.3669 0 0 lightmap_gray 16384.148 16386.471 -624.00586 1088.3669 0 0
+ ( -13 59.5 80.25 ) ( 12 59.5 80.25 ) ( 12 -52.5 79.75 ) clip 64 64.009911 -624 1087.0728 0 0 lightmap_gray 16383.92 16386.438 -624 1087.0697 0 0
+ ( -12 -19.25 -5.5 ) ( -12 -18 87.5 ) ( 13 -18 87.5 ) clip 64 63.994164 -624 -0.97850341 0 0 lightmap_gray 16384 16382.406 -624.00146 -0.97850484 0 0
+ ( 9 58.75 -2.75 ) ( 9 -53.25 -3.25 ) ( 9 -52 89.75 ) clip 64 64 -1088.1602 0 -0.79996502 0 lightmap_gray 16383.973 16384 -1088.1583 0 -0.79996336 0
+ ( 12 16.75 1 ) ( 12 18 94 ) ( -13 18 94 ) clip 64 63.994156 -624 1.0181638 0 0 lightmap_gray 16384.08 16382.406 -624.00165 1.0181575 0 0
+ ( -9 59.5 90.25 ) ( -9 -52.5 89.75 ) ( -9 -53.75 -3.25 ) clip 64 64 -1088.1602 0 -0.7998786 0 lightmap_gray 16383.838 16384 -1088.156 0 -0.80004346 0
+}
+}
+// entity 1
+{
+"script_noteworthy" "start_chest"
+"targetname" "treasure_chest_use"
+"target" "auto192"
+"classname" "trigger_use"
+// brush 0
+{
+ ( -29 -27.25 30 ) ( -9 -27.25 30 ) ( -9 26.75 30 ) trigger 64 63.996475 -7.0157547 0.66121465 -180 0 lightmap_gray 16384 16383.098 -9.0169907 0.66121465 180 0
+ ( -9 26.5 68 ) ( -9 -27.5 68 ) ( -29 -27.5 68 ) trigger 64 63.996521 -7.01579 0.5288257 -180 0 lightmap_gray 16383.965 16383.109 -9.012208 0.5288257 180 0
+ ( -11 12.5 68 ) ( -31 12.5 68 ) ( -31 12.75 30 ) trigger 64 -64.001694 -7.0034714 14.108977 180 0 lightmap_gray 16384.063 -16384.434 -9.0168304 14.108977 180 0
+ ( -21 28.5 68 ) ( -21 -25.5 68 ) ( -21 -25.25 30 ) trigger 64 -64 -0.77359658 14.064643 -179.79997 0 lightmap_gray 16383.926 -16384 -0.76590431 14.06465 -179.79997 0
+ ( -27 -13.5 68.25 ) ( -7 -13.5 68.25 ) ( -7 -13.25 30.25 ) trigger 64 -64.001663 -7.016933 14.018944 180 0 lightmap_gray 16384.209 -16384.424 -9.0179234 14.018923 180 0
+ ( -17 -27.5 68 ) ( -17 26.5 68 ) ( -17 26.75 30 ) trigger 64 -64 -0.76765436 14.06473 -179.79997 0 lightmap_gray 16383.984 -16384 -0.76756388 14.06473 -179.79997 0
+}
+}
+// entity 2
+{
+"targetname" "auto194"
+"script_noteworthy" "teddy_bear"
+"origin" "3.0 -1.1 12.9"
+"angles" "340.007 185.032 -0.969351"
+"model" "zombie_teddybear"
+"classname" "script_model"
+}
+// entity 3
+{
+"target" "auto193"
+"targetname" "auto192"
+"origin" "0.0 0.5 0.0"
+"angles" "0 270 -180"
+"model" "ugx_coffin_box"
+"classname" "script_model"
+}
+// entity 4
+{
+"target" "auto194"
+"targetname" "auto193"
+"script_noteworthy" "weapon_spawn"
+"origin" "0.0 0.0 40.0"
+"classname" "script_origin"
+}

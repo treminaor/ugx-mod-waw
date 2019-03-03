@@ -1,0 +1,40 @@
+// ingame menu defs
+
+{		
+	loadMenu { "ui_mp/scriptmenus/popup_leavegame.menu" }
+	loadMenu { "ui_mp/muteplayer.menu" }
+
+	loadMenu { "ui_mp/scriptmenus/victory_marines.menu" }
+	loadMenu { "ui_mp/scriptmenus/victory_opfor.menu" }
+	loadMenu { "ui_mp/scriptmenus/victory_none.menu" }
+	loadMenu { "ui_mp/wm_quickmessage.menu" }
+
+	loadMenu { "ui_mp/scriptmenus/ingame_options.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_look_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_move_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_shoot_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_misc_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_graphics_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_game_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_sound_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_coop_pc_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_control_defaults_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_graphics_defaults_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_voice_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/options_multi_ingame.menu" }
+	loadMenu { "ui_mp/scriptmenus/controls_multi_ingame.menu" }
+	loadMenu { "ui_mp/vid_restart.menu" }
+	loadMenu { "ui/snd_restart.menu" }
+	
+	loadMenu { "ui_mp/cac_main_ingame.menu" }
+	loadMenu { "ui_mp/cac_custom_ingame.menu" }
+	
+	loadMenu { "ui_mp/game_summary.menu" }
+	loadMenu { "ui_mp/scriptmenus/endofgame.menu" }
+
+	loadMenu { "ui_mp/challenges_ingame.menu" }
+
+	loadMenu { "ui_mp/cdkey.menu" }
+	
+	loadMenu { "ui_mp/scriptmenus/manage_friends_ingame.menu" }
+}

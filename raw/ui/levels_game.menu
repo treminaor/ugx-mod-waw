@@ -1,0 +1,87 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_X_START			45
+#define CHOICE_Y_START			72
+
+#define CHOICE_SEP_OFFSET_Y		-2
+#define CHOICE_Y_COUNT			11
+#define CHOICE_GROUP			"levels"
+
+#include "ui_mp/menustyle.inc"
+
+#undef CHOICE_SIZE_X
+#define CHOICE_SIZE_X			220
+#define CHOICE_X_SPACING		280
+#include "ui/choices_setup_common.menu"
+
+#include "ui/choices_setup_levels.menu"
+{
+	menuDef
+	{
+		LEVELS_CHOICES_SETUP( levels_game )
+		//onFocus
+		//{
+		//	exec "ui_cinematic bink_front_end_screen_solo 2";
+		//}
+
+		// --------- button ----------
+		itemDef
+		{
+			rect				-140 -4 0 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+			origin				0 0
+			text				"@PLATFORM_TEST_LEVELS"
+			textfont			UI_FONT_NORMAL
+			textscale			TEXTSIZE_SMALL
+			textalign			ITEM_ALIGN_BOTTOM_LEFT
+			visible				when ( dvarbool( cg_development ) || dvarbool ( ui_shipping_cheats ) );
+#ifdef CONSOLE
+			decoration
+			execkeyint BUTTON_Y {open cod5_levels_test;}
+#endif
+// #ifdef PC
+// 			type				1
+// 			rect				-140 -26 60 20 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_BOTTOM
+// 			mouseEnter			{ play "mouse_over"; }
+// 			action
+// 			{
+// 				play			"mouse_click";
+// 				close			self;
+// 				open			cod5_levels_test;
+// 			}
+// #endif
+
+		}		
+
+
+//		#include "ui/blurredbg.inc"
+		#include "ui/navcontrols.inc"
+
+		CHOICE_MENU_TITLE( "MISSION LEVELS" )
+
+		CHOICE_BUTTON_VIS( 1, "@MENU_RESUMEGAME", open resume_popmenu, when( dvarbool( sv_saveGameAvailable ) ) )
+
+		#undef LOCAL_MAP_ACTION
+		#define LOCAL_MAP_ACTION( p_mapname ) \
+			setdvar credits "0"; \
+			setdvar credits_active "0"; \
+			setdvar ui_load_level p_mapname; open popmenu_difficulty;
+
+		//CHOICE_BUTTON_EX( 2, "Prologue", LOCAL_MAP_ACTION( prologue ) )
+		CHOICE_BUTTON( 2, "@MENU_MAK",	LOCAL_MAP_ACTION( mak ) )
+		CHOICE_BUTTON( 3, "@MENU_PEL1",		LOCAL_MAP_ACTION( pel1 ) )
+		CHOICE_BUTTON( 4, "@MENU_PEL1A",	LOCAL_MAP_ACTION( pel1a ) )
+		CHOICE_BUTTON( 5, "@MENU_SEE2",		LOCAL_MAP_ACTION( see2 ) )
+		CHOICE_BUTTON( 6, "@MENU_SEE1",		LOCAL_MAP_ACTION( see1 ) )
+		CHOICE_BUTTON( 7, "@MENU_PEL1B",	LOCAL_MAP_ACTION( pel1b ) )
+		CHOICE_BUTTON( 8, "@MENU_PEL2",		LOCAL_MAP_ACTION( pel2 ) )
+		CHOICE_BUTTON( 9, "@MENU_PBY",		LOCAL_MAP_ACTION( pby_fly ) )
+		CHOICE_BUTTON( 10, "@MENU_BER1",	LOCAL_MAP_ACTION( ber1 ) )
+		CHOICE_BUTTON( 11, "@MENU_BER2",	LOCAL_MAP_ACTION( ber2 ) )
+		CHOICE_BUTTON( 12, "@MENU_SNIPER",	LOCAL_MAP_ACTION( sniper ) )
+		CHOICE_BUTTON( 13, "@MENU_OKI2",	LOCAL_MAP_ACTION( oki2 ) )
+		CHOICE_BUTTON( 14, "@MENU_OKI3",	LOCAL_MAP_ACTION( oki3 ) )
+		CHOICE_BUTTON( 15, "@MENU_BER3",	LOCAL_MAP_ACTION( ber3 ) )
+		CHOICE_BUTTON( 16, "@MENU_BER3B",	LOCAL_MAP_ACTION( ber3b ) )
+	}
+}

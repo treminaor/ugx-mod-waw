@@ -1,0 +1,124 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define ORIGIN_DIY_TITLE_PC			42 270
+#define ORIGIN_DIY_FRAME_PC			35 270
+#define ORIGIN_DIY_PC				37 290
+
+#define ORIGIN_DIY_TITLE_HIDEF		-302 300
+#define ORIGIN_DIY_FRAME_HIDEF		-295 300
+#define ORIGIN_DIY_HIDEF			-297 320
+
+#define WIDESCREEN_OFFSET			107 0
+
+// Displayed when client is initially connecting to the server.
+{
+	menuDef 
+	{
+		name			"connect"
+		style			WINDOW_STYLE_FILLED
+		fullScreen		MENU_FALSE
+		focusColor		COLOR_FOCUSED
+		visible			MENU_FALSE		
+#ifdef PC
+		backcolor		1 1 1 1
+		background		"$levelBriefing"
+		rect			FULLSCREEN_WIDE
+		onOpen
+		{
+			//exec "selectStringTableEntryInDvar mp/didyouknow.csv 0 didyouknow";
+		}
+		
+		itemDef 
+		{
+			name			"loadbar"
+			style			WINDOW_STYLE_LOADBAR
+			rect			-174 68 258 2 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			background		"menu_white_line_faded"
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{ 
+			style			WINDOW_STYLE_SHADER 
+			rect			0 0 260 4 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_CENTER
+			origin 			-174 67
+			forecolor		0 0 0 0.5 
+			exp				material( "menu_white_line_faded" ); 
+			visible			1 
+			decoration 
+		}
+		PREPROC_GRADIENT_DRAW_ALIGNED( -174, 335, 258, 98, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0 0, "menu_white_line_faded", 0.05 0.05 0.05 1 )
+
+		itemDef
+		{
+			rect			-160 355 220 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+			type			ITEM_TYPE_BUTTON
+			textfont		UI_FONT_NORMAL
+			dvar			"didyouknow"
+			textalign 		ITEM_ALIGN_LEFT
+			textscale		TEXTSIZE_SMALL
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			textalignx 		0
+			textaligny 		-10   
+			origin			5 10
+			visible			1
+			decoration
+			autowrapped
+		}
+#else		
+		rect			0 0 640 480
+
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			FULLSCREEN_WIDE
+			background		"$levelBriefing"
+			visible			1
+			decoration
+		}
+		itemDef 
+		{ 
+			style			WINDOW_STYLE_SHADER 
+			rect			0 0 260 4 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+			origin 			-285 -136
+			forecolor		0 0 0 0.5 
+			exp				material( "menu_white_line_faded" ); 
+			visible			1 
+			decoration 
+		}
+		itemDef 
+		{
+			name			"loadbar"
+			style			WINDOW_STYLE_LOADBAR
+			rect			-284 -135 258 2 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_BOTTOM
+			background		"menu_white_line_faded"
+			visible			1
+			decoration
+		}
+		PREPROC_GRADIENT_DRAW_ALIGNED( -284, 300, 258, 98, HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_TOP, 0 0, "menu_white_line_faded", 0.05 0.05 0.05 1 )
+
+		itemDef
+		{
+			rect			-270 320 220 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP
+			type			ITEM_TYPE_BUTTON
+			textfont		UI_FONT_NORMAL
+			dvar			"didyouknow"
+			textalign 		ITEM_ALIGN_LEFT
+			textscale		TEXTSIZE_SMALL
+			forecolor		1 1 1 1
+			backcolor		0 0 0 0
+			textalignx 		0
+			textaligny 		-10   
+			origin			5 10
+			visible			1
+			decoration
+			autowrapped
+		}
+#endif
+		#include "ui/safearea.menu"
+	}
+}
+

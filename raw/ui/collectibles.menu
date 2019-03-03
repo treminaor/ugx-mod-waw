@@ -1,0 +1,185 @@
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			30//0
+#define CHOICE_Y_START			65//85//34
+
+#define CHOICE_SEP_OFFSET_Y		-2
+#define CHOICE_SIDEITEM_SPACING	-310
+
+#define NEW_X_OFFSET			10
+#define	NEW_Y_OFFSET			3
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui_mp/stats_info.inc"
+#include "ui/overlaybg.inc"
+
+#undef	CHOICE_DVAR_OFFSET_X
+#define CHOICE_DVAR_OFFSET_X	(CHOICE_SIZE_X+20)
+#undef	CHOICE_DVAR_TEXTALIGN
+#define CHOICE_DVAR_TEXTALIGN	ITEM_ALIGN_MIDDLE_LEFT
+
+#undef CHOICE_SIZE_X
+#define CHOICE_SIZE_X			150
+
+#define ORIGIN_DESCRIPTION		(CHOICE_X_START + 15) 190
+#define COLOR_DESC_TEXT			1 1 1 0.7
+#define COLOR_LOCKED_DESC_TEXT	0.5 0.5 0.5 0.5
+
+#define ORIGIN_BUTTON_BACK		52 438
+#define ORIGIN_BUTTON_INVITE	390 86
+#define ORIGIN_BUTTON_KICK		529 98
+
+#define MENU_FONT_SIZE			TEXTSIZE_DEFAULT
+#define HIGHLIGHT_SIZE			142 22
+#define MENU_FONT_COLOR			1 1 1 0.5
+#define MENU_LOCKED_COLOR		0.25 0.25 0.25 1
+
+#define PLAYERLIST_WIDTH		270
+#define ORIGIN_PLAYERLIST		(- (PLAYERLIST_WIDTH - RIGHTITEM_OFFSET)) 38
+#define LISTBOX_WIDTH			204
+#define COLOR_DISABLE			0.3 0.3 0.3 1
+
+#define GAMEINFO_ORIENTATION		1
+#define GAMEINFO_ORIGIN_X			-200
+#define GAMEINFO_ORIGIN_Y			65
+#define GAMEINFO_ORIGIN				GAMEINFO_ORIGIN_X GAMEINFO_ORIGIN_Y//-200 65 //-200 100//100 100//(CHOICE_X_START+CHOICE_SIZE_X-GAMEINFO_WIDTH) 226 //(CHOICE_X_START + 32) 226
+
+#define GAMEINFO_WIDTH				200 //100 100 256 192
+#define GAMEINFO_HEIGHT				100//120//192//150
+
+#define GAMEINFO_RECT				GAMEINFO_ORIGIN GAMEINFO_WIDTH GAMEINFO_HEIGHT
+
+#define COLLECTIBLES_TABLE		"maps/collectiblesTable.csv"
+
+#define COLLECTIBLE_STICKSSTONES	0
+#define COLLECTIBLE_VAMPIRE			1
+#define COLLECTIBLE_BERSERKER		2
+#define COLLECTIBLE_ZOMBIE			3
+#define COLLECTIBLE_PAINTBALL		4
+#define COLLECTIBLE_DIRTYHARRY		5
+#define COLLECTIBLE_MORPHINE		6
+#define COLLECTIBLE_THUNDER			7
+#define COLLECTIBLE_FLAK_JACKET		8
+#define COLLECTIBLE_HARDCORE		9
+#define COLLECTIBLE_BODY_ARMOR		10
+#define COLLECTIBLE_HARD_HEADED		11
+#define COLLECTIBLE_DEAD_HANDS		12
+
+#define HAS_COLLECTIBLE(collectible) ( ( ( dvarint( cheat_items_set1 ) & ( 1 << collectible ) ) != 0 ) )
+#define NOT_HAVE_COLLECTIBLE(collectible) ( ( ( dvarint( cheat_items_set1 ) & ( 1 << collectible ) ) == 0 ) )
+
+#define COLLECTIBLE_BUTTON( itemIndex, textArg, collectibleName, collectibleBit ) \
+	CHOICE_BUTTON_FOCUS_VIS_NOICON( itemIndex, textArg, ;, setdvar ui_selected_collectible collectibleName; setdvar ui_collectible_islocked 0;, ;, when( HAS_COLLECTIBLE( collectibleBit ) ) ) \ 
+	CHOICE_BUTTON_FOCUS_VIS_NOHI_NOICON( itemIndex, "", ;, setdvar ui_selected_collectible collectibleName; setdvar ui_collectible_islocked 1;, ;, when( NOT_HAVE_COLLECTIBLE( collectibleBit ) ) ) \
+	CHOICE_DBUTTON_VIS( itemIndex, textArg, when( NOT_HAVE_COLLECTIBLE( collectibleBit ) ) ) \
+	CHOICE_LOCKEDICON_VIS( itemIndex, "specialty_locked", when( NOT_HAVE_COLLECTIBLE( collectibleBit ) ) )
+{
+	
+	menuDef
+	{
+		name			menu_collectibles
+		rect			0 0 640 470 HORIZONTAL_ALIGN_FULLSCREEN VERTICAL_ALIGN_FULLSCREEN
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_FILLED
+		soundloop 		"music_mainmenu"
+		onOpen			{ setdvar invite_visible "0"; setLocalVarBool ui_inOverlay 1; setdvar ui_selected_collectible "collectible_zombie"; }
+		onEsc			{ close self; }
+		onClose			{ setdvar invite_visible "1"; setLocalVarBool ui_inOverlay 0; }
+
+		// background from overlaybg.inc
+		BACKGROUND_BLACK_LETTERBOX_BLURWORLD_VIS( 0 , 0 )
+		OVERLAY_BACKGROUND_VIS( !menuisopen( "menu_xboxlive_barracks" ) )
+
+		#define BACK_OPEN	;
+		#include "ui/navcontrols.inc"
+
+		#ifdef PC
+			CHOICE_OVERLAY_TITLE( "@MENU_DEATHCARDS" )
+		#else
+			CHOICE_OVERLAY_TITLE( "@MENU_DEATHCARDS" )
+		#endif
+		//CHOICE_OVERLAY_TITLE( "@MENU_DEATHCARDS" )
+
+/* Level based ordering
+		COLLECTIBLE_BUTTON( 1, "@MENU_HOST_OPTION_THUNDER_CARD",collectible_thunder, COLLECTIBLE_THUNDER )
+		COLLECTIBLE_BUTTON( 2, "@MENU_HOST_OPTION_HARD_HEADED_CARD",collectible_hard_headed, COLLECTIBLE_HARD_HEADED )
+		COLLECTIBLE_BUTTON( 3, "@MENU_HOST_OPTION_DIRTYHARRY_CARD",collectible_dirtyharry, COLLECTIBLE_DIRTYHARRY )
+		COLLECTIBLE_BUTTON( 4, "@MENU_HOST_OPTION_DEAD_HANDS_CARD",collectible_dead_hands, COLLECTIBLE_DEAD_HANDS )
+		COLLECTIBLE_BUTTON( 5, "@MENU_HOST_OPTION_STICKSSTONES_CARD",collectible_sticksstones, COLLECTIBLE_STICKSSTONES )
+		COLLECTIBLE_BUTTON( 6, "@MENU_HOST_OPTION_VAMPIRE_CARD",collectible_vampire, COLLECTIBLE_VAMPIRE )
+		COLLECTIBLE_BUTTON( 7, "@MENU_HOST_OPTION_FLAK_JACKET_CARD",collectible_flak_jacket, COLLECTIBLE_FLAK_JACKET )
+		COLLECTIBLE_BUTTON( 8, "@MENU_HOST_OPTION_BODY_ARMOR_CARD",collectible_body_armor, COLLECTIBLE_BODY_ARMOR )
+		COLLECTIBLE_BUTTON( 9, "@MENU_HOST_OPTION_ZOMBIE_CARD",collectible_zombie, COLLECTIBLE_ZOMBIE )
+		COLLECTIBLE_BUTTON( 10, "@MENU_HOST_OPTION_MORPHINE_SHOT_CARD",collectible_morphine, COLLECTIBLE_MORPHINE )
+		COLLECTIBLE_BUTTON( 11, "@MENU_HOST_OPTION_BERSERKER_CARD",collectible_berserker, COLLECTIBLE_BERSERKER )
+		COLLECTIBLE_BUTTON( 12, "@MENU_HOST_OPTION_PAINTBALL_CARD",collectible_paintball, COLLECTIBLE_PAINTBALL )
+		COLLECTIBLE_BUTTON( 13, "@MENU_HOST_OPTION_HARDCORE_CARD",collectible_hardcore, COLLECTIBLE_HARDCORE )
+*/ 
+		COLLECTIBLE_BUTTON( 1, "@MENU_HOST_OPTION_ZOMBIE_CARD",collectible_zombie, COLLECTIBLE_ZOMBIE )
+		COLLECTIBLE_BUTTON( 2, "@MENU_HOST_OPTION_DIRTYHARRY_CARD",collectible_dirtyharry, COLLECTIBLE_DIRTYHARRY )
+		COLLECTIBLE_BUTTON( 3, "@MENU_HOST_OPTION_VAMPIRE_CARD",collectible_vampire, COLLECTIBLE_VAMPIRE )
+		COLLECTIBLE_BUTTON( 4, "@MENU_HOST_OPTION_BODY_ARMOR_CARD",collectible_body_armor, COLLECTIBLE_BODY_ARMOR )
+		COLLECTIBLE_BUTTON( 5, "@MENU_HOST_OPTION_MORPHINE_SHOT_CARD",collectible_morphine, COLLECTIBLE_MORPHINE )
+		COLLECTIBLE_BUTTON( 6, "@MENU_HOST_OPTION_FLAK_JACKET_CARD",collectible_flak_jacket, COLLECTIBLE_FLAK_JACKET )
+		COLLECTIBLE_BUTTON( 7, "@MENU_HOST_OPTION_THUNDER_CARD",collectible_thunder, COLLECTIBLE_THUNDER )
+		COLLECTIBLE_BUTTON( 8, "@MENU_HOST_OPTION_STICKSSTONES_CARD",collectible_sticksstones, COLLECTIBLE_STICKSSTONES )
+		COLLECTIBLE_BUTTON( 9, "@MENU_HOST_OPTION_PAINTBALL_CARD",collectible_paintball, COLLECTIBLE_PAINTBALL )
+		COLLECTIBLE_BUTTON( 10, "@MENU_HOST_OPTION_DEAD_HANDS_CARD",collectible_dead_hands, COLLECTIBLE_DEAD_HANDS )
+		COLLECTIBLE_BUTTON( 11, "@MENU_HOST_OPTION_HARD_HEADED_CARD",collectible_hard_headed, COLLECTIBLE_HARD_HEADED )
+		COLLECTIBLE_BUTTON( 12, "@MENU_HOST_OPTION_BERSERKER_CARD",collectible_berserker, COLLECTIBLE_BERSERKER )
+		COLLECTIBLE_BUTTON( 13, "@MENU_HOST_OPTION_HARDCORE_CARD",collectible_hardcore, COLLECTIBLE_HARDCORE )
+
+		// ---------------------- Final Drawing ------------------------------//
+		THIRD_RIGHT_COL_GRADIENT
+		PREPROC_GRADIENT_DRAW_ALIGNED( 0, -5, 185, (115+45), HORIZONTAL_ALIGN_RIGHT, VERTICAL_ALIGN_CENTER, ORIGIN_DESCRIPTION, "menu_white_line_faded", 0 0 0 0.5 )
+		// death card image
+#ifndef PC
+		#define LOCAL_X_CARD_OFFSET -500
+		#define LOCAL_Y_CARD_OFFSET 80
+		#define LOCAL_X_TEXT_OFFSET -205
+		#define LOCAL_X_BG_OFFSET -180
+		#define LOCAL_Y_INFO_OFFSET 50
+		#define LOCAL_X_MAP_OFFSET -170
+#else // #ifndef PC
+		#define LOCAL_X_CARD_OFFSET -470
+		#define LOCAL_Y_CARD_OFFSET 110
+		#define LOCAL_X_TEXT_OFFSET -225
+		#define LOCAL_X_BG_OFFSET -190
+		#define LOCAL_Y_INFO_OFFSET 80
+		#define LOCAL_X_MAP_OFFSET -190
+#endif // #ifndef PC
+		// For HiDef
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_X_CARD_OFFSET LOCAL_Y_CARD_OFFSET 256 256 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 5 ) , 1 1 1 1, 0, 0, 0 0 0 0, when( !dvarbool( ui_collectible_islocked ) && dvarbool( hiDef ) ) )
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_X_CARD_OFFSET LOCAL_Y_CARD_OFFSET 256 256 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 4 ) , 1 1 1 1, 0, 0, 0 0 0 0, when( dvarbool( ui_collectible_islocked ) && dvarbool( hiDef ) ) )
+		// For StandardDef
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( -350 150 128 128 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 5 ) , 1 1 1 1, 0, 0, 0 0 0 0, when( !dvarbool( ui_collectible_islocked ) && !dvarbool( hiDef ) ) )
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( -350 150 128 128 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 4 ) , 1 1 1 1, 0, 0, 0 0 0 0, when( dvarbool( ui_collectible_islocked ) && !dvarbool( hiDef ) ) )
+
+		// map image
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( LOCAL_X_MAP_OFFSET LOCAL_Y_INFO_OFFSET 156 96 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 7 ), 1 1 1 1, 0, 0, 0 0 0 0, when( !dvarbool( ui_collectible_islocked ) ) )
+		// Lock
+		PREPROC_SHADER_DRAW_ALIGNED_VIS( (LOCAL_X_MAP_OFFSET+32) LOCAL_Y_INFO_OFFSET 96 96 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, "specialty_locked_big", 1 1 1 1, 0, 0, 0 0 0 0, when( dvarbool( ui_collectible_islocked ) ) )
+		// Background shader
+		PREPROC_SHADER_DRAW_ALIGNED( LOCAL_X_BG_OFFSET (LOCAL_Y_INFO_OFFSET+130) 188 1 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 -20, "menu_white_line_faded", CHOICE_TEXTCOLOR, 0, 0, 0 0 0 0 )
+		PREPROC_SHADER_DRAW_ALIGNED( LOCAL_X_BG_OFFSET (LOCAL_Y_INFO_OFFSET+110) 188 200 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, 0 0, "menu_white_line_faded", 0 0 0 0.5, 0, 0, 0 0 0 0 )
+		// Mission found in :
+		PREPROC_TEXT_DRAW_ALIGNED( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET-60) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, exp text( "@MENU_MISSION_FOUND_IN" ), TEXTSIZE_DEFAULT, 0, 0, ITEM_ALIGN_LEFT, COLOR_FOCUSED )
+		// Map's name
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET-43) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, "@"+tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 6 ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_DESC_TEXT, when( !dvarbool( ui_collectible_islocked ) ) )
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET-43) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, "@"+tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 6 ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_LOCKED_DESC_TEXT, when( dvarbool( ui_collectible_islocked ) ) )
+		// Co-op Cheat Unlocked :
+		PREPROC_TEXT_DRAW_ALIGNED( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET-23) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, exp text( "@MENU_CHEAT_UNLOCKED" ), TEXTSIZE_DEFAULT, 0, 0, ITEM_ALIGN_LEFT, COLOR_FOCUSED )
+		// Death card's original name
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET-6) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, "@"+tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 2 ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_DESC_TEXT, when( !dvarbool( ui_collectible_islocked ) ) )
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET-6) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, "@"+tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 2 ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_LOCKED_DESC_TEXT, when( dvarbool( ui_collectible_islocked ) ) )
+		// Cheat Description
+		PREPROC_TEXT_DRAW_ALIGNED( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET+14) 200 14 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, exp text( "@MENU_CHEAT_DESC" ), TEXTSIZE_DEFAULT, 0, 0, ITEM_ALIGN_LEFT, COLOR_FOCUSED )	
+		// description
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET+31) 170 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, "@"+tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 3 ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_DESC_TEXT, when( !dvarbool( ui_collectible_islocked ) ) )
+		PREPROC_TEXT_DRAW_ALIGNED_VIS( LOCAL_X_TEXT_OFFSET (LOCAL_Y_INFO_OFFSET+31) 170 100 HORIZONTAL_ALIGN_RIGHT VERTICAL_ALIGN_TOP, ORIGIN_DESCRIPTION, "@"+tablelookup( COLLECTIBLES_TABLE, 0, dvarString( ui_selected_collectible ), 3 ), TEXTSIZE_SMALL, 0, 0, ITEM_ALIGN_LEFT, COLOR_LOCKED_DESC_TEXT, when( dvarbool( ui_collectible_islocked ) ) )
+	}
+}

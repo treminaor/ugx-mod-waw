@@ -1,0 +1,77 @@
+iwmap 4
+"000_Global" flags  active
+"The Map" flags 
+// entity 0
+{
+"radiosityscale" "1"
+"sunradiosity" "1.5"
+"northyaw" "225"
+"diffusefraction" "0.20"
+"_color" "0.9 0.92 1"
+"contrastgain" "0.3"
+"sunlight" "1"
+"sundirection" "-50 50 0"
+"sundiffusecolor" "0.9 0.92 1"
+"ambient" "0.35"
+"suncolor" "0.9 0.98 1"
+"skyboxmodel" "skybox_see2"
+"classname" "worldspawn"
+}
+// entity 1
+{
+"classname" "trigger_use"
+"targetname" "ugxm_trap_machine"
+"zombie_cost" "500"
+// brush 0
+{
+ ( -5 -20 0.5 ) ( -11 -20 0.5 ) ( -11 -46 0.5 ) trigger 64 64 -224.0023 -760.00586 0 0 lightmap_gray 16384.168 16383.561 -224 -759.97632 0 0
+ ( -12 -42 84.5 ) ( -12 -16 84.5 ) ( -6 -16 84.5 ) trigger 64 64 -224 -760.00916 0 0 lightmap_gray 16383.766 16384.023 -224 -760.00415 0 0
+ ( 20 -22 17 ) ( 26 -22 17 ) ( 26 -22 -9 ) trigger 64 64 -223.98228 9 0 0 lightmap_gray 16384.283 16384 -224 9 0 0
+ ( 25 -22 17 ) ( 25 4 17 ) ( 25 4 -9 ) trigger 64 64 760.00409 9 0 0 lightmap_gray 16384.221 16384 760.00958 9 0 0
+ ( -6 -20 17 ) ( -12 -20 17 ) ( -12 -20 -9 ) trigger 64 64 -224 9 0 0 lightmap_gray 16383.75 16384 -224 9 0 0
+ ( -25 -20 16.5 ) ( -25 -46 16.5 ) ( -25 -46 -9.5 ) trigger 64 64 760.00568 9 0 0 lightmap_gray 16383.949 16384 760.0022 9 0 0
+}
+}
+// entity 2
+{
+"targetname" "ugxm_trap_machine_model"
+"origin" "0.0 0.0 0.0"
+"classname" "script_model"
+"model" "ugxm_trap_machine_off"
+}
+// entity 3
+{
+"origin" "-12.0 -28.0 63.0"
+"targetname" "auto207"
+"classname" "info_null"
+}
+// entity 4
+{
+"target" "auto207"
+"targetname" "ugxm_traps_machine_light"
+"classname" "light"
+"intensity" "0.0001"
+"_color" "1 1 1"
+"radius" "100"
+"def" "light_point_quadratic"
+"exponent" "1"
+"fov_inner" "80"
+"fov_outer" "120"
+"spawnflags" "5"
+"origin" "-12.5 -40.0 70.0"
+"angles" "0 90 0"
+}
+// entity 5
+{
+"angles" "0 90 0"
+"origin" "-12.5 -8.0 66.0"
+"spawnflags" "0"
+"fov_outer" "120"
+"fov_inner" "80"
+"exponent" "1"
+"def" "light_point_quadratic"
+"radius" "100"
+"_color" "1 1 1"
+"intensity" "1"
+"classname" "light"
+}

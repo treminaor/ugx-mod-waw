@@ -1,0 +1,33 @@
+#include "ui/menudef.h"
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+#include "ui/choices_setup_popmenu.menu"
+
+	
+{
+	menuDef
+	{
+		name				"mon_menu"
+		rect					173 265 300 210
+		fullscreen			0
+		focuscolor			COLOR_FOCUSED
+		style					WINDOW_STYLE_SHADER
+		background		"black"
+		
+		legacySplitScreenScale
+		onEsc
+		{
+			close self;
+		}
+		onOpen
+		{
+			setDvar cl_bypassMouseInput "1"
+		}
+		onClose
+		{
+			setDvar cl_bypassMouseInput "0"
+		}
+		
+		execKey "j" { scriptMenuResponse "1"; close self }
+	}
+}
