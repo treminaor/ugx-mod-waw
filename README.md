@@ -1,8 +1,12 @@
 # UGX Mod Standalone v1.1.1 (Final) WaW Edition
  UGX Mod for Call of Duty 5 World at War
  
- Release page: https://www.ugx-mods.com/forum/ugx-team-releases/18/release-ugx-mod-standalone-v1-0-4/537
- Installation Guide: https://confluence.ugx-mods.com/display/UGXMODS/UGX+Mod+Standalone+v1.1+Installation+Guide
+ Portfolio Overview: https://andy-king.me/work/ugxmod.html
+ 
+ Official Release page: https://www.ugx-mods.com/forum/ugx-team-releases/18/release-ugx-mod-standalone-v1-0-4/537
+ 
+ Official Installation Guide: https://confluence.ugx-mods.com/display/UGXMODS/UGX+Mod+Standalone+v1.1+Installation+Guide
+ 
  
 ## Changes from versin 1.0.0 to 1.1.0
 ### Weapons: 
