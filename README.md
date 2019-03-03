@@ -5,7 +5,7 @@
  Installation Guide: https://confluence.ugx-mods.com/display/UGXMODS/UGX+Mod+Standalone+v1.1+Installation+Guide
  
 ## Changes from versin 1.0.0 to 1.1.0
-###Weapons: 
+### Weapons: 
 __Pistols__: M9 Beretta, Desert Eagle, .44 Magnum, Glock 18, M1911 Dual Wield
 __Shotguns__: Winchester 1200, M1014 Benelli, AA-12, Model 1887 Dual Wield, Blundergat
 __Submachine Guns__: AK-74u, P90, Skorpion, M1927, PP19, Honey Badger, FMG9 Dual Wield
@@ -18,7 +18,7 @@ __Perks__ - Second Chance QR, Double Tap 2.0, Juggernog, Sleight of Hand, Stamin
 __Dive-to-Prone__ - We have fully working BO1 Dive-To-Prone animations for all weapon classes (except LMGs) with the correct key combination of Shift + Ctrl or C. Diving off of a high enough surface will cause a Flopper explosion if you have PHD.
 __Traps Machine__ - Buy 3 types of Playable Sentry Turrets (Bullet, Flame, Grenade), buy upgrades for your existing Sentry Turrets, buy equipment (Electrip Wire, Gas and Match Trap, Bear Traps, Bouncing Betties, Gersch Devices (Requiem Only)
 __Elemental Machine__ - Pack-a-punch your weapons a second time with the new Elemental Machine! There are 6 different possible elemental types in the mod: Acid, Explosive, Electric, Fire, Ice, and Wind. PaP'd guns which have a BLUE camo color can be upgraded a second time with the Elemental Machine. PaP'd guns which have a PINK camo color already have special abilities and cannot be upgraded a second time.
-###6 Gamemodes:
+### 6 Gamemodes:
 __Classic Mode__: Classic zombies experience! Completely stock gameplay which includes the Firesale powerup.
 __Arcademode__: Classic zombies experience with UGX Powerups (Terminator, Invisibility, etc) and a Brutus bossround included!
 __Gungame__: Compete against your friends or the clock to see how fast you can progress through a list of weapons!
