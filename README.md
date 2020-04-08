@@ -1,3 +1,5 @@
+License: GNU Lesser General Public License v3.0
+
 # UGX Mod Standalone v1.1.1 (Final) WaW Edition
  UGX Mod for Call of Duty 5 World at War
  
